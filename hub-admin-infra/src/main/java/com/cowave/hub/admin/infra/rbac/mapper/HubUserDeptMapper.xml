@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.rbac.mapper.HubUserDeptMapper">
+
+    <select id="getJoinedMembers" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.DeptUserPto" databaseId="postgres">
+        select DISTINCT on(u.user_id)
+            u.user_id userId,
+            u.user_name userName,
+            u.user_phone userPhone,
+            u.user_rank userRank,
+            ud.is_default isDefault,
+            ud.is_leader isLeader,
+            p.post_name postName
+        from hub_user_dept ud
+        join hub_user u on ud.user_id = u.user_id
+        left join hub_post p on ud.post_id = p.post_id
+        where ud.dept_id = #{query.deptId} and u.tenant_id = #{tenantId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+    </select>
+
+    <select id="getJoinedMembers" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.DeptUserPto" databaseId="mysql">
+        select
+            u.user_id as userId,
+            u.user_name as userName,
+            u.user_phone as userPhone,
+            u.user_rank as userRank,
+            any_value(ud.is_default) as isDefault,
+            any_value(ud.is_leader) as isLeader,
+            any_value(p.post_name) as postName
+        from hub_user_dept ud
+        join hub_user u on ud.user_id = u.user_id
+        left join hub_post p on ud.post_id = p.post_id
+        where ud.dept_id = #{query.deptId}
+          and u.tenant_id = #{tenantId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+        group by u.user_id, u.user_name, u.user_phone, u.user_rank
+    </select>
+
+    <select id="getUnJoinedMembers" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.DeptUserPto" databaseId="postgres">
+        with uids as (select user_id from hub_user except select user_id from hub_user_dept where dept_id = #{query.deptId})
+        select DISTINCT on(u.user_id)
+        u.user_id userId,
+        u.user_name userName,
+        u.user_phone userPhone,
+        u.user_rank userRank,
+        0 as isDefault,
+        0 as isLeader
+        from uids
+        join hub_user u on uids.user_id = u.user_id
+        where u.tenant_id = #{tenantId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+    </select>
+
+    <select id="getUnJoinedMembers" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.DeptUserPto" databaseId="mysql">
+        select
+            u.user_id as userId,
+            u.user_name as userName,
+            u.user_phone as userPhone,
+            u.user_rank as userRank,
+            0 as isDefault,
+            0 as isLeader
+        from hub_user u
+        where u.tenant_id = #{tenantId}
+          and u.user_id not in (select user_id from hub_user_dept where dept_id = #{query.deptId})
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+        group by u.user_id, u.user_name, u.user_phone, u.user_rank
+    </select>
+
+    <insert id="insertDeptUsers" databaseId="postgres">
+        insert into hub_user_dept(user_id, dept_id, post_id, is_default, is_leader) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.userId}, #{item.deptId}, #{item.postId}, #{item.isDefault}, #{item.isLeader})
+        </foreach>
+        on conflict(user_id, dept_id, post_id)
+        do update set
+        is_default = excluded.is_default,
+        is_leader = excluded.is_leader
+    </insert>
+
+    <insert id="insertDeptUsers" databaseId="mysql">
+        insert into hub_user_dept(user_id, dept_id, post_id, is_default, is_leader)
+        select t.user_id, t.dept_id, t.post_id, t.is_default, t.is_leader
+        from (<foreach collection="list" item="item" separator="union all">
+                select
+                    #{item.userId} as user_id,
+                    #{item.deptId} as dept_id,
+                    #{item.postId} as post_id,
+                    #{item.isDefault} as is_default,
+                    #{item.isLeader} as is_leader
+              </foreach>) t
+        where exists (
+            select 1 from hub_user
+            where hub_user.user_id = t.user_id
+              and hub_user.tenant_id = #{tenantId}
+        )
+        on duplicate key update
+        is_default = values(is_default),
+        is_leader = values(is_leader)
+    </insert>
+
+    <resultMap id="userDiagramMap" type="com.cowave.hub.admin.domain.rbac.entity.pto.TreeNode">
+        <result column="dept_id"     property="pid"/>
+        <collection property="children" javaType="list" ofType="cn.hutool.core.lang.tree.Tree">
+            <result column="user_id"    property="id"/>
+            <result column="user_name"   property="label"/>
+        </collection>
+    </resultMap>
+
+    <select id="listDeptUserDiagramNode" resultMap="userDiagramMap" databaseId="postgres">
+        select distinct on(u.user_id)
+            u.user_id,
+            u.user_name,
+            COALESCE (ud.dept_id, 0) AS dept_id
+        from hub_user u
+        left join hub_user_dept ud on u.user_id = ud.user_id
+        where u.tenant_id = #{tenantId}
+    </select>
+
+    <select id="listDeptUserDiagramNode" resultMap="userDiagramMap" databaseId="mysql">
+        select
+            u.user_id,
+            u.user_name,
+            coalesce(ud.dept_id, 0) as dept_id
+        from hub_user u
+        left join hub_user_dept ud on u.user_id = ud.user_id
+        where u.tenant_id = #{tenantId}
+        group by u.user_id, u.user_name, ud.dept_id
+    </select>
+
+    <select id="getCandidatesByCode" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.UserNamePto">
+        select u.user_id userId,
+               u.user_name userName
+        from hub_user u, hub_dept d, hub_user_dept ud
+        where d.tenant_id = #{tenantId} and d.dept_code = #{deptCode}
+          and d.dept_id = ud.dept_id and ud.user_id = u.user_id
+    </select>
+</mapper>

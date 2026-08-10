@@ -1,0 +1,67 @@
+############################################################################ 监听listener
+## type  single [默认]单线程处理所有消息
+##       batch  批量处理消息
+## idle-event-interval   检查是否有新消息的时间间隔，默认5000
+## ack-mode  record  [默认]每处理一条消息就提交 offset
+##           manual  手动提交 offset
+##           batch   每处理一批消息就提交 offset
+## missing-topics-fatal  消费端监听的topic不存在时，进程是否退出
+
+############################################################################ 生产者producer
+## retries  重试次数,如果设置可能改变消息顺序，比如消息1重试，然后2成功了
+## acks     0 吞吐量高，容忍部分数据丢失；
+##          1 有个一个副本写成功就算成功，但是如果leader挂了并且其他broker没有同步则可能丢失数据；
+##         -1 保证写入副本数不小于min.insync.replicas(在server.properties或者创建主题时设置)才算成功
+## buffer-memory  生产端缓冲区大小，比如5242880=5MB
+## batch-size     批量大小，比如5120=5KB
+## properties.linger.ms  提交延时，当积累的消息达到batch-size或延时达到linger.ms后，就会将消息提交给kafka，
+##                       所以如果配置为0，就表示每接收到一条消息就提交kafka，那么这时batch-size其实就没用了
+
+############################################################################ 消费者consumer
+## enable-auto-commit       是否自动提交offset
+## auto.commit.interval.ms  offset提交延时(接收到消息后多久提交)
+## max-poll-records         批量消费每次最多消费多少条消息
+## auto-offset-reset  当kafka中没有初始offset，或者offset超出范围时将自动重置
+##                    earliest 重置为分区中最小的offset(消费所有的数据);
+##                    latest   [默认]重置为分区中最新的offset(消费新产生的数据);
+##                    none     只要有一个分区不存在已提交的offset,就抛出异常;
+## properties.session.timeout.ms  消费会话超时时间，超过这个时间consumer没有发送心跳，会触发rebalance操作
+## properties.request.timeout.ms  消费请求超时时间，客户端会重发请求，超过重试次数将抛异常
+
+spring:
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092,127.0.0.1:9093,127.0.0.1:9094
+    listener:
+      missing-topics-fatal: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      retries: 0
+      acks: 1
+      buffer-memory: 5242880
+      batch-size: 5120
+      properties:
+        linger.ms: 0
+    consumer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      enable-auto-commit: true
+      auto-offset-reset: earliest
+      max-poll-records: 10
+      auto:
+        commit:
+          interval:
+            ms: 1000
+      properties:
+        group:
+          id: hub-admin
+        spring:
+          json:
+            trusted:
+              packages: '*'
+        session:
+          timeout:
+            ms: 120000
+        request:
+          timeout:
+            ms: 180000

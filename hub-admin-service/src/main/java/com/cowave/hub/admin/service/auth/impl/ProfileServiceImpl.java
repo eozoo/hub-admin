@@ -1,0 +1,129 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+package com.cowave.hub.admin.service.auth.impl;
+
+import com.cowave.hub.admin.domain.auth.entity.HubOAuthUser;
+import com.cowave.hub.admin.domain.auth.entity.pto.UserProfile;
+import com.cowave.hub.admin.domain.auth.entity.command.MfaBind;
+import com.cowave.hub.admin.domain.auth.entity.command.PasswdReset;
+import com.cowave.hub.admin.domain.auth.entity.command.ProfileUpdate;
+import com.cowave.hub.admin.domain.auth.entity.vo.MfaVo;
+import com.cowave.hub.admin.domain.rbac.biz.HubUserBiz;
+import com.cowave.hub.admin.domain.rbac.entity.HubTenant;
+import com.cowave.hub.admin.domain.rbac.entity.HubUser;
+import com.cowave.hub.admin.domain.rbac.enums.UserType;
+import com.cowave.hub.admin.domain.rbac.repository.facade.HubUserRepositoryFacade;
+import com.cowave.hub.admin.domain.sys.entity.HubAttach;
+import com.cowave.hub.admin.domain.auth.repository.facade.HubOAuthRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.HubTenantRepositoryFacade;
+import com.cowave.hub.admin.domain.sys.biz.HubAttachBiz;
+import com.cowave.hub.admin.service.auth.ProfileService;
+import com.cowave.hub.admin.service.auth.support.MfaAuthVerifier;
+import com.cowave.zoo.framework.access.Access;
+import com.cowave.zoo.framework.access.security.AccessUserDetails;
+import com.cowave.zoo.http.client.asserts.HttpAsserts;
+import com.cowave.zoo.http.client.asserts.HttpHintException;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import static com.cowave.hub.admin.domain.sys.enums.AttachType.AVATAR;
+import static com.cowave.hub.admin.domain.sys.enums.OpModule.SYSTEM_USER;
+import static com.cowave.zoo.http.client.constants.HttpCode.BAD_REQUEST;
+import static com.cowave.zoo.http.client.constants.HttpCode.UNAUTHORIZED;
+
+/**
+ * @author shanhuiming
+ */
+@RequiredArgsConstructor
+@Service
+public class ProfileServiceImpl implements ProfileService {
+    private final PasswordEncoder passwordEncoder;
+    private final HubUserBiz userBiz;
+    private final HubAttachBiz attachBiz;
+    private final HubUserRepositoryFacade userRepositoryFacade;
+    private final HubOAuthRepositoryFacade oauthRepositoryFacade;
+    private final HubTenantRepositoryFacade tenantRepositoryFacade;
+
+    @Override
+    public UserProfile info() throws Exception {
+        AccessUserDetails userDetails = Access.userDetails();
+        String tenantId = userDetails.getTenantId();
+        Integer userId = userDetails.getUserId();
+        String userCode = userDetails.getUserCode();
+        UserProfile userProfile = userRepositoryFacade.queryUserProfile(userId);
+        // Avatar
+        if (UserType.GITLAB.equalsType(userCode)) {
+            HubOAuthUser oauthUser =
+                    oauthRepositoryFacade.queryUserByAccount(tenantId, UserType.GITLAB.getVal(), userDetails.getUsername());
+            userProfile.setAvatar(oauthUser.getUserAvatar());
+        } else if (UserType.SYS.equalsType(userCode)) {
+            HubAttach avatar = attachBiz.previewLatestByOwner(String.valueOf(userId), SYSTEM_USER, AVATAR);
+            if (avatar != null) {
+                userProfile.setAvatar(avatar.getViewUrl());
+            }
+        }
+        // 租户信息
+        HubTenant hubTenant = tenantRepositoryFacade.queryById(tenantId);
+        userProfile.setTenantId(hubTenant.getTenantId());
+        userProfile.setTenantName(hubTenant.getTenantName());
+        return userProfile;
+    }
+
+    @Override
+    public void edit(ProfileUpdate profile) throws Exception {
+        Integer userId = Access.userId();
+        userBiz.updateProfile(userId, profile);
+        attachBiz.reserveByOwner(String.valueOf(userId), SYSTEM_USER, AVATAR, 3);
+    }
+
+    @Override
+    public void resetPasswd(PasswdReset passwdReset) {
+        String userCode = Access.userCode();
+        String passwd = userRepositoryFacade.queryByCode(userCode).getUserPasswd();
+        HttpAsserts.isTrue(passwordEncoder.matches(passwdReset.getOldPasswd(), passwd), BAD_REQUEST, "{admin.user.passwd.failed}");
+        HttpAsserts.isFalse(passwordEncoder.matches(passwdReset.getNewPasswd(), passwd), BAD_REQUEST, "{admin.user.passwd.repeat}");
+        userBiz.changePasswd(Access.userId(), passwordEncoder.encode(passwdReset.getNewPasswd()));
+    }
+
+    @Override
+    public MfaVo generateMfa() {
+        MfaVo mfaVo = new MfaVo();
+        HubUser hubUser = userRepositoryFacade.queryByCode(Access.userCode());
+        if (hubUser != null) {
+            String mfaKey = hubUser.getMfa();
+            if (StringUtils.isBlank(mfaKey)) {
+                mfaKey = MfaAuthVerifier.generateKey();
+                String mfaUrl = MfaAuthVerifier.generateAuthUrl(Access.tenantId(), Access.userAccount(), mfaKey);
+                mfaVo.setMfaUrl(mfaUrl);
+            }
+            mfaVo.setMfaKey(mfaKey);
+        }
+        return mfaVo;
+    }
+
+    @Override
+    public void enableMfa(MfaBind mfaBind) {
+        HttpAsserts.isTrue(MfaAuthVerifier.validateCode(
+                mfaBind.getMfaKey(), mfaBind.getMfaCode()), BAD_REQUEST, "{admin.mfa.code.invalid}");
+        userBiz.enableMfa(Access.userId(), mfaBind.getMfaKey());
+    }
+
+    @Override
+    public void disableMfa(MfaBind mfaBind) {
+        HttpAsserts.isTrue(MfaAuthVerifier.validateCode(
+                mfaBind.getMfaKey(), mfaBind.getMfaCode()), BAD_REQUEST, "{admin.mfa.code.invalid}");
+        userBiz.disableMfa(Access.userId());
+    }
+}

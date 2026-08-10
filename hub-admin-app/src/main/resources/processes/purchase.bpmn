@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test" exporter="Flowable Open Source Modeler" exporterVersion="6.8.0">
+  <process id="purchase" name="采购流程" isExecutable="true">
+    <startEvent id="startevent1" name="Start" flowable:initiator="starter" flowable:formFieldValidation="true"></startEvent>
+    <userTask id="purchaseManager" name="部门审批" flowable:assignee="${manager}" flowable:candidateGroups="采购经理" flowable:formKey="purchase-manager" flowable:formFieldValidation="true">
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="purchaseManager"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1"></exclusiveGateway>
+    <sequenceFlow id="flow2" sourceRef="purchaseManager" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="purchaseApply" name="重新申请" flowable:assignee="${starter}" flowable:formKey="purchase-apply" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${purchaseRejectStartListener}"></flowable:taskListener>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway2"></exclusiveGateway>
+    <sequenceFlow id="flow5" sourceRef="purchaseApply" targetRef="exclusivegateway2"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <subProcess id="pay" name="付费子流程">
+      <startEvent id="startevent2" name="Start" flowable:formFieldValidation="true"></startEvent>
+      <userTask id="purchaseFinance" name="财务审批" flowable:assignee="${finance}" flowable:candidateGroups="财务管理员" flowable:formKey="purchase-finance" flowable:formFieldValidation="true">
+        <extensionElements>
+          <flowable:taskListener event="create" delegateExpression="${purchaseFinanceStartListener}"></flowable:taskListener>
+          <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+        </extensionElements>
+      </userTask>
+      <exclusiveGateway id="exclusivegateway3"></exclusiveGateway>
+      <exclusiveGateway id="exclusivegateway4"></exclusiveGateway>
+      <userTask id="purchaseGeneral" name="总经理审批" flowable:assignee="${general}" flowable:candidateGroups="总经理" flowable:formKey="purchase-general" flowable:formFieldValidation="true">
+        <extensionElements>
+          <flowable:taskListener event="create" delegateExpression="${purchaseGeneralStartListener}"></flowable:taskListener>
+          <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+        </extensionElements>
+      </userTask>
+      <userTask id="purchaseCashier" name="出纳付款" flowable:assignee="${cashier}" flowable:candidateGroups="出纳员" flowable:formKey="purchase-cashier" flowable:formFieldValidation="true">
+        <extensionElements>
+          <flowable:taskListener event="create" delegateExpression="${purchaseCashierStartListener}"></flowable:taskListener>
+          <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+        </extensionElements>
+      </userTask>
+      <endEvent id="endevent2" name="End"></endEvent>
+      <exclusiveGateway id="exclusivegateway5"></exclusiveGateway>
+      <endEvent id="errorendevent1" name="总经理不同意">
+        <errorEventDefinition errorRef="payment_reject" flowable:errorVariableLocalScope="false" flowable:errorVariableTransient="false"></errorEventDefinition>
+      </endEvent>
+      <endEvent id="errorendevent2" name="财务不同意">
+        <errorEventDefinition errorRef="payment_reject" flowable:errorVariableLocalScope="false" flowable:errorVariableTransient="false"></errorEventDefinition>
+      </endEvent>
+      <sequenceFlow id="flow9" sourceRef="startevent2" targetRef="purchaseFinance"></sequenceFlow>
+      <sequenceFlow id="flow10" sourceRef="purchaseFinance" targetRef="exclusivegateway3"></sequenceFlow>
+      <sequenceFlow id="flow15" sourceRef="purchaseGeneral" targetRef="exclusivegateway5"></sequenceFlow>
+      <sequenceFlow id="flow17" name="通过" sourceRef="exclusivegateway5" targetRef="purchaseCashier">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${generalResult=='true'}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow12" name="大于1万" sourceRef="exclusivegateway4" targetRef="purchaseGeneral">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${money>10000}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow18" sourceRef="exclusivegateway3" targetRef="errorendevent2">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${financeResult=='false'}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow11" name="通过" sourceRef="exclusivegateway3" targetRef="exclusivegateway4">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${financeResult=='true'}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow13" name="小于1万" sourceRef="exclusivegateway4" targetRef="purchaseCashier">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${money<10000}]]></conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="flow14" sourceRef="purchaseCashier" targetRef="endevent2"></sequenceFlow>
+      <sequenceFlow id="flow23" sourceRef="exclusivegateway5" targetRef="errorendevent1">
+        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${generalResult=='false'}]]></conditionExpression>
+      </sequenceFlow>
+    </subProcess>
+    <boundaryEvent id="boundaryerror1" name="Error" attachedToRef="pay">
+      <errorEventDefinition errorRef="payment_reject" flowable:errorVariableLocalScope="false" flowable:errorVariableTransient="false"></errorEventDefinition>
+    </boundaryEvent>
+    <userTask id="purchaseConsignee" name="收货确认" flowable:assignee="${starter}" flowable:formKey="purchase-consignee" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="create" delegateExpression="${purchaseReceiveStartListener}"></flowable:taskListener>
+        <flowable:taskListener event="complete" delegateExpression="${purchaseReceiveEndListener}"></flowable:taskListener>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow21" sourceRef="pay" targetRef="purchaseConsignee"></sequenceFlow>
+    <endEvent id="endevent3" name="End"></endEvent>
+    <sequenceFlow id="flow22" sourceRef="purchaseConsignee" targetRef="endevent3"></sequenceFlow>
+    <sequenceFlow id="flow20" name="进入付费子流程" sourceRef="exclusivegateway1" targetRef="pay">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${manageResult=='true'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" name="不同意" sourceRef="exclusivegateway1" targetRef="purchaseApply">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${manageResult=='false'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow19" name="子流程异常" sourceRef="boundaryerror1" targetRef="purchaseApply"></sequenceFlow>
+    <sequenceFlow id="flow7" name="重新申请" sourceRef="exclusivegateway2" targetRef="purchaseManager">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${purchaseReapplyListener}"></flowable:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${reapply=='true'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow6" name="结束" sourceRef="exclusivegateway2" targetRef="endevent1">
+      <extensionElements>
+        <flowable:executionListener event="end" delegateExpression="${purchaseRevocateListener}"></flowable:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${reapply=='false'}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_purchase">
+    <bpmndi:BPMNPlane bpmnElement="purchase" id="BPMNPlane_purchase">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="30.0" width="29.999999999999993" x="59.999997377395694" y="205.49999604374176"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="purchaseManager" id="BPMNShape_purchaseManager">
+        <omgdc:Bounds height="54.99999999999997" width="105.0" x="139.49999784678224" y="192.99999623000627"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="290.4999955967069" y="200.49999324232357"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="purchaseApply" id="BPMNShape_purchaseApply">
+        <omgdc:Bounds height="55.0" width="105.0" x="257.9999999254942" y="278.9999991059303"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="171.9999999254942" y="285.9999991059303"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="28.0" width="27.999999999999993" x="60.99999827146534" y="288.9999953806401"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="pay" id="BPMNShape_pay">
+        <omgdc:Bounds height="321.0" width="588.0" x="484.9999999254942" y="59.99999910593034"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent2" id="BPMNShape_startevent2">
+        <omgdc:Bounds height="30.0" width="30.0" x="514.9999923259021" y="139.9999976009131"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="purchaseFinance" id="BPMNShape_purchaseFinance">
+        <omgdc:Bounds height="55.0" width="105.0" x="604.9999909847976" y="127.49999485164894"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="758.9999886900188" y="134.9999934211375"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="856.9999872297051" y="134.99999199062614"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="purchaseGeneral" id="BPMNShape_purchaseGeneral">
+        <omgdc:Bounds height="55.0" width="105.0" x="949.9999858438971" y="127.49998935312088"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="purchaseCashier" id="BPMNShape_purchaseCashier">
+        <omgdc:Bounds height="55.000000000000014" width="105.0" x="824.4999750182038" y="233.99999620020395"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="28.000000000000014" width="28.0" x="862.9999999254942" y="319.9999991059303"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway5" id="BPMNShape_exclusivegateway5">
+        <omgdc:Bounds height="40.000000000000014" width="40.0" x="982.4999712780125" y="241.49999318271892"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="errorendevent1" id="BPMNShape_errorendevent1">
+        <omgdc:Bounds height="28.000000000000014" width="28.0" x="988.4999711886055" y="319.9999949187041"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="errorendevent2" id="BPMNShape_errorendevent2">
+        <omgdc:Bounds height="28.000000000000014" width="28.0" x="764.4999886080624" y="229.9999962598086"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundaryerror1" id="BPMNShape_boundaryerror1">
+        <omgdc:Bounds height="30.0" width="30.0" x="462.9999999254942" y="291.9999991059303"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="purchaseConsignee" id="BPMNShape_purchaseConsignee">
+        <omgdc:Bounds height="55.0" width="105.0" x="725.9999999254942" y="438.9999991059303"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="28.0" width="28.0" x="889.9999867379668" y="452.4999929443003"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.000000000000007" flowable:targetDockerX="52.5" flowable:targetDockerY="27.500000000000007">
+        <omgdi:waypoint x="982.4999689730051" y="261.49999366239086"></omgdi:waypoint>
+        <omgdi:waypoint x="929.4499729539809" y="261.4999949379094"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.000000000000007">
+        <omgdi:waypoint x="778.8882568317752" y="174.83854089253956"></omgdi:waypoint>
+        <omgdi:waypoint x="778.5783581908823" y="230.00021315783613"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="52.5" flowable:targetDockerY="27.5">
+        <omgdi:waypoint x="463.0000529387807" y="306.9552231819216"></omgdi:waypoint>
+        <omgdi:waypoint x="362.949999925486" y="306.6565662701094"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="52.5" flowable:targetDockerY="27.500000000000007">
+        <omgdi:waypoint x="876.9999849364658" y="174.94063686440282"></omgdi:waypoint>
+        <omgdi:waypoint x="876.9999781656752" y="233.99999620020395"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14" flowable:sourceDockerX="52.5" flowable:sourceDockerY="27.500000000000007" flowable:targetDockerX="14.0" flowable:targetDockerY="14.000000000000007">
+        <omgdi:waypoint x="876.9999844486189" y="288.949996200204"></omgdi:waypoint>
+        <omgdi:waypoint x="876.9999951158107" y="319.9999991059303"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15" flowable:sourceDockerX="52.5" flowable:sourceDockerY="27.5" flowable:targetDockerX="20.0" flowable:targetDockerY="20.000000000000007">
+        <omgdi:waypoint x="1002.4999820827533" y="182.44998935312088"></omgdi:waypoint>
+        <omgdi:waypoint x="1002.4999740065509" y="241.4999959180959"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1" flowable:sourceDockerX="14.999999999999996" flowable:sourceDockerY="15.0" flowable:targetDockerX="52.5" flowable:targetDockerY="27.499999999999986">
+        <omgdi:waypoint x="89.94998950280251" y="220.4999960675422"></omgdi:waypoint>
+        <omgdi:waypoint x="139.4999967206327" y="220.49999614642604"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2" flowable:sourceDockerX="52.5" flowable:sourceDockerY="27.499999999999986" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="244.44999784678225" y="220.49999490634934"></omgdi:waypoint>
+        <omgdi:waypoint x="290.49999610095716" y="220.4999937453132"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="52.5" flowable:targetDockerY="27.5">
+        <omgdi:waypoint x="310.4999966008848" y="240.43840687482984"></omgdi:waypoint>
+        <omgdi:waypoint x="310.4999985412891" y="278.9999991059303"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5" flowable:sourceDockerX="52.5" flowable:sourceDockerY="27.5" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="257.99999992549084" y="306.27848011858856"></omgdi:waypoint>
+        <omgdi:waypoint x="211.82487376903913" y="306.08382263534213"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="294.0" flowable:targetDockerY="160.5">
+        <omgdi:waypoint x="330.44786666581376" y="220.49999349201187"></omgdi:waypoint>
+        <omgdi:waypoint x="484.9999980233492" y="220.49999542631372"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="13.999999999999996" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="172.4920772554255" y="305.49999850746246"></omgdi:waypoint>
+        <omgdi:waypoint x="88.94436029554558" y="303.3575729100037"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10" flowable:sourceDockerX="52.5" flowable:sourceDockerY="27.5" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="709.9499909847975" y="154.9999942335267"></omgdi:waypoint>
+        <omgdi:waypoint x="758.9999889254939" y="154.99999365602395"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21" flowable:sourceDockerX="294.0" flowable:sourceDockerY="160.5" flowable:targetDockerX="52.5" flowable:targetDockerY="27.5">
+        <omgdi:waypoint x="778.673780413299" y="380.9499991059303"></omgdi:waypoint>
+        <omgdi:waypoint x="778.555792608421" y="438.9999991059303"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="52.5" flowable:targetDockerY="27.499999999999986">
+        <omgdi:waypoint x="191.9999994392458" y="285.9999991059303"></omgdi:waypoint>
+        <omgdi:waypoint x="191.99999851415816" y="247.94999623000626"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="798.9398207848917" y="154.99999312919635"></omgdi:waypoint>
+        <omgdi:waypoint x="856.9999875216462" y="154.9999922818374"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22" flowable:sourceDockerX="52.5" flowable:sourceDockerY="27.5" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="830.9499999254941" y="466.49999652835567"></omgdi:waypoint>
+        <omgdi:waypoint x="889.999986502389" y="466.4999936291987"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="52.5" flowable:targetDockerY="27.5">
+        <omgdi:waypoint x="544.949991201914" y="154.99999727747024"></omgdi:waypoint>
+        <omgdi:waypoint x="604.9999909847976" y="154.99999598262076"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="52.5" flowable:targetDockerY="27.5">
+        <omgdi:waypoint x="896.9420457694047" y="154.99999157030658"></omgdi:waypoint>
+        <omgdi:waypoint x="949.9999858438971" y="154.99999045540895"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.000000000000007" flowable:targetDockerX="14.0" flowable:targetDockerY="14.000000000000007">
+        <omgdi:waypoint x="1002.4999712533485" y="281.4362535381776"></omgdi:waypoint>
+        <omgdi:waypoint x="1002.4999711886055" y="319.9999949187041"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,48 @@
+server:
+  port: ${http_port:19010}
+  servlet:
+    context-path: /admin
+
+spring:
+  application:
+    name: hub-admin
+  access:
+    filter:
+      - /api/v1/*
+    auth:
+      enable: true
+      mode: access-refresh
+      accessExpire: 60
+      ignoreUrls:
+        - /favicon.ico
+        - /actuator/**
+        - /doc/**
+  cache:
+    l2-enable: true
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://127.0.0.1:5432/hub-admin
+    username: postgres
+    password: postgres
+  liquibase:
+    enabled: true
+    change-log: sql/changelog.yml
+  redis:
+    host: 127.0.0.1
+    port: 6379
+  elasticsearch:
+    rest:
+      uris: 127.0.0.1:9200
+  minio:
+    endpoint: http://127.0.0.1:9100
+    accessKey: admin
+    secretKey: admin123
+  socket-io:
+    port: 19011
+  mail:
+    host: smtp.163.com
+    username: cowaveAdmin@163.com
+    password: TQQWRIRSQLTEELPT
+
+flowable:
+  database-schema-update: true

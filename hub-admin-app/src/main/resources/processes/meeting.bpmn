@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test" exporter="Flowable Open Source Modeler" exporterVersion="6.8.0">
+  <process id="meeting" name="会议预约" isExecutable="true">
+    <startEvent id="startevent1" name="Start" flowable:initiator="host" flowable:formFieldValidation="true"></startEvent>
+    <userTask id="meetingSign" name="会议签到" flowable:assignee="${member}" flowable:formKey="meeting-sign" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="complete" delegateExpression="${meetingSignStartListener}"></flowable:taskListener>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="false" flowable:collection="members" flowable:elementVariable="member">
+        <extensionElements></extensionElements>
+      </multiInstanceLoopCharacteristics>
+    </userTask>
+    <userTask id="meetingSummary" name="会议纪要" flowable:assignee="${applyUser}" flowable:formKey="meeting-summary" flowable:formFieldValidation="true">
+      <extensionElements>
+        <flowable:taskListener event="complete" delegateExpression="${meetingSummaryEndListener}"></flowable:taskListener>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow3" sourceRef="meetingSign" targetRef="meetingSummary"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow4" sourceRef="meetingSummary" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="startevent1" targetRef="meetingSign"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_meeting">
+    <bpmndi:BPMNPlane bpmnElement="meeting" id="BPMNPlane_meeting">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="439.9999934434892" y="218.99999673664576"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="meetingSign" id="BPMNShape_meetingSign">
+        <omgdc:Bounds height="55.0" width="105.0" x="540.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="meetingSummary" id="BPMNShape_meetingSummary">
+        <omgdc:Bounds height="55.0" width="105.0" x="690.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="28.0" width="28.0" x="840.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3" flowable:sourceDockerX="52.5" flowable:sourceDockerY="27.5" flowable:targetDockerX="52.5" flowable:targetDockerY="27.5">
+        <omgdi:waypoint x="644.9499999999999" y="237.5"></omgdi:waypoint>
+        <omgdi:waypoint x="689.9999999999422" y="237.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4" flowable:sourceDockerX="52.5" flowable:sourceDockerY="27.5" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="794.9499999999999" y="235.85201793721976"></omgdi:waypoint>
+        <omgdi:waypoint x="840.0067579948274" y="234.43768101804824"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="52.5" flowable:targetDockerY="27.5">
+        <omgdi:waypoint x="469.9451144691398" y="234.3804218152726"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="236.16363518135122"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

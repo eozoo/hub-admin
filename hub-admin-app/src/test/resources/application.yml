@@ -1,0 +1,27 @@
+server:
+  port: 19010
+  servlet:
+    context-path: /admin
+
+spring:
+  application:
+    name: hub-admin
+  access:
+    auth:
+      enable: true
+      mode: access-refresh
+      accessExpire: 60
+      ignoreUrls:
+        - /designer/**
+        - /favicon.ico
+        - /actuator/**
+        - /doc/**
+  liquibase:
+    enabled: true
+    change-log: sql/changelog.yml
+  socket-io:
+    port: 19011
+  mail:
+    host: smtp.163.com
+    username: cowaveAdmin@163.com
+    password: TQQWRIRSQLTEELPT

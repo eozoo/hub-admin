@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.rbac.mapper.HubDeptDiagramMapper">
+
+    <select id="listDiagramDpo" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.DeptDiagramPto">
+        select t.dept_id   id,
+               t.parent_id pid,
+               d.dept_name as label
+        from hub_dept_diagram t
+        left join hub_dept d ON t.dept_id = d.dept_id
+        where t.tenant_id = #{tenantId}
+        order by t.parent_id, t.dept_id
+    </select>
+
+    <select id="childIds" resultType="java.lang.Integer">
+        with recursive tree (dept_id, parent_id) as
+            (select t1.dept_id, t1.parent_id from hub_dept_diagram t1 where dept_id = #{deptId} union
+            select t2.dept_id, t2.parent_id from hub_dept_diagram t2 join tree on t2.parent_id = tree.dept_id)
+        select distinct tree.dept_id from tree JOIN hub_dept u on tree.dept_id = u.dept_id
+    </select>
+</mapper>

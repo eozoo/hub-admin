@@ -1,0 +1,3 @@
+-- 配置
+insert into hub_ldap (tenant_id, ldap_status, ldap_url, ldap_user, ldap_passwd, base_dn, user_class, account_property,name_property,email_property,phone_property,post_property,dept_property,leader_property,info_property, role_code, "create_by", "create_time", "update_by", "update_time")
+values ('cowave', 1, 'ldap://10.64.3.1:389', 'zhangyuliang@cowave.com', 'Cowave@123', 'OU=Cowavers,DC=cowave,DC=com', 'person', 'sAMAccountName','displayName','userPrincipalName','telephoneNumber','title','department','manager','distinguishedName', 'role-readonly', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');

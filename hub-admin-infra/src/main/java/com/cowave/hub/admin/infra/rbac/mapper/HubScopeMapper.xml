@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.rbac.mapper.HubScopeMapper">
+
+    <resultMap id="scopeMap" type="com.cowave.hub.admin.domain.rbac.entity.HubScope">
+        <result property="scopeId"      column="scope_id"/>
+        <result property="scopeName"    column="scope_name"/>
+        <result property="scopeContent" column="scope_content"
+                typeHandler="com.cowave.zoo.framework.support.mybatis.handler.JsonObjectHandler"/>
+    </resultMap>
+
+    <select id="listScopeByPermit" resultMap="scopeMap">
+        select s.scope_id, s.scope_name, s.scope_content
+        from hub_menu m
+        join hub_role_menu rm on m.menu_id = rm.menu_id and m.menu_permit = #{permit}
+        join hub_role r on rm.role_id = r.role_id and r.role_code in
+            <foreach collection="list"  item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        join hub_scope s on rm.scope_id = s.scope_id
+    </select>
+</mapper>

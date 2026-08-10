@@ -1,0 +1,35 @@
+spring:
+  access:
+    filter:
+      - /api/v1/*
+    auth:
+      accessExpire: 60
+  cache:
+    l2-enable: true
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${datasource_url:jdbc:postgresql://127.0.0.1:5432/hub-admin}
+    username: ${datasource_username:postgres}
+    password: ${datasource_password:postgres}
+  liquibase:
+    enabled: true
+    change-log: sql/changelog.yml
+  redis:
+    host: ${redis_host:127.0.0.1}
+    port: ${redis_port:6379}
+  elasticsearch:
+    rest:
+      uris: ${elastic_url}
+  minio:
+    endpoint: ${minio_endpoint:http://127.0.0.1:9100}
+    accessKey: ${minio_accessKey:admin}
+    secretKey: ${minio_secretKey:admin123}
+  socket-io:
+    port: ${socket_port:19011}
+  mail:
+    host: smtp.163.com
+    username: cowaveAdmin@163.com
+    password: TQQWRIRSQLTEELPT
+
+flowable:
+  database-schema-update: true

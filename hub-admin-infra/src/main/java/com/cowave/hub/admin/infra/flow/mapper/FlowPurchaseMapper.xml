@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.flow.mapper.FlowPurchaseMapper">
+
+    <resultMap id="PurchaseInfoPtoMap" type="com.cowave.hub.admin.domain.flow.entity.pto.PurchaseInfoPto">
+        <result property="id"            column="id"           />
+        <result property="content"       column="content"      />
+        <result property="money"         column="money"        />
+        <result property="applyUser"     column="apply_user"   />
+        <result property="applyUserName" column="apply_user_name" />
+        <result property="applyTime"     column="apply_time"   />
+        <result property="processId"     column="process_id"   />
+        <result property="processStatus" column="process_status" />
+    </resultMap>
+
+    <sql id="PurchaseField">
+        p.id,
+        p.content,
+        p.money,
+        p.apply_user,
+        p.apply_time,
+        p.process_id,
+        p.process_status
+    </sql>
+
+    <select id="list" resultMap="PurchaseInfoPtoMap">
+        select
+        u.user_name apply_user_name,
+        <include refid="PurchaseField"/>
+        from flow_purchase p
+        left join hub_user u on p.apply_user = u.user_code
+        <where>
+            <if test="purchase.applyUser != null">
+                and p.apply_user = #{purchase.applyUser}
+            </if>
+            <if test="purchase.processStatus != null">
+                and p.process_status = #{purchase.processStatus}
+            </if>
+            <if test="purchase.beginTime != null">
+                <![CDATA[
+                and p.apply_time >= #{purchase.beginTime}
+                ]]>
+            </if>
+            <if test="purchase.endTime != null">
+                <![CDATA[
+                and p.apply_time <= #{purchase.endTime}
+                ]]>
+            </if>
+        </where>
+    </select>
+
+    <select id="info" resultMap="PurchaseInfoPtoMap">
+        select
+        u.user_name apply_user_name,
+        <include refid="PurchaseField"/>
+        from flow_purchase p
+        left join hub_user u on p.apply_user = u.user_code
+        where id = #{id}
+    </select>
+</mapper>

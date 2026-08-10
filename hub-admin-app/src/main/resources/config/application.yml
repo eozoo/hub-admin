@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import:
+      - dev\application.yml
+      - dev\application-kafka.yml
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import:
+      - prod\application.yml
+      - prod\application-kafka.yml

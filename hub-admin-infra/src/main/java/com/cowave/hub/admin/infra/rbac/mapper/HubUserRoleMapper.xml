@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.rbac.mapper.HubUserRoleMapper">
+
+    <insert id="addRoleUser" databaseId="postgres">
+        with data(role_id, user_id) as (
+        values
+        <foreach collection="role.userIds" item="userId" index="index" separator=",">
+            (#{role.roleId}, #{userId})
+        </foreach>
+        )
+        insert into hub_user_role(role_id, user_id)
+        select data.role_id, data.user_id
+        from data
+        where exists (select 1 from hub_user where hub_user.user_id = data.user_id and hub_user.tenant_id = #{tenantId})
+        on conflict do nothing
+    </insert>
+
+    <insert id="addRoleUser" databaseId="mysql">
+        insert ignore into hub_user_role(role_id, user_id)
+        select #{role.roleId}, user_id
+        from hub_user
+        where tenant_id = #{tenantId}
+        and user_id in
+        <foreach collection="role.userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </insert>
+
+    <select id="getAuthedUser" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.RoleUserPto" databaseId="postgres">
+        select DISTINCT on(u.user_id)
+        d.dept_name deptName,
+        p.post_name postName,
+        u.user_id      userId,
+        u.user_name    userName,
+        u.user_phone   userPhone,
+        u.user_rank    userRank
+        from hub_user_role r
+        join hub_user u on r.user_id = u.user_id
+        left join hub_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
+        left join hub_dept d on ud.dept_id = d.dept_id
+        left join hub_post p on ud.post_id = p.post_id
+        where u.tenant_id = #{tenantId} and r.role_id = #{query.roleId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+    </select>
+
+    <select id="getAuthedUser" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.RoleUserPto" databaseId="mysql">
+        select
+            d.dept_name as deptName,
+            p.post_name as postName,
+            u.user_id as userId,
+            u.user_name as userName,
+            u.user_phone as userPhone,
+            u.user_rank as userRank
+        from hub_user_role r
+        join hub_user u on r.user_id = u.user_id
+        left join hub_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
+        left join hub_dept d on ud.dept_id = d.dept_id
+        left join hub_post p on ud.post_id = p.post_id
+        where u.tenant_id = #{tenantId}
+          and r.role_id = #{query.roleId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+        group by u.user_id, d.dept_name, p.post_name, u.user_name, u.user_phone, u.user_rank
+    </select>
+
+    <select id="getUnAuthedUser" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.RoleUserPto" databaseId="postgres">
+        with uids as(select user_id from hub_user except select user_id from hub_user_role where role_id = #{query.roleId})
+        select DISTINCT on(u.user_id)
+        d.dept_name deptName,
+        p.post_name postName,
+        u.user_id      userId,
+        u.user_name    userName,
+        u.user_phone   userPhone,
+        u.user_rank    userRank
+        from uids
+        join hub_user u on uids.user_id = u.user_id
+        left join hub_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
+        left join hub_dept d on ud.dept_id = d.dept_id
+        left join hub_post p on ud.post_id = p.post_id
+        where u.tenant_id = #{tenantId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+    </select>
+
+    <select id="getUnAuthedUser" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.RoleUserPto" databaseId="mysql">
+        select
+            d.dept_name as deptName,
+            p.post_name as postName,
+            u.user_id as userId,
+            u.user_name as userName,
+            u.user_phone as userPhone,
+            u.user_rank as userRank
+        from hub_user u
+        left join hub_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
+        left join hub_dept d on ud.dept_id = d.dept_id
+        left join hub_post p on ud.post_id = p.post_id
+        where u.tenant_id = #{tenantId}
+          and u.user_id not in (
+              select user_id from hub_user_role where role_id = #{query.roleId}
+          )
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+        group by u.user_id, d.dept_name, p.post_name, u.user_name, u.user_phone, u.user_rank
+    </select>
+</mapper>

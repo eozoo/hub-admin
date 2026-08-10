@@ -1,0 +1,33 @@
+
+name: build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Install cloc
+      run: sudo apt-get install -y cloc
+    - name: Count lines of code
+      run: cloc .
+#    - name: Build with Maven
+#      run: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: 13cbb5b3-b97e-4b24-a57b-311ca9814d2e
+        slug: eozoo/hub-admin
+        file: ${{ github.workspace }}/hub-test-report/target/site/jacoco-aggregate/jacoco.xml
+

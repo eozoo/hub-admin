@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.cowave.hub</groupId>
+		<artifactId>hub</artifactId>
+		<version>1.0.3</version>
+	</parent>
+
+	<artifactId>hub-admin</artifactId>
+	<packaging>pom</packaging>
+
+	<name>hub-admin</name>
+	<url>https://www.cowave.com/</url>
+	<description>系统管理</description>
+
+	<modules>
+		<module>hub-admin-app</module>
+		<module>hub-admin-service</module>
+		<module>hub-admin-infra</module>
+		<module>hub-admin-client</module>
+		<module>hub-admin-domain</module>
+		<module>hub-test-report</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.cowave.zoo</groupId>
+			<artifactId>zoo-framework</artifactId>
+		</dependency>
+	</dependencies>
+</project>
