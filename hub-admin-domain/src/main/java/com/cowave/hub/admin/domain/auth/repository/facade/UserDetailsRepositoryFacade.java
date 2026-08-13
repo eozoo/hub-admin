@@ -12,8 +12,8 @@
  */
 package com.cowave.hub.admin.domain.auth.repository.facade;
 
-import com.cowave.hub.admin.domain.rbac.entity.HubTenant;
-import com.cowave.hub.admin.domain.rbac.entity.HubUser;
+import com.cowave.hub.admin.domain.rbac.entity.SysTenant;
+import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import com.cowave.hub.admin.domain.rbac.enums.UserType;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
 
@@ -25,6 +25,6 @@ public interface UserDetailsRepositoryFacade {
     /**
      * 查询用户认证详情（含部门、角色、权限）
      */
-    AccessUserDetails queryUserDetails(UserType userType, HubTenant hubTenant, HubUser hubUser, boolean validAccess);
+    AccessUserDetails queryUserDetails(UserType userType, SysTenant sysTenant, SysUser sysUser, boolean validAccess);
 }
 

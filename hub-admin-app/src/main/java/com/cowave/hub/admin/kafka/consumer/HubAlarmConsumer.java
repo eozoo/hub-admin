@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.kafka.consumer;
 
 import com.alibaba.fastjson.JSON;
-import com.cowave.hub.admin.service.sys.HubAlarmService;
+import com.cowave.hub.admin.service.sys.SysAlarmService;
 import com.cowave.hub.admin.domain.sys.entity.pto.AlarmPto;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class HubAlarmConsumer {
 
-    private final HubAlarmService alarmService;
+    private final SysAlarmService alarmService;
 
     @KafkaListener(topics = {"${spring.access.alarm.kafka-topic:hub-alarm}"})
     public void recordAlarm(ConsumerRecord<?, ?> message) {

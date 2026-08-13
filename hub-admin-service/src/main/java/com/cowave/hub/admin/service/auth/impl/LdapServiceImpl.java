@@ -13,16 +13,16 @@
 package com.cowave.hub.admin.service.auth.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cowave.hub.admin.domain.auth.biz.HubLdapBiz;
-import com.cowave.hub.admin.domain.auth.entity.HubLdap;
-import com.cowave.hub.admin.domain.auth.entity.HubLdapUser;
-import com.cowave.hub.admin.domain.auth.repository.facade.HubLdapRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.biz.HubUserBiz;
+import com.cowave.hub.admin.domain.auth.biz.SysLdapBiz;
+import com.cowave.hub.admin.domain.auth.entity.SysLdap;
+import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
+import com.cowave.hub.admin.domain.auth.repository.facade.SysLdapRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.biz.SysUserBiz;
 import com.cowave.hub.admin.domain.rbac.entity.*;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubRoleRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubTenantRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubUserRepositoryFacade;
-import com.cowave.hub.admin.domain.sys.biz.HubOperationBiz;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysRoleRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysTenantRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
+import com.cowave.hub.admin.domain.sys.biz.SysOperationBiz;
 import com.cowave.hub.admin.domain.auth.repository.facade.UserDetailsRepositoryFacade;
 import com.cowave.hub.admin.service.auth.LdapService;
 import com.cowave.hub.admin.service.auth.remote.LdapRemoteService;
@@ -52,74 +52,74 @@ import static com.cowave.zoo.http.client.constants.HttpCode.*;
 public class LdapServiceImpl implements LdapService {
     private final LdapRemoteService ldapRemoteService;
     private final BearerTokenService bearerTokenService;
-    private final HubOperationBiz operationBiz;
-    private final HubUserBiz userBiz;
-    private final HubLdapBiz ldapBiz;
-    private final HubLdapRepositoryFacade ldapRepositoryFacade;
-    private final HubTenantRepositoryFacade tenantRepositoryFacade;
-    private final HubUserRepositoryFacade userRepositoryFacade;
-    private final HubRoleRepositoryFacade roleRepositoryFacade;
+    private final SysOperationBiz operationBiz;
+    private final SysUserBiz userBiz;
+    private final SysLdapBiz ldapBiz;
+    private final SysLdapRepositoryFacade ldapRepositoryFacade;
+    private final SysTenantRepositoryFacade tenantRepositoryFacade;
+    private final SysUserRepositoryFacade userRepositoryFacade;
+    private final SysRoleRepositoryFacade roleRepositoryFacade;
     private final UserDetailsRepositoryFacade userDetailsRepositoryFacade;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public AccessUserDetails authenticate(String tenantId, String userAccount, String passWord) {
-        HubLdap hubLdap = ldapRepositoryFacade.queryById(tenantId);
-        if (hubLdap == null || hubLdap.getLdapStatus() == 0) {
+        SysLdap sysLdap = ldapRepositoryFacade.queryById(tenantId);
+        if (sysLdap == null || sysLdap.getLdapStatus() == 0) {
             throw new HttpException(FORBIDDEN, "ldap认证不支持");
         }
 
-        String filter = "(&(objectClass=" + hubLdap.getUserClass() + ")(" + hubLdap.getAccountProperty() + "=" + userAccount + "))";
-        boolean isAuthenticated = ldapRemoteService.authenticate(hubLdap, filter, passWord);
+        String filter = "(&(objectClass=" + sysLdap.getUserClass() + ")(" + sysLdap.getAccountProperty() + "=" + userAccount + "))";
+        boolean isAuthenticated = ldapRemoteService.authenticate(sysLdap, filter, passWord);
         HttpAsserts.isTrue(isAuthenticated, UNAUTHORIZED, "{frame.auth.pass.invalid}");
 
-        List<HubLdapUser> list = ldapRemoteService.searchUser(hubLdap, filter);
+        List<SysLdapUser> list = ldapRemoteService.searchUser(sysLdap, filter);
         HttpAsserts.isTrue(list.size() == 1, FORBIDDEN, "{admin.ldap.failed.user}");
-        HubLdapUser newUser = list.get(0);
+        SysLdapUser newUser = list.get(0);
 
-        HubLdapUser hubLdapUser = ldapRepositoryFacade.queryUserByAccount(tenantId, newUser.getUserAccount());
-        if (hubLdapUser != null) {
-            hubLdapUser.setUserName(newUser.getUserName());
-            hubLdapUser.setUserPhone(newUser.getUserPhone());
-            hubLdapUser.setUserEmail(newUser.getUserEmail());
-            hubLdapUser.setUserPost(newUser.getUserPost());
-            hubLdapUser.setUserDept(newUser.getUserDept());
-            hubLdapUser.setUserLeader(newUser.getUserLeader());
-            hubLdapUser.setUpdateTime(new Date());
-            ldapBiz.updateLdapUserById(hubLdapUser);
+        SysLdapUser ldapUser = ldapRepositoryFacade.queryUserByAccount(tenantId, newUser.getUserAccount());
+        if (ldapUser != null) {
+            ldapUser.setUserName(newUser.getUserName());
+            ldapUser.setUserPhone(newUser.getUserPhone());
+            ldapUser.setUserEmail(newUser.getUserEmail());
+            ldapUser.setUserPost(newUser.getUserPost());
+            ldapUser.setUserDept(newUser.getUserDept());
+            ldapUser.setUserLeader(newUser.getUserLeader());
+            ldapUser.setUpdateTime(new Date());
+            ldapBiz.updateLdapUserById(ldapUser);
         } else {
-            hubLdapUser = newUser;
-            hubLdapUser.setUserPasswd(passWord);
-            hubLdapUser.setTenantId(hubLdap.getTenantId());
-            ldapBiz.saveLdapUser(hubLdapUser);
+            ldapUser = newUser;
+            ldapUser.setUserPasswd(passWord);
+            ldapUser.setTenantId(sysLdap.getTenantId());
+            ldapBiz.saveLdapUser(ldapUser);
         }
 
         String userCode = LDAP.newCode(tenantId, newUser.getUserAccount());
-        HubUser hubUser = userRepositoryFacade.queryByCode(userCode);
-        if (hubUser == null) {
-            hubUser = new HubUser();
-            hubUser.setUserCode(userCode);
-            hubUser.setTenantId(hubLdap.getTenantId());
-            hubUser.setUserType(LDAP);
-            hubUser.setUserAccount(newUser.getUserAccount());
-            hubUser.setUserName(newUser.getUserName());
-            hubUser.setUserPhone(newUser.getUserPhone());
-            hubUser.setUserEmail(newUser.getUserEmail());
-            userBiz.createTenantManager(hubUser);
-            HubRole hubRole = roleRepositoryFacade.queryByCode(tenantId, hubLdap.getRoleCode());
-            if (hubRole != null) {
-                userBiz.saveUserRole(hubUser.getUserId(), hubRole.getRoleId());
+        SysUser sysUser = userRepositoryFacade.queryByCode(userCode);
+        if (sysUser == null) {
+            sysUser = new SysUser();
+            sysUser.setUserCode(userCode);
+            sysUser.setTenantId(sysLdap.getTenantId());
+            sysUser.setUserType(LDAP);
+            sysUser.setUserAccount(newUser.getUserAccount());
+            sysUser.setUserName(newUser.getUserName());
+            sysUser.setUserPhone(newUser.getUserPhone());
+            sysUser.setUserEmail(newUser.getUserEmail());
+            userBiz.createTenantManager(sysUser);
+            SysRole sysRole = roleRepositoryFacade.queryByCode(tenantId, sysLdap.getRoleCode());
+            if (sysRole != null) {
+                userBiz.saveUserRole(sysUser.getUserId(), sysRole.getRoleId());
             }
-            userBiz.saveUserDiagram(hubUser.getUserId(), 0, hubLdap.getTenantId());
+            userBiz.saveUserDiagram(sysUser.getUserId(), 0, sysLdap.getTenantId());
         } else {
-            hubUser.setUserName(newUser.getUserName());
-            hubUser.setUserPhone(newUser.getUserPhone());
-            hubUser.setUserEmail(newUser.getUserEmail());
-            userBiz.updateLdapUser(hubUser);
+            sysUser.setUserName(newUser.getUserName());
+            sysUser.setUserPhone(newUser.getUserPhone());
+            sysUser.setUserEmail(newUser.getUserEmail());
+            userBiz.updateLdapUser(sysUser);
         }
 
-        HubTenant hubTenant = tenantRepositoryFacade.queryById(tenantId);
-        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(LDAP, hubTenant, hubUser, true);
+        SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
+        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(LDAP, sysTenant, sysUser, true);
         bearerTokenService.assignAccessRefreshToken(userDetails);
 
         OperationInfo operationInfo = OperationInfo.builder()
@@ -134,24 +134,24 @@ public class LdapServiceImpl implements LdapService {
     }
 
     @Override
-    public void validConfig(HubLdap hubLdap) {
-        ldapRemoteService.authenticate(hubLdap, "(objectClass=*)", hubLdap.getLdapPasswd());
+    public void validConfig(SysLdap sysLdap) {
+        ldapRemoteService.authenticate(sysLdap, "(objectClass=*)", sysLdap.getLdapPasswd());
     }
 
     @Override
-    public HubLdap getLdap(String tenantId) {
+    public SysLdap getLdap(String tenantId) {
         return ldapRepositoryFacade.queryById(tenantId);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void editLdap(String tenantId, HubLdap hubLdap) {
-        hubLdap.setTenantId(tenantId);
-        ldapBiz.editLdap(hubLdap);
+    public void editLdap(String tenantId, SysLdap sysLdap) {
+        sysLdap.setTenantId(tenantId);
+        ldapBiz.editLdap(sysLdap);
     }
 
     @Override
-    public Page<HubLdapUser> listUser(String tenantId, String ldapAccount) {
+    public Page<SysLdapUser> listUser(String tenantId, String ldapAccount) {
         return ldapRepositoryFacade.queryUserPage(tenantId, ldapAccount);
     }
 }

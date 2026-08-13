@@ -1,11 +1,11 @@
 -- 租户信息
-INSERT INTO hub_tenant (tenant_id, tenant_name, title, view_index, tenant_user, tenant_addr, tenant_phone, tenant_email, user_index, user_count, status, expire_time, remark, create_by, create_time, update_by, update_time, logo) VALUES
+INSERT INTO sys_tenant (tenant_id, tenant_name, title, view_index, tenant_user, tenant_addr, tenant_phone, tenant_email, user_index, user_count, status, expire_time, remark, create_by, create_time, update_by, update_time, logo) VALUES
 ('system', 'system', 'tenant.title.system', 'index_system', NULL, '华清园6栋', NULL, NULL, 1, 1, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00', NULL),
 ('cowave', '控维通信', 'tenant.title.cowave', 'index_cowave', NULL, '华清园6栋', NULL, NULL, 9, 9, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00', NULL),
 ('open', '在线Hub', 'tenant.title.open', 'index_open', NULL, '华清园6栋', NULL, NULL, 1, 1, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00', NULL);
 
 -- 部门数据
-INSERT INTO hub_dept (dept_id, tenant_id, dept_type, dept_code, dept_name, dept_short, dept_addr, dept_phone, remark, create_by, create_time, update_by, update_time) VALUES
+INSERT INTO sys_dept (dept_id, tenant_id, dept_type, dept_code, dept_name, dept_short, dept_addr, dept_phone, remark, create_by, create_time, update_by, update_time) VALUES
 (1, 'cowave', 'HD', NULL, '南京总公司', NULL, NULL, '15888888888', NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (2, 'cowave', 'BR', NULL, '北京分公司', NULL, NULL, '15888888888', NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (3, 'cowave', 'RND', NULL, '研发部门', NULL, NULL, '15888888888', NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
@@ -20,7 +20,7 @@ INSERT INTO hub_dept (dept_id, tenant_id, dept_type, dept_code, dept_name, dept_
 (12, 'cowave', 'PUB', NULL, '公共部门', NULL, NULL, '15888888888', NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
 
 -- 岗位数据
-INSERT INTO hub_post (post_id, tenant_id, post_code, post_name, post_level, post_type, post_status, remark, create_by, create_time, update_by, update_time) VALUES
+INSERT INTO sys_post (post_id, tenant_id, post_code, post_name, post_level, post_type, post_status, remark, create_by, create_time, update_by, update_time) VALUES
 (17, 'cowave', 'AC', '出纳员', 1, 'F', 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (18, 'cowave', 'ACCT', '会计师', 1, 'F', 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (1, 'cowave', 'GM', '总经理', 1, 'M', 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
@@ -53,89 +53,89 @@ INSERT INTO hub_post (post_id, tenant_id, post_code, post_name, post_level, post
 (12, 'cowave', NULL, '运营经理', 1, 'A', 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
 
 -- 部门岗位
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (1, 1);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (1, 2);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (1, 3);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (1, 4);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (1, 5);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (1, 6);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (1, 7);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (7, 8);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (7, 9);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (7, 10);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (8, 12);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (4, 13);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (4, 14);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (6, 15);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (6, 16);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (5, 17);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (5, 18);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 19);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 20);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 21);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 22);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 23);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 24);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 25);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 26);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 27);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 28);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 29);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (3, 30);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (9, 11);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (11, 11);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (10, 13);
-INSERT INTO hub_dept_post (dept_id, post_id) VALUES (10, 14);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (1, 1);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (1, 2);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (1, 3);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (1, 4);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (1, 5);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (1, 6);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (1, 7);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (7, 8);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (7, 9);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (7, 10);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (8, 12);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (4, 13);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (4, 14);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (6, 15);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (6, 16);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (5, 17);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (5, 18);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 19);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 20);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 21);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 22);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 23);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 24);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 25);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 26);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 27);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 28);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 29);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (3, 30);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (9, 11);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (11, 11);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (10, 13);
+INSERT INTO sys_dept_post (dept_id, post_id) VALUES (10, 14);
 
 -- 部门关系
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (1, 0, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (2, 0, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (3, 1, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (4, 1, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (5, 1, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (6, 1, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (7, 1, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (8, 1, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (9, 1, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (12, 1, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (10, 2, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (11, 2, 'cowave');
-INSERT INTO hub_dept_diagram (dept_id, parent_id, tenant_id) VALUES (12, 2, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (1, 0, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (2, 0, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (3, 1, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (4, 1, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (5, 1, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (6, 1, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (7, 1, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (8, 1, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (9, 1, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (12, 1, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (10, 2, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (11, 2, 'cowave');
+INSERT INTO sys_dept_diagram (dept_id, parent_id, tenant_id) VALUES (12, 2, 'cowave');
 
 -- 岗位关系
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (2, 1, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (3, 1, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (4, 1, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (5, 1, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (6, 1, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (7, 1, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (10, 3, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (12, 6, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (14, 5, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (16, 7, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (17, 4, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (18, 4, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (19, 2, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (1, 0, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (15, 16, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (11, 12, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (13, 14, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (8, 10, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (9, 10, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (27, 21, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (28, 21, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (29, 21, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (30, 21, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (21, 19, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (20, 19, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (25, 21, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (22, 19, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (23, 21, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (24, 21, 'cowave');
-INSERT INTO hub_post_diagram (post_id, parent_id, tenant_id) VALUES (26, 21, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (2, 1, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (3, 1, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (4, 1, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (5, 1, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (6, 1, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (7, 1, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (10, 3, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (12, 6, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (14, 5, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (16, 7, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (17, 4, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (18, 4, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (19, 2, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (1, 0, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (15, 16, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (11, 12, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (13, 14, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (8, 10, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (9, 10, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (27, 21, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (28, 21, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (29, 21, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (30, 21, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (21, 19, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (20, 19, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (25, 21, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (22, 19, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (23, 21, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (24, 21, 'cowave');
+INSERT INTO sys_post_diagram (post_id, parent_id, tenant_id) VALUES (26, 21, 'cowave');
 
 -- 用户数据
-INSERT INTO hub_user (user_id, tenant_id, user_type, user_code, user_name, user_account, user_passwd, user_sex, user_phone, user_email, user_status, user_rank, remark, create_by, create_time, update_by, update_time) VALUES
+INSERT INTO sys_user (user_id, tenant_id, user_type, user_code, user_name, user_account, user_passwd, user_sex, user_phone, user_email, user_status, user_rank, remark, create_by, create_time, update_by, update_time) VALUES
 (1, 'system', 'sys', 'system-sys-sysAdmin', '系统管理员', 'sysAdmin', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, null, null, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (2, 'cowave', 'sys', 'cowave-sys-liubei', '刘备', 'liubei', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'liubei@cowave.com', 1, 'M7', NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (3, 'cowave', 'sys', 'cowave-sys-zhugeliang', '诸葛亮', 'zhugeliang', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'zhugeliang@cowave.com', 1, 'M7', NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
@@ -149,13 +149,13 @@ INSERT INTO hub_user (user_id, tenant_id, user_type, user_code, user_name, user_
 (11, 'open', 'sys', 'open-sys-mia', '米娅', 'mia', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, null, null, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
 
 -- 角色数据
-INSERT INTO hub_role (role_id, tenant_id, role_code, role_name, role_type, remark, create_by, create_time, update_by, update_time) VALUES
+INSERT INTO sys_role (role_id, tenant_id, role_code, role_name, role_type, remark, create_by, create_time, update_by, update_time) VALUES
 (1, '#', 'sysAdmin', '系统管理员', NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (2, 'cowave', 'flowAdmin', '流程管理员', NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (3, 'cowave', 'role-readonly', '只读用户', NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
 
 -- 菜单数据
-INSERT INTO hub_menu (menu_id, parent_id, tenant_id, menu_module, menu_name, menu_order, menu_permit, menu_path, menu_param, menu_type, menu_icon, component, menu_status, is_frame, is_cache, is_visible, is_protected, remark, create_by, create_time, update_by, update_time) VALUES
+INSERT INTO sys_menu (menu_id, parent_id, tenant_id, menu_module, menu_name, menu_order, menu_permit, menu_path, menu_param, menu_type, menu_icon, component, menu_status, is_frame, is_cache, is_visible, is_protected, remark, create_by, create_time, update_by, update_time) VALUES
 (4, 0, 'cowave', NULL, 'commons.menu.cowave', 100, NULL, 'https://www.cowave.com', NULL, 'C', 'guide', NULL, 1, 0, 1, 1, 0, '控维官网', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 系统管理
@@ -370,97 +370,97 @@ INSERT INTO hub_menu (menu_id, parent_id, tenant_id, menu_module, menu_name, men
 (137, 132, '#', NULL, 'commons.menu.meter.develop.table', 5, NULL, 'table', NULL, 'C', 'table', 'meter/develop/table', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
 
 -- 用户部门岗位
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (2, 1, 1, 1, 1);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (3, 1, 2, 1, 0);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (4, 1, 3, 1, 0);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (5, 1, 6, 1, 0);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (7, 1, 4, 1, 0);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (6, 1, 7, 1, 0);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (8, 1, 5, 1, 0);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (3, 3, 19, 0, 1);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (4, 7, 10, 0, 1);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (5, 8, 12, 0, 1);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (7, 5, 18, 0, 1);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (6, 6, 16, 0, 1);
-INSERT INTO hub_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (8, 4, 14, 0, 1);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (2, 1, 1, 1, 1);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (3, 1, 2, 1, 0);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (4, 1, 3, 1, 0);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (5, 1, 6, 1, 0);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (7, 1, 4, 1, 0);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (6, 1, 7, 1, 0);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (8, 1, 5, 1, 0);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (3, 3, 19, 0, 1);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (4, 7, 10, 0, 1);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (5, 8, 12, 0, 1);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (7, 5, 18, 0, 1);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (6, 6, 16, 0, 1);
+INSERT INTO sys_user_dept (user_id, dept_id, post_id, is_default, is_leader) VALUES (8, 4, 14, 0, 1);
 
 -- 用户角色
-INSERT INTO hub_user_role (user_id, role_id) VALUES (1, 1);
-INSERT INTO hub_user_role (user_id, role_id) VALUES (11, 1);
-INSERT INTO hub_user_role (user_id, role_id) VALUES (2, 1);
-INSERT INTO hub_user_role (user_id, role_id) VALUES (3, 3);
-INSERT INTO hub_user_role (user_id, role_id) VALUES (4, 3);
-INSERT INTO hub_user_role (user_id, role_id) VALUES (5, 3);
-INSERT INTO hub_user_role (user_id, role_id) VALUES (6, 3);
-INSERT INTO hub_user_role (user_id, role_id) VALUES (7, 3);
-INSERT INTO hub_user_role (user_id, role_id) VALUES (8, 3);
+INSERT INTO sys_user_role (user_id, role_id) VALUES (1, 1);
+INSERT INTO sys_user_role (user_id, role_id) VALUES (11, 1);
+INSERT INTO sys_user_role (user_id, role_id) VALUES (2, 1);
+INSERT INTO sys_user_role (user_id, role_id) VALUES (3, 3);
+INSERT INTO sys_user_role (user_id, role_id) VALUES (4, 3);
+INSERT INTO sys_user_role (user_id, role_id) VALUES (5, 3);
+INSERT INTO sys_user_role (user_id, role_id) VALUES (6, 3);
+INSERT INTO sys_user_role (user_id, role_id) VALUES (7, 3);
+INSERT INTO sys_user_role (user_id, role_id) VALUES (8, 3);
 
 -- 用户关系
-INSERT INTO hub_user_diagram (user_id, parent_id, tenant_id) VALUES (1, 0, 'system');
-INSERT INTO hub_user_diagram (user_id, parent_id, tenant_id) VALUES (2, 0, 'cowave');
-INSERT INTO hub_user_diagram (user_id, parent_id, tenant_id) VALUES (3, 2, 'cowave');
-INSERT INTO hub_user_diagram (user_id, parent_id, tenant_id) VALUES (4, 2, 'cowave');
-INSERT INTO hub_user_diagram (user_id, parent_id, tenant_id) VALUES (5, 2, 'cowave');
-INSERT INTO hub_user_diagram (user_id, parent_id, tenant_id) VALUES (6, 2, 'cowave');
-INSERT INTO hub_user_diagram (user_id, parent_id, tenant_id) VALUES (7, 2, 'cowave');
-INSERT INTO hub_user_diagram (user_id, parent_id, tenant_id) VALUES (8, 2, 'cowave');
+INSERT INTO sys_user_diagram (user_id, parent_id, tenant_id) VALUES (1, 0, 'system');
+INSERT INTO sys_user_diagram (user_id, parent_id, tenant_id) VALUES (2, 0, 'cowave');
+INSERT INTO sys_user_diagram (user_id, parent_id, tenant_id) VALUES (3, 2, 'cowave');
+INSERT INTO sys_user_diagram (user_id, parent_id, tenant_id) VALUES (4, 2, 'cowave');
+INSERT INTO sys_user_diagram (user_id, parent_id, tenant_id) VALUES (5, 2, 'cowave');
+INSERT INTO sys_user_diagram (user_id, parent_id, tenant_id) VALUES (6, 2, 'cowave');
+INSERT INTO sys_user_diagram (user_id, parent_id, tenant_id) VALUES (7, 2, 'cowave');
+INSERT INTO sys_user_diagram (user_id, parent_id, tenant_id) VALUES (8, 2, 'cowave');
 
 -- 只读用户菜单
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 1);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 5);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 8);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 9);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 6);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 11);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 141);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 142);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 148);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 169);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 170);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 195);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 196);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 2);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 14);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 13);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 15);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 22);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 88);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 39);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 91);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 180);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 183);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 99);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 43);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 95);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 29);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 53);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 129);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 143);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 145);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 149);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 18);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 64);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 79);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 3);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 21);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 115);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 116);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 126);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 19);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 132);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 133);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 134);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 135);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 136);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 137);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 67);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 117);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 71);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 138);
-INSERT INTO hub_role_menu (role_id, menu_id) VALUES (3, 124);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 1);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 5);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 8);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 9);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 6);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 11);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 141);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 142);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 148);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 169);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 170);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 195);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 196);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 2);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 14);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 13);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 15);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 22);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 88);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 39);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 91);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 180);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 183);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 99);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 43);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 95);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 29);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 53);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 129);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 143);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 145);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 149);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 18);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 64);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 79);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 3);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 21);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 115);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 116);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 126);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 19);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 132);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 133);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 134);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 135);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 136);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 137);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 67);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 117);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 71);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 138);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES (3, 124);
 
 -- 数据权限
-INSERT INTO hub_scope (tenant_id, scope_name, scope_module, scope_status, scope_content, remark, create_by, create_time, update_by, update_time) VALUES
+INSERT INTO sys_scope (tenant_id, scope_name, scope_module, scope_status, scope_content, remark, create_by, create_time, update_by, update_time) VALUES
 ('cowave', '仅本人数据', 'module_oplog', 1, '{"scope":"personal"}', NULL, NULL, '2023-08-25 01:58:50', NULL, '2023-08-29 02:07:02'),
 ('cowave', '本部门数据', 'module_oplog', 1, '{"scope":"dept"}', NULL, NULL, '2023-08-25 01:58:50', NULL, '2023-08-29 02:07:02'),
 ('cowave', '全部数据', 'module_oplog', 1, '{"scope":"all"}', NULL, NULL, '2023-08-25 01:58:50', NULL, '2023-08-29 02:07:02');

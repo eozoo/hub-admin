@@ -1,6 +1,6 @@
 -- 系统评分留言
-drop table if exists hub_feedback;
-create table hub_feedback
+drop table if exists sys_feedback;
+create table sys_feedback
 (
     id          bigint auto_increment primary key comment '主键',
     tenant_id   varchar(64) comment '租户id',
@@ -16,8 +16,8 @@ create table hub_feedback
 ) comment='系统评分留言';
 
 -- 留言评论（支持嵌套回复）
-drop table if exists hub_feedback_comment;
-create table hub_feedback_comment
+drop table if exists sys_feedback_comment;
+create table sys_feedback_comment
 (
     id             bigint auto_increment primary key comment '主键',
     feedback_id    bigint comment '留言id',
@@ -32,8 +32,8 @@ create table hub_feedback_comment
 ) comment='留言评论';
 
 -- 点赞（支持留言和评论）
-drop table if exists hub_feedback_like;
-create table hub_feedback_like
+drop table if exists sys_feedback_like;
+create table sys_feedback_like
 (
     id          bigint auto_increment primary key comment '主键',
     target_type smallint default 1 comment '目标类型 1-留言 2-评论',
@@ -42,4 +42,4 @@ create table hub_feedback_like
     user_name   varchar(128) comment '点赞用户名称',
     create_time datetime comment '点赞时间'
 ) comment='点赞记录';
-create unique index hub_feedback_like_uk on hub_feedback_like(target_type, target_id, user_code);
+create unique index sys_feedback_like_uk on sys_feedback_like(target_type, target_id, user_code);

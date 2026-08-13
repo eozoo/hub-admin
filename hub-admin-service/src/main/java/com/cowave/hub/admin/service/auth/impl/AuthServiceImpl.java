@@ -12,12 +12,12 @@
  */
 package com.cowave.hub.admin.service.auth.impl;
 
-import com.cowave.hub.admin.domain.sys.biz.HubAttachBiz;
+import com.cowave.hub.admin.domain.sys.biz.SysAttachBiz;
 import com.cowave.hub.admin.service.auth.AuthService;
 
 import com.cowave.hub.admin.domain.rbac.entity.*;
-import com.cowave.hub.admin.domain.sys.repository.facade.HubConfigRepositoryFacade;
-import com.cowave.hub.admin.domain.sys.biz.HubNoticeBiz;
+import com.cowave.hub.admin.domain.sys.repository.facade.SysConfigRepositoryFacade;
+import com.cowave.hub.admin.domain.sys.biz.SysNoticeBiz;
 import com.cowave.hub.admin.service.auth.support.MfaAuthVerifier;
 import com.cowave.hub.admin.service.auth.support.MfaConfiguration;
 import com.cowave.zoo.http.client.asserts.HttpAsserts;
@@ -26,22 +26,22 @@ import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.access.operation.OperationInfo;
 import com.cowave.zoo.framework.access.security.*;
 import com.cowave.zoo.framework.helper.redis.RedisHelper;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthUser;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
 import com.cowave.hub.admin.domain.auth.entity.command.UserRegister;
 import com.cowave.hub.admin.domain.auth.entity.vo.AuthVo;
 import com.cowave.hub.admin.domain.auth.entity.vo.OnlineAccess;
 import com.cowave.hub.admin.domain.auth.entity.vo.OnlineVo;
-import com.cowave.hub.admin.domain.sys.entity.HubAttach;
+import com.cowave.hub.admin.domain.sys.entity.SysAttach;
 import com.cowave.hub.admin.domain.rbac.entity.vo.Route;
 import com.cowave.hub.admin.domain.rbac.entity.vo.RouteMeta;
 import com.cowave.hub.admin.domain.auth.repository.facade.UserDetailsRepositoryFacade;
-import com.cowave.hub.admin.domain.sys.biz.HubOperationBiz;
-import com.cowave.hub.admin.domain.auth.repository.facade.HubOAuthRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubRoleRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubTenantRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.biz.HubUserBiz;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubUserRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubMenuRepositoryFacade;
+import com.cowave.hub.admin.domain.sys.biz.SysOperationBiz;
+import com.cowave.hub.admin.domain.auth.repository.facade.SysOAuthRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysRoleRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysTenantRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.biz.SysUserBiz;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysMenuRepositoryFacade;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -80,18 +80,18 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final BearerTokenService bearerTokenService;
-    private final HubOperationBiz operationBiz;
+    private final SysOperationBiz operationBiz;
     private final RedisHelper redisHelper;
     private final MfaConfiguration mfaConfiguration;
-    private final HubUserBiz userBiz;
-    private final HubNoticeBiz noticeBiz;
-    private final HubAttachBiz attachBiz;
-    private final HubUserRepositoryFacade userRepositoryFacade;
-    private final HubRoleRepositoryFacade roleRepositoryFacade;
-    private final HubMenuRepositoryFacade menuRepositoryFacade;
-    private final HubConfigRepositoryFacade configRepositoryFacade;
-    private final HubOAuthRepositoryFacade oauthRepositoryFacade;
-    private final HubTenantRepositoryFacade tenantRepositoryFacade;
+    private final SysUserBiz userBiz;
+    private final SysNoticeBiz noticeBiz;
+    private final SysAttachBiz attachBiz;
+    private final SysUserRepositoryFacade userRepositoryFacade;
+    private final SysRoleRepositoryFacade roleRepositoryFacade;
+    private final SysMenuRepositoryFacade menuRepositoryFacade;
+    private final SysConfigRepositoryFacade configRepositoryFacade;
+    private final SysOAuthRepositoryFacade oauthRepositoryFacade;
+    private final SysTenantRepositoryFacade tenantRepositoryFacade;
     private final UserDetailsRepositoryFacade userDetailsRepositoryFacade;
 
     @Transactional(rollbackFor = Exception.class)
@@ -104,20 +104,20 @@ public class AuthServiceImpl implements AuthService {
 
         String userCode = SYS.newCode(tenantId, userRegister.getUserAccount());
         String initPasswd = configRepositoryFacade.queryConfigValue(tenantId, "hub.initPassword");
-        HubUser hubUser = new HubUser();
-        hubUser.setTenantId(tenantId);
-        hubUser.setUserType(SYS);
-        hubUser.setUserStatus(ENABLE);
-        hubUser.setUserCode(userCode);
-        hubUser.setUserEmail(userRegister.getUserEmail());
-        hubUser.setUserName(userRegister.getUserName());
-        hubUser.setUserAccount(userRegister.getUserAccount());
-        hubUser.setUserPasswd(passwordEncoder.encode(initPasswd));
-        userBiz.createTenantManager(hubUser);
+        SysUser sysUser = new SysUser();
+        sysUser.setTenantId(tenantId);
+        sysUser.setUserType(SYS);
+        sysUser.setUserStatus(ENABLE);
+        sysUser.setUserCode(userCode);
+        sysUser.setUserEmail(userRegister.getUserEmail());
+        sysUser.setUserName(userRegister.getUserName());
+        sysUser.setUserAccount(userRegister.getUserAccount());
+        sysUser.setUserPasswd(passwordEncoder.encode(initPasswd));
+        userBiz.createTenantManager(sysUser);
 
-        HubRole hubRole = roleRepositoryFacade.queryByCode(tenantId, "role-readonly");
-        if(hubRole != null) {
-            userBiz.saveUserRole(hubUser.getUserId(), hubRole.getRoleId());
+        SysRole sysRole = roleRepositoryFacade.queryByCode(tenantId, "role-readonly");
+        if(sysRole != null) {
+            userBiz.saveUserRole(sysUser.getUserId(), sysRole.getRoleId());
         }
 
         // 注册用户的通知消息
@@ -171,13 +171,13 @@ public class AuthServiceImpl implements AuthService {
         Claims claims = mfaConfiguration.parseMfaToken(mfaToken);
         String tenantId = (String) claims.get(CLAIM_TENANT_ID);
         String userAccount = (String) claims.get(CLAIM_USER_ACCOUNT);
-        HubUser hubUser = userRepositoryFacade.queryByAccount(tenantId, SYS, userAccount);
+        SysUser sysUser = userRepositoryFacade.queryByAccount(tenantId, SYS, userAccount);
 
-        String mfaKey = hubUser.getMfa();
+        String mfaKey = sysUser.getMfa();
         HttpAsserts.isTrue(MfaAuthVerifier.validateCode(mfaKey, mfaCode), BAD_REQUEST, "{admin.mfa.code.invalid}");
 
-        HubTenant hubTenant = tenantRepositoryFacade.queryById(tenantId);
-        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(SYS, hubTenant, hubUser, true);
+        SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
+        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(SYS, sysTenant, sysUser, true);
         bearerTokenService.assignAccessRefreshToken(userDetails);
         return userDetails;
     }
@@ -258,18 +258,18 @@ public class AuthServiceImpl implements AuthService {
         authVo.setPermissions(userDetails.getPermissions());
 
         String tenantId = userDetails.getTenantId();
-        HubTenant hubTenant = tenantRepositoryFacade.queryById(tenantId);
+        SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
         authVo.setTenantId(tenantId);
-        authVo.setTenantTitle(hubTenant.getTitle());
-        authVo.setTenantLogo(hubTenant.getLogo());
+        authVo.setTenantTitle(sysTenant.getTitle());
+        authVo.setTenantLogo(sysTenant.getLogo());
 
         // Avatar
         if (GITLAB.equalsVal(userDetails.getAuthType())) {
-            HubOAuthUser oauthUser =
+            SysOAuthUser oauthUser =
                     oauthRepositoryFacade.queryUserByAccount(tenantId, GITLAB.getVal(), userDetails.getUsername());
             authVo.setAvatar(oauthUser.getUserAvatar());
         } else if (SYS.equalsVal(userDetails.getAuthType())) {
-            HubAttach avatar = attachBiz.previewLatestByOwner(String.valueOf(userId), SYSTEM_USER, AVATAR);
+            SysAttach avatar = attachBiz.previewLatestByOwner(String.valueOf(userId), SYSTEM_USER, AVATAR);
             if (avatar != null) {
                 authVo.setAvatar(avatar.getViewUrl());
             }
@@ -279,7 +279,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public List<Route> menus(){
-        List<HubMenu> menuList;
+        List<SysMenu> menuList;
         if(Access.isAdminUser()){
             menuList = menuRepositoryFacade.queryMenusByAdmin(Access.tenantId());
         }else{
@@ -295,8 +295,8 @@ public class AuthServiceImpl implements AuthService {
             return Collections.emptyList();
         }
 
-        List<HubMenu> rootMenus = new ArrayList<>();
-        for(HubMenu menu : menuList){
+        List<SysMenu> rootMenus = new ArrayList<>();
+        for(SysMenu menu : menuList){
             if (menu.getParentId() == 0) {
                 recursionFn(menuList, menu);
                 rootMenus.add(menu);
@@ -305,23 +305,23 @@ public class AuthServiceImpl implements AuthService {
         return buildRoutes(rootMenus);
     }
 
-    private void recursionFn(List<HubMenu> list, HubMenu menu) {
-        List<HubMenu> childList = getChildList(list, menu);
+    private void recursionFn(List<SysMenu> list, SysMenu menu) {
+        List<SysMenu> childList = getChildList(list, menu);
         menu.setChildren(childList);
-        for (HubMenu child : childList) {
+        for (SysMenu child : childList) {
             if (hasChild(list, child)) {
                 recursionFn(list, child);
             }
         }
     }
 
-    private boolean hasChild(List<HubMenu> list, HubMenu t) {
+    private boolean hasChild(List<SysMenu> list, SysMenu t) {
         return !getChildList(list, t).isEmpty();
     }
 
-    private List<HubMenu> getChildList(List<HubMenu> list, HubMenu parent) {
-        List<HubMenu> children = new ArrayList<>();
-        for (HubMenu child : list) {
+    private List<SysMenu> getChildList(List<SysMenu> list, SysMenu parent) {
+        List<SysMenu> children = new ArrayList<>();
+        for (SysMenu child : list) {
             if (child.getParentId().equals(parent.getMenuId())) {
                 children.add(child);
             }
@@ -329,9 +329,9 @@ public class AuthServiceImpl implements AuthService {
         return children;
     }
 
-    private List<Route> buildRoutes(List<HubMenu> menus){
+    private List<Route> buildRoutes(List<SysMenu> menus){
         List<Route> routes = new LinkedList<>();
-        for (HubMenu menu : menus) {
+        for (SysMenu menu : menus) {
             Route route = new Route();
             route.setHidden("L".equals(menu.getMenuType())); // 链接不展示在菜单
             route.setName(menu.routeName());
@@ -340,7 +340,7 @@ public class AuthServiceImpl implements AuthService {
             route.setQuery(menu.getMenuParam());
             route.setMeta(new RouteMeta(menu.getMenuName(), menu.getMenuIcon(), false, menu.getMenuPath()));
 
-            List<HubMenu> cMenus = menu.getChildren();
+            List<SysMenu> cMenus = menu.getChildren();
             if (!cMenus.isEmpty() && "M".equals(menu.getMenuType())) {
                 route.setAlwaysShow(true);
                 route.setRedirect("noRedirect");

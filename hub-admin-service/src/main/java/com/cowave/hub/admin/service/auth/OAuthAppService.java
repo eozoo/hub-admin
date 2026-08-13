@@ -13,9 +13,9 @@
 package com.cowave.hub.admin.service.auth;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthApp;
+import com.cowave.hub.admin.domain.auth.entity.HubApp;
 import com.cowave.hub.admin.domain.auth.entity.command.RoleAppGrant;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthAppMenu;
+import com.cowave.hub.admin.domain.auth.entity.HubAppMenu;
 import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
 import com.cowave.hub.admin.domain.auth.entity.vo.OAuthAppCard;
 
@@ -29,12 +29,12 @@ public interface OAuthAppService {
     /**
      * 授权应用列表
      */
-    Page<HubOAuthApp> listOauthApp(String tenantId, String clientName);
+    Page<HubApp> listOauthApp(String tenantId, String clientName);
 
     /**
      * 新增授权应用
      */
-    HubOAuthApp createOauthApp(String tenantId, HubOAuthApp oauthApp);
+    HubApp createOauthApp(String tenantId, HubApp oauthApp);
 
     /**
      * 删除授权应用
@@ -64,5 +64,5 @@ public interface OAuthAppService {
     /**
      * 获取授权应用的菜单列表
      */
-    List<HubOAuthAppMenu> listAppMenus(Integer appId, String menuName, EnableStatus menuStatus);
+    List<HubAppMenu> listAppMenus(Integer appId, String menuName, EnableStatus menuStatus);
 }

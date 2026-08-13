@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.rbac;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.rbac.entity.HubMenu;
+import com.cowave.hub.admin.domain.rbac.entity.SysMenu;
 import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
@@ -67,15 +67,15 @@ public class HubMenuControllerTest extends SpringTest {
         mockPost("/api/v1/menu", body, accessToken);
         // 列表，验证新增
         mvcResult = mockGet("/api/v1/menu?menuName=" + menuName + "&page=1&pageSize=100", accessToken);
-        List<HubMenu> menuList = readData(mvcResult, "/data/list", new TypeReference<List<HubMenu>>() {});
+        List<SysMenu> menuList = readData(mvcResult, "/data/list", new TypeReference<List<SysMenu>>() {});
         Assertions.assertEquals(1, menuList.size());
-        HubMenu menu = menuList.get(0);
+        SysMenu menu = menuList.get(0);
         Integer menuId = menu.getMenuId();
         Assertions.assertEquals(menuName, menu.getMenuName());
         Assertions.assertEquals("C", menu.getMenuType());
         // 详情
         mvcResult = mockGet("/api/v1/menu/" + menuId, accessToken);
-        HubMenu detail = readData(mvcResult, "/data", new TypeReference<HubMenu>() {});
+        SysMenu detail = readData(mvcResult, "/data", new TypeReference<SysMenu>() {});
         Assertions.assertEquals(menuId, detail.getMenuId());
         Assertions.assertEquals(menuName, detail.getMenuName());
         // 修改菜单
@@ -135,11 +135,11 @@ public class HubMenuControllerTest extends SpringTest {
         Assertions.assertFalse(tree.isEmpty(), "菜单树至少应有1个根节点");
         // 菜单列表
         mvcResult = mockGet("/api/v1/menu?page=1&pageSize=100", accessToken);
-        List<HubMenu> menuList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysMenu> menuList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertFalse(menuList.isEmpty(), "菜单列表至少应有1条");
         // 菜单详情（查预置菜单 menuId=5 用户管理）
         mvcResult = mockGet("/api/v1/menu/5", accessToken);
-        HubMenu detail = readData(mvcResult, "/data", new TypeReference<>() {});
+        SysMenu detail = readData(mvcResult, "/data", new TypeReference<>() {});
         Assertions.assertNotNull(detail);
         Assertions.assertNotNull(detail.getMenuName(), "菜单名称不应为空");
         // 退出登录

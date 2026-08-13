@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.sys;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.sys.entity.HubAttach;
+import com.cowave.hub.admin.domain.sys.entity.SysAttach;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
@@ -63,7 +63,7 @@ public class HubAttachControllerTest extends SpringTest {
         mockImport("/api/v1/attach", params, "source/cw.jpg", accessToken);
         // 列表
         mvcResult = mockGet("/api/v1/attach?ownerId=2&ownerModule=" + SYSTEM_USER + "&attachType=" + AVATAR.getVal(), accessToken);
-        List<HubAttach> attachList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysAttach> attachList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Long attachId = attachList.get(0).getAttachId();
         // 预览
         mockGet("/api/v1/attach/preview/" + attachId, accessToken);

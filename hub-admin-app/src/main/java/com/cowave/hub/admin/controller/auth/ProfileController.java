@@ -26,7 +26,7 @@ import com.cowave.hub.admin.domain.auth.entity.vo.TokenVo;
 import com.cowave.hub.admin.domain.auth.entity.vo.MfaVo;
 import com.cowave.hub.admin.service.auth.ApiTokenService;
 import com.cowave.hub.admin.service.auth.ProfileService;
-import com.cowave.hub.admin.service.rbac.HubMenuService;
+import com.cowave.hub.admin.service.rbac.SysMenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +47,7 @@ import static com.cowave.zoo.http.client.constants.HttpCode.UNAUTHORIZED;
 public class ProfileController {
     private final ProfileService profileService;
     private final ApiTokenService apiTokenService;
-    private final HubMenuService menuService;
+    private final SysMenuService menuService;
 
     /**
      * 详情

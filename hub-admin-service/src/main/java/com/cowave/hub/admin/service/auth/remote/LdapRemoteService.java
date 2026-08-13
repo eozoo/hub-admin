@@ -12,8 +12,8 @@
  */
 package com.cowave.hub.admin.service.auth.remote;
 
-import com.cowave.hub.admin.domain.auth.entity.HubLdap;
-import com.cowave.hub.admin.domain.auth.entity.HubLdapUser;
+import com.cowave.hub.admin.domain.auth.entity.SysLdap;
+import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public interface LdapRemoteService {
      * @param password 用户密码
      * @return 认证是否通过
      */
-    boolean authenticate(HubLdap config, String filter, String password);
+    boolean authenticate(SysLdap config, String filter, String password);
 
     /**
      * 搜索 LDAP 用户
@@ -39,5 +39,5 @@ public interface LdapRemoteService {
      * @param filter 查询过滤器
      * @return 用户属性列表
      */
-    List<HubLdapUser> searchUser(HubLdap config, String filter);
+    List<SysLdapUser> searchUser(SysLdap config, String filter);
 }

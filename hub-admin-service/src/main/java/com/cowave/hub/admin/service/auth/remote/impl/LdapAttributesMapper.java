@@ -12,8 +12,8 @@
  */
 package com.cowave.hub.admin.service.auth.remote.impl;
 
-import com.cowave.hub.admin.domain.auth.entity.HubLdap;
-import com.cowave.hub.admin.domain.auth.entity.HubLdapUser;
+import com.cowave.hub.admin.domain.auth.entity.SysLdap;
+import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ldap.core.AttributesMapper;
@@ -29,100 +29,100 @@ import java.util.regex.Pattern;
  * @author shanhuiming
  */
 @RequiredArgsConstructor
-public class LdapAttributesMapper implements AttributesMapper<HubLdapUser> {
+public class LdapAttributesMapper implements AttributesMapper<SysLdapUser> {
 
     private static final Pattern PATTERN_CN = Pattern.compile("CN=([^,]+)");
 
-    private final HubLdap hubLdap;
+    private final SysLdap sysLdap;
 
     @Override
-    public HubLdapUser mapFromAttributes(Attributes attributes) throws NamingException {
-        HubLdapUser hubLdapUser = new HubLdapUser();
+    public SysLdapUser mapFromAttributes(Attributes attributes) throws NamingException {
+        SysLdapUser ldapUser = new SysLdapUser();
         NamingEnumeration<? extends Attribute> attributeEnum = attributes.getAll();
         while (attributeEnum.hasMore()) {
             Attribute attribute = attributeEnum.next();
-            setUserAccount(attribute, hubLdapUser);
-            setUserName(attribute, hubLdapUser);
-            setUserEmail(attribute, hubLdapUser);
-            setUserPhone(attribute, hubLdapUser);
-            setUserPost(attribute, hubLdapUser);
-            setUserDept(attribute, hubLdapUser);
-            setUserLeader(attribute, hubLdapUser);
-            setUserInfo(attribute, hubLdapUser);
+            setUserAccount(attribute, ldapUser);
+            setUserName(attribute, ldapUser);
+            setUserEmail(attribute, ldapUser);
+            setUserPhone(attribute, ldapUser);
+            setUserPost(attribute, ldapUser);
+            setUserDept(attribute, ldapUser);
+            setUserLeader(attribute, ldapUser);
+            setUserInfo(attribute, ldapUser);
         }
-        return hubLdapUser;
+        return ldapUser;
     }
 
-    private void setUserAccount(Attribute attribute, HubLdapUser hubLdapUser) throws NamingException {
-        if(hubLdap.getAccountProperty().equals(attribute.getID())){
-            hubLdapUser.setUserAccount(attribute.get().toString());
+    private void setUserAccount(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
+        if(sysLdap.getAccountProperty().equals(attribute.getID())){
+            ldapUser.setUserAccount(attribute.get().toString());
         }
     }
 
-    public void setUserName(Attribute attribute, HubLdapUser hubLdapUser) throws NamingException {
-        if(StringUtils.isBlank(hubLdap.getNameProperty())){
+    public void setUserName(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
+        if(StringUtils.isBlank(sysLdap.getNameProperty())){
             return;
         }
-        if(hubLdap.getNameProperty().equals(attribute.getID())){
-            hubLdapUser.setUserName(attribute.get().toString());
+        if(sysLdap.getNameProperty().equals(attribute.getID())){
+            ldapUser.setUserName(attribute.get().toString());
         }
     }
 
-    public void setUserEmail(Attribute attribute, HubLdapUser hubLdapUser) throws NamingException {
-        if(StringUtils.isBlank(hubLdap.getEmailProperty())){
+    public void setUserEmail(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
+        if(StringUtils.isBlank(sysLdap.getEmailProperty())){
             return;
         }
-        if(hubLdap.getEmailProperty().equals(attribute.getID())){
-            hubLdapUser.setUserEmail(attribute.get().toString());
+        if(sysLdap.getEmailProperty().equals(attribute.getID())){
+            ldapUser.setUserEmail(attribute.get().toString());
         }
     }
 
-    public void setUserPhone(Attribute attribute, HubLdapUser hubLdapUser) throws NamingException {
-        if(StringUtils.isBlank(hubLdap.getPhoneProperty())){
+    public void setUserPhone(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
+        if(StringUtils.isBlank(sysLdap.getPhoneProperty())){
             return;
         }
-        if(hubLdap.getPhoneProperty().equals(attribute.getID())){
-            hubLdapUser.setUserPhone(attribute.get().toString());
+        if(sysLdap.getPhoneProperty().equals(attribute.getID())){
+            ldapUser.setUserPhone(attribute.get().toString());
         }
     }
 
-    public void setUserPost(Attribute attribute, HubLdapUser hubLdapUser) throws NamingException {
-        if(StringUtils.isBlank(hubLdap.getPostProperty())){
+    public void setUserPost(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
+        if(StringUtils.isBlank(sysLdap.getPostProperty())){
             return;
         }
-        if(hubLdap.getPostProperty().equals(attribute.getID())){
-            hubLdapUser.setUserPost(attribute.get().toString());
+        if(sysLdap.getPostProperty().equals(attribute.getID())){
+            ldapUser.setUserPost(attribute.get().toString());
         }
     }
 
-    public void setUserDept(Attribute attribute, HubLdapUser hubLdapUser) throws NamingException {
-        if(StringUtils.isBlank(hubLdap.getDeptProperty())){
+    public void setUserDept(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
+        if(StringUtils.isBlank(sysLdap.getDeptProperty())){
             return;
         }
-        if(hubLdap.getDeptProperty().equals(attribute.getID())){
-            hubLdapUser.setUserDept(attribute.get().toString());
+        if(sysLdap.getDeptProperty().equals(attribute.getID())){
+            ldapUser.setUserDept(attribute.get().toString());
         }
     }
 
-    public void setUserLeader(Attribute attribute, HubLdapUser hubLdapUser) throws NamingException {
-        if(StringUtils.isBlank(hubLdap.getLeaderProperty())){
+    public void setUserLeader(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
+        if(StringUtils.isBlank(sysLdap.getLeaderProperty())){
             return;
         }
-        if(hubLdap.getLeaderProperty().equals(attribute.getID())){
+        if(sysLdap.getLeaderProperty().equals(attribute.getID())){
             String manager = attribute.get().toString();
             Matcher matcher = PATTERN_CN.matcher(manager);
             if (matcher.find()) {
-                hubLdapUser.setUserLeader(matcher.group(1));
+                ldapUser.setUserLeader(matcher.group(1));
             }
         }
     }
 
-    public void setUserInfo(Attribute attribute, HubLdapUser hubLdapUser) throws NamingException {
-        if(StringUtils.isBlank(hubLdap.getInfoProperty())){
+    public void setUserInfo(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
+        if(StringUtils.isBlank(sysLdap.getInfoProperty())){
             return;
         }
-        if(hubLdap.getInfoProperty().equals(attribute.getID())){
-            hubLdapUser.setUserInfo(attribute.get().toString());
+        if(sysLdap.getInfoProperty().equals(attribute.getID())){
+            ldapUser.setUserInfo(attribute.get().toString());
         }
     }
 }

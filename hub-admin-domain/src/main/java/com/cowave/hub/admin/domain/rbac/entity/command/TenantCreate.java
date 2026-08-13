@@ -12,7 +12,7 @@
  */
 package com.cowave.hub.admin.domain.rbac.entity.command;
 
-import com.cowave.hub.admin.domain.rbac.entity.HubTenant;
+import com.cowave.hub.admin.domain.rbac.entity.SysTenant;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +21,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TenantCreate extends HubTenant {
+public class TenantCreate extends SysTenant {
 
     /**
      * logo id

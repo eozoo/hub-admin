@@ -13,8 +13,8 @@
 package com.cowave.hub.admin.controller.auth;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.auth.entity.HubLdapUser;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthUser;
+import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
 import com.cowave.hub.admin.service.auth.support.MfaAuthVerifier;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.*;
@@ -199,9 +199,9 @@ public class AuthControllerTest extends SpringTest {
         String refreshToken = readString(mvcResult, "/data/refreshToken");
         // 获取gitlab用户列表
         mvcResult = mockGet("/api/v1/oauth/user?serverType=gitlab", accessToken);
-        List<HubOAuthUser> userList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysOAuthUser> userList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertEquals(1, userList.size());
-        HubOAuthUser oAuthUser = userList.get(0);
+        SysOAuthUser oAuthUser = userList.get(0);
         Assertions.assertEquals("gitlabtest", oAuthUser.getUserAccount());
         // 令牌刷新
         mvcResult = mockGet("/api/v1/auth/public/refresh?refreshToken=" + refreshToken);
@@ -233,9 +233,9 @@ public class AuthControllerTest extends SpringTest {
         String refreshToken = readString(mvcResult, "/data/refreshToken");
         // 获取ldap用户列表
         mvcResult = mockGet("/api/v1/ldap/user", accessToken);
-        List<HubLdapUser> userList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysLdapUser> userList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertEquals(1, userList.size());
-        HubLdapUser ldapUser = userList.get(0);
+        SysLdapUser ldapUser = userList.get(0);
         Assertions.assertEquals("ldaptest", ldapUser.getUserAccount());
         // 令牌刷新
         mvcResult = mockGet("/api/v1/auth/public/refresh?refreshToken=" + refreshToken);

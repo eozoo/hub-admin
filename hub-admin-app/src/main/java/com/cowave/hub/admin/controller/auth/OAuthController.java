@@ -17,8 +17,8 @@ import com.cowave.zoo.framework.access.annotation.AnonymousPostMapping;
 import com.cowave.zoo.http.client.response.Response;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuth;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthUser;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuth;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
 import com.cowave.hub.admin.domain.auth.entity.command.OAuth2CodeReq;
 import com.cowave.hub.admin.domain.auth.entity.command.OAuth2TokenReq;
 import com.cowave.hub.admin.domain.auth.entity.query.OAuthUserQuery;
@@ -53,7 +53,7 @@ public class OAuthController {
      */
     @PreAuthorize("@permits.hasPermit('oauth:gitlab:query')")
     @GetMapping("/config/{serverType}")
-    public Response<HubOAuth> getOauth(@PathVariable String serverType) {
+    public Response<SysOAuth> getOauth(@PathVariable String serverType) {
         return Response.success(oauthService.getOauth(Access.tenantId(), serverType));
     }
 
@@ -62,7 +62,7 @@ public class OAuthController {
      */
     @PreAuthorize("@permits.hasPermit('oauth:gitlab:edit')")
     @PatchMapping("/config")
-    public Response<Void> editOauth(@RequestBody HubOAuth oauth) {
+    public Response<Void> editOauth(@RequestBody SysOAuth oauth) {
         oauthService.editOauth(Access.tenantId(), oauth);
         return Response.success();
     }
@@ -72,7 +72,7 @@ public class OAuthController {
      */
     @PreAuthorize("@permits.hasPermit('oauth:gitlab:user:query')")
     @GetMapping("/user")
-    public Response<Response.Page<HubOAuthUser>> listUser(OAuthUserQuery query) {
+    public Response<Response.Page<SysOAuthUser>> listUser(OAuthUserQuery query) {
         return Response.page(oauthService.listUser(Access.tenantId(), query));
     }
 

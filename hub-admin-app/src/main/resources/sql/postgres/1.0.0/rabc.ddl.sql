@@ -1,6 +1,6 @@
 -- 租户信息
-drop table if exists hub_tenant;
-create table hub_tenant
+drop table if exists sys_tenant;
+create table sys_tenant
 (
     tenant_id    character varying(64) primary key,
     tenant_name  character varying(128),
@@ -22,29 +22,29 @@ create table hub_tenant
     update_by    character varying(64),
     update_time  timestamp
 );
-comment on table hub_tenant is '租户信息';
-comment on column hub_tenant.tenant_id is '租户id';
-comment on column hub_tenant.tenant_name is '租户名称';
-comment on column hub_tenant.tenant_user is '租户联系人';
-comment on column hub_tenant.tenant_addr is '租户地址';
-comment on column hub_tenant.tenant_phone is '租户电话';
-comment on column hub_tenant.tenant_email is '租户邮箱';
-comment on column hub_tenant.user_index is '用户序号';
-comment on column hub_tenant.user_count is '用户统计';
-comment on column hub_tenant.user_limit is '用户上限';
-comment on column hub_tenant.title is '租户标题';
-comment on column hub_tenant.logo is '租户图标';
-comment on column hub_tenant.status is '租户状态';
-comment on column hub_tenant.expire_time is '到期时间';
-comment on column hub_tenant.remark is '备注';
-comment on column hub_tenant.create_by is '创建人';
-comment on column hub_tenant.create_time is '创建时间';
-comment on column hub_tenant.update_by is '更新人';
-comment on column hub_tenant.update_time is '更新时间';
+comment on table sys_tenant is '租户信息';
+comment on column sys_tenant.tenant_id is '租户id';
+comment on column sys_tenant.tenant_name is '租户名称';
+comment on column sys_tenant.tenant_user is '租户联系人';
+comment on column sys_tenant.tenant_addr is '租户地址';
+comment on column sys_tenant.tenant_phone is '租户电话';
+comment on column sys_tenant.tenant_email is '租户邮箱';
+comment on column sys_tenant.user_index is '用户序号';
+comment on column sys_tenant.user_count is '用户统计';
+comment on column sys_tenant.user_limit is '用户上限';
+comment on column sys_tenant.title is '租户标题';
+comment on column sys_tenant.logo is '租户图标';
+comment on column sys_tenant.status is '租户状态';
+comment on column sys_tenant.expire_time is '到期时间';
+comment on column sys_tenant.remark is '备注';
+comment on column sys_tenant.create_by is '创建人';
+comment on column sys_tenant.create_time is '创建时间';
+comment on column sys_tenant.update_by is '更新人';
+comment on column sys_tenant.update_time is '更新时间';
 
 -- 部门信息
-drop table if exists hub_dept;
-create table hub_dept(
+drop table if exists sys_dept;
+create table sys_dept(
     dept_id     serial primary key,
     tenant_id   character varying(64),
     dept_code   character varying(64),
@@ -60,38 +60,38 @@ create table hub_dept(
     update_time timestamp
 
 );
-create unique index hub_dept_dept_code on hub_dept(tenant_id, dept_code);
-comment on table hub_dept is '部门信息';
-comment on column hub_dept.dept_id is '部门id';
-comment on column hub_dept.tenant_id is '租户id';
-comment on column hub_dept.dept_code is '部门编码';
-comment on column hub_dept.dept_type is '部门类型';
-comment on column hub_dept.dept_name is '部门名称';
-comment on column hub_dept.dept_short is '部门简称';
-comment on column hub_dept.dept_addr is '部门地址';
-comment on column hub_dept.dept_phone is '部门电话';
-comment on column hub_dept.remark is '备注';
-comment on column hub_dept.create_by is '创建人';
-comment on column hub_dept.create_time is '创建时间';
-comment on column hub_dept.update_by is '更新人';
-comment on column hub_dept.update_time is '更新时间';
+create unique index sys_dept_dept_code on sys_dept(tenant_id, dept_code);
+comment on table sys_dept is '部门信息';
+comment on column sys_dept.dept_id is '部门id';
+comment on column sys_dept.tenant_id is '租户id';
+comment on column sys_dept.dept_code is '部门编码';
+comment on column sys_dept.dept_type is '部门类型';
+comment on column sys_dept.dept_name is '部门名称';
+comment on column sys_dept.dept_short is '部门简称';
+comment on column sys_dept.dept_addr is '部门地址';
+comment on column sys_dept.dept_phone is '部门电话';
+comment on column sys_dept.remark is '备注';
+comment on column sys_dept.create_by is '创建人';
+comment on column sys_dept.create_time is '创建时间';
+comment on column sys_dept.update_by is '更新人';
+comment on column sys_dept.update_time is '更新时间';
 
 -- 部门关系
-drop table if exists hub_dept_diagram;
-create table hub_dept_diagram(
+drop table if exists sys_dept_diagram;
+create table sys_dept_diagram(
     parent_id int4 not null,
     dept_id   int4 not null,
     tenant_id character varying(64),
-    constraint hub_dept_diagram_pkey primary key (dept_id, parent_id)
+    constraint sys_dept_diagram_pkey primary key (dept_id, parent_id)
 );
-comment on table hub_dept_diagram is '部门关系';
-comment on column hub_dept_diagram.parent_id is '上级部门id';
-comment on column hub_dept_diagram.dept_id is '部门id';
-comment on column hub_dept_diagram.tenant_id is '租户id';
+comment on table sys_dept_diagram is '部门关系';
+comment on column sys_dept_diagram.parent_id is '上级部门id';
+comment on column sys_dept_diagram.dept_id is '部门id';
+comment on column sys_dept_diagram.tenant_id is '租户id';
 
 -- 岗位信息
-drop table if exists hub_post;
-create table hub_post(
+drop table if exists sys_post;
+create table sys_post(
     post_id     serial primary key,
     tenant_id   character varying(64),
     post_code   varchar(64),
@@ -105,48 +105,48 @@ create table hub_post(
     update_by   varchar(64),
     update_time timestamp
 );
-comment on table hub_post is '岗位信息';
-comment on column hub_post.post_id is '岗位id';
-comment on column hub_post.post_code is '岗位编码';
-comment on column hub_post.post_name is '岗位名称';
-comment on column hub_post.post_level is '岗位级别';
-comment on column hub_post.post_type is '岗位类型';
-comment on column hub_post.post_status is '岗位状态';
-comment on column hub_post.remark is '备注';
-comment on column hub_post.create_by is '创建人';
-comment on column hub_post.create_time is '创建时间';
-comment on column hub_post.update_by is '更新人';
-comment on column hub_post.update_time is '更新时间';
+comment on table sys_post is '岗位信息';
+comment on column sys_post.post_id is '岗位id';
+comment on column sys_post.post_code is '岗位编码';
+comment on column sys_post.post_name is '岗位名称';
+comment on column sys_post.post_level is '岗位级别';
+comment on column sys_post.post_type is '岗位类型';
+comment on column sys_post.post_status is '岗位状态';
+comment on column sys_post.remark is '备注';
+comment on column sys_post.create_by is '创建人';
+comment on column sys_post.create_time is '创建时间';
+comment on column sys_post.update_by is '更新人';
+comment on column sys_post.update_time is '更新时间';
 
 -- 岗位关系
-drop table if exists hub_post_diagram;
-create table hub_post_diagram(
+drop table if exists sys_post_diagram;
+create table sys_post_diagram(
     parent_id int4 not null,
     post_id   int4 not null,
     tenant_id character varying(64),
-    constraint hub_post_diagram_pkey primary key (post_id, parent_id)
+    constraint sys_post_diagram_pkey primary key (post_id, parent_id)
 );
-comment on table hub_post_diagram is '岗位关系';
-comment on column hub_post_diagram.parent_id is '上级岗位id';
-comment on column hub_post_diagram.post_id is '岗位id';
-comment on column hub_post_diagram.tenant_id is '租户id';
+comment on table sys_post_diagram is '岗位关系';
+comment on column sys_post_diagram.parent_id is '上级岗位id';
+comment on column sys_post_diagram.post_id is '岗位id';
+comment on column sys_post_diagram.tenant_id is '租户id';
 
 -- 部门岗位
-drop table if exists hub_dept_post;
-create table hub_dept_post(
+drop table if exists sys_dept_post;
+create table sys_dept_post(
     dept_id   int4 not null,
     post_id   int4 not null,
     is_default int2 default 0,
-    constraint hub_dept_post_pkey primary key (dept_id, post_id)
+    constraint sys_dept_post_pkey primary key (dept_id, post_id)
 );
-comment on table hub_dept_post is '部门岗位';
-comment on column hub_dept_post.dept_id is '部门id';
-comment on column hub_dept_post.post_id is '岗位id';
-comment on column hub_dept_post.is_default is '是否部门默认岗位';
+comment on table sys_dept_post is '部门岗位';
+comment on column sys_dept_post.dept_id is '部门id';
+comment on column sys_dept_post.post_id is '岗位id';
+comment on column sys_dept_post.is_default is '是否部门默认岗位';
 
 -- 用户信息
-drop table if exists hub_user;
-create table hub_user
+drop table if exists sys_user;
+create table sys_user
 (
     user_id      serial primary key,
     user_code    character varying(64),
@@ -167,61 +167,61 @@ create table hub_user
     update_by    character varying(64),
     update_time  timestamp
 );
-create unique index hub_user_user_code on hub_user(user_code);
-create unique index hub_user_user_account on hub_user(tenant_id, user_type, user_account);
-comment on table hub_user is '用户信息';
-comment on column hub_user.user_id is '用户id';
-comment on column hub_user.tenant_id is '租户id';
-comment on column hub_user.user_type is '用户类型';
-comment on column hub_user.user_code is '用户编码';
-comment on column hub_user.user_name is '用户名称';
-comment on column hub_user.user_account is '用户账号';
-comment on column hub_user.user_passwd is '用户密码';
-comment on column hub_user.user_sex is '用户性别';
-comment on column hub_user.user_phone is '用户电话';
-comment on column hub_user.user_email is '用户邮箱';
-comment on column hub_user.user_status is '用户状态';
-comment on column hub_user.user_rank is '职级';
-comment on column hub_user.remark is '备注';
-comment on column hub_user.create_by is '创建人';
-comment on column hub_user.create_time is '创建时间';
-comment on column hub_user.update_by is '更新人';
-comment on column hub_user.update_time is '更新时间';
+create unique index sys_user_user_code on sys_user(user_code);
+create unique index sys_user_user_account on sys_user(tenant_id, user_type, user_account);
+comment on table sys_user is '用户信息';
+comment on column sys_user.user_id is '用户id';
+comment on column sys_user.tenant_id is '租户id';
+comment on column sys_user.user_type is '用户类型';
+comment on column sys_user.user_code is '用户编码';
+comment on column sys_user.user_name is '用户名称';
+comment on column sys_user.user_account is '用户账号';
+comment on column sys_user.user_passwd is '用户密码';
+comment on column sys_user.user_sex is '用户性别';
+comment on column sys_user.user_phone is '用户电话';
+comment on column sys_user.user_email is '用户邮箱';
+comment on column sys_user.user_status is '用户状态';
+comment on column sys_user.user_rank is '职级';
+comment on column sys_user.remark is '备注';
+comment on column sys_user.create_by is '创建人';
+comment on column sys_user.create_time is '创建时间';
+comment on column sys_user.update_by is '更新人';
+comment on column sys_user.update_time is '更新时间';
 
 -- 用户关系
-drop table if exists hub_user_diagram;
-create table hub_user_diagram
+drop table if exists sys_user_diagram;
+create table sys_user_diagram
 (
     parent_id int4 not null,
     user_id   int4 not null,
     tenant_id character varying(64),
-    constraint hub_user_diagram_pkey primary key (user_id, parent_id)
+    constraint sys_user_diagram_pkey primary key (user_id, parent_id)
 );
-comment on table hub_user_diagram is '用户关系';
-comment on column hub_user_diagram.parent_id is '上级用户id';
-comment on column hub_user_diagram.user_id is '用户id';
-comment on column hub_user_diagram.tenant_id is '租户id';
+comment on table sys_user_diagram is '用户关系';
+comment on column sys_user_diagram.parent_id is '上级用户id';
+comment on column sys_user_diagram.user_id is '用户id';
+comment on column sys_user_diagram.tenant_id is '租户id';
 
 -- 用户部门
-drop table if exists hub_user_dept;
-create table hub_user_dept(
+drop table if exists sys_user_dept;
+create table sys_user_dept(
     user_id    int4 not null,
     dept_id    int4 not null,
     post_id    int4 default -1,
     is_default int2 default 0,
     is_leader  int2 default 0,
-    constraint hub_user_dept_pkey primary key (user_id, dept_id, post_id)
+    constraint sys_user_dept_pkey primary key (user_id, dept_id, post_id)
 );
-comment on table hub_user_dept is '用户部门';
-comment on column hub_user_dept.user_id is '用户id';
-comment on column hub_user_dept.dept_id is '部门id';
-comment on column hub_user_dept.post_id is '岗位id';
-comment on column hub_user_dept.is_default is '是否用户默认部门';
-comment on column hub_user_dept.is_leader is '是否部门负责人';
+comment on table sys_user_dept is '用户部门';
+comment on column sys_user_dept.user_id is '用户id';
+comment on column sys_user_dept.dept_id is '部门id';
+comment on column sys_user_dept.post_id is '岗位id';
+comment on column sys_user_dept.is_default is '是否用户默认部门';
+comment on column sys_user_dept.is_leader is '是否部门负责人';
 
 -- 角色信息
-drop table if exists hub_role;
-create table hub_role(
+drop table if exists sys_role;
+create table sys_role(
     role_id     serial primary key,
     tenant_id   character varying(64),
     role_code   character varying(100) not null,
@@ -233,32 +233,32 @@ create table hub_role(
     update_by   character varying(64),
     update_time timestamp
 );
-create unique index hub_role_role_code on hub_role(tenant_id, role_code);
-comment on table hub_role is '角色信息';
-comment on column hub_role.role_id is '角色id';
-comment on column hub_role.role_code is '角色编码';
-comment on column hub_role.role_name is '角色名称';
-comment on column hub_role.role_type is '角色类型';
-comment on column hub_role.remark is '备注';
-comment on column hub_role.create_by is '创建人';
-comment on column hub_role.create_time is '创建时间';
-comment on column hub_role.update_by is '更新人';
-comment on column hub_role.update_time is '更新时间';
+create unique index sys_role_role_code on sys_role(tenant_id, role_code);
+comment on table sys_role is '角色信息';
+comment on column sys_role.role_id is '角色id';
+comment on column sys_role.role_code is '角色编码';
+comment on column sys_role.role_name is '角色名称';
+comment on column sys_role.role_type is '角色类型';
+comment on column sys_role.remark is '备注';
+comment on column sys_role.create_by is '创建人';
+comment on column sys_role.create_time is '创建时间';
+comment on column sys_role.update_by is '更新人';
+comment on column sys_role.update_time is '更新时间';
 
 -- 用户角色
-drop table if exists hub_user_role;
-create table hub_user_role(
+drop table if exists sys_user_role;
+create table sys_user_role(
     user_id int4 not null,
     role_id int4 not null,
-    constraint hub_user_role_pkey primary key (user_id, role_id)
+    constraint sys_user_role_pkey primary key (user_id, role_id)
 );
-comment on table hub_user_role is '用户角色';
-comment on column hub_user_role.user_id is '用户id';
-comment on column hub_user_role.role_id is '角色id';
+comment on table sys_user_role is '用户角色';
+comment on column sys_user_role.user_id is '用户id';
+comment on column sys_user_role.role_id is '角色id';
 
 -- 菜单信息
-drop table if exists hub_menu;
-create table hub_menu
+drop table if exists sys_menu;
+create table sys_menu
 (
     menu_id      serial primary key,
     parent_id    int4                   default 0,
@@ -283,44 +283,44 @@ create table hub_menu
     update_by    character varying(64),
     update_time  timestamp
 );
-comment on table hub_menu is '菜单信息';
-comment on column hub_menu.menu_id is '菜单id';
-comment on column hub_menu.parent_id is '父菜单id';
-comment on column hub_menu.menu_name is '菜单名称';
-comment on column hub_menu.menu_order is '菜单顺序';
-comment on column hub_menu.menu_permit is '权限标识';
-comment on column hub_menu.menu_path is '菜单路径';
-comment on column hub_menu.menu_param is '路径参数';
-comment on column hub_menu.menu_type is '菜单类型：M:目录 C:菜单 B:按钮';
-comment on column hub_menu.menu_icon is '菜单图标';
-comment on column hub_menu.component is '组件路径';
-comment on column hub_menu.menu_status is '菜单状态 1启用 2停用';
-comment on column hub_menu.is_frame is '是否内部链接 1是 0否';
-comment on column hub_menu.is_cache is '是否缓存 1是 0否';
-comment on column hub_menu.is_visible is '是否显示 1是 0否';
-comment on column hub_menu.is_protected is '是否受保护的菜单 1是 0否';
-comment on column hub_menu.remark is '备注';
-comment on column hub_menu.create_by is '创建人';
-comment on column hub_menu.create_time is '创建时间';
-comment on column hub_menu.update_by is '更新人';
-comment on column hub_menu.update_time is '更新时间';
+comment on table sys_menu is '菜单信息';
+comment on column sys_menu.menu_id is '菜单id';
+comment on column sys_menu.parent_id is '父菜单id';
+comment on column sys_menu.menu_name is '菜单名称';
+comment on column sys_menu.menu_order is '菜单顺序';
+comment on column sys_menu.menu_permit is '权限标识';
+comment on column sys_menu.menu_path is '菜单路径';
+comment on column sys_menu.menu_param is '路径参数';
+comment on column sys_menu.menu_type is '菜单类型：M:目录 C:菜单 B:按钮';
+comment on column sys_menu.menu_icon is '菜单图标';
+comment on column sys_menu.component is '组件路径';
+comment on column sys_menu.menu_status is '菜单状态 1启用 2停用';
+comment on column sys_menu.is_frame is '是否内部链接 1是 0否';
+comment on column sys_menu.is_cache is '是否缓存 1是 0否';
+comment on column sys_menu.is_visible is '是否显示 1是 0否';
+comment on column sys_menu.is_protected is '是否受保护的菜单 1是 0否';
+comment on column sys_menu.remark is '备注';
+comment on column sys_menu.create_by is '创建人';
+comment on column sys_menu.create_time is '创建时间';
+comment on column sys_menu.update_by is '更新人';
+comment on column sys_menu.update_time is '更新时间';
 
 -- 角色菜单
-drop table if exists hub_role_menu;
-create table hub_role_menu
+drop table if exists sys_role_menu;
+create table sys_role_menu
 (
     role_id  int4 not null,
     menu_id  int4 not null,
     scope_id int4,
-    constraint hub_role_menu_pkey primary key (role_id, menu_id)
+    constraint sys_role_menu_pkey primary key (role_id, menu_id)
 );
-comment on table hub_role_menu is '角色菜单';
-comment on column hub_role_menu.role_id is '角色id';
-comment on column hub_role_menu.menu_id is '菜单id';
+comment on table sys_role_menu is '角色菜单';
+comment on column sys_role_menu.role_id is '角色id';
+comment on column sys_role_menu.menu_id is '菜单id';
 
 -- 数据权限
-drop table if exists hub_scope;
-CREATE TABLE hub_scope
+drop table if exists sys_scope;
+CREATE TABLE sys_scope
 (
     scope_id      serial primary key,
     tenant_id     character varying(64),
@@ -335,12 +335,12 @@ CREATE TABLE hub_scope
     update_time   timestamp,
     content jsonb
 );
-comment on table hub_scope is '数据权限';
-comment on column hub_scope.scope_id is '权限id';
-comment on column hub_scope.scope_name is '权限名称';
-comment on column hub_scope.scope_status is '权限状态';
-comment on column hub_scope.scope_content is '权限规则';
-comment on column hub_scope.remark is '备注';
+comment on table sys_scope is '数据权限';
+comment on column sys_scope.scope_id is '权限id';
+comment on column sys_scope.scope_name is '权限名称';
+comment on column sys_scope.scope_status is '权限状态';
+comment on column sys_scope.scope_content is '权限规则';
+comment on column sys_scope.remark is '备注';
 
 -- 用户ApiToken
 drop table if exists hub_token;

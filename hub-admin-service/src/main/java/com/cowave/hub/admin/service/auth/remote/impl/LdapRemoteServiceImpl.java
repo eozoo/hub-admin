@@ -12,8 +12,8 @@
  */
 package com.cowave.hub.admin.service.auth.remote.impl;
 
-import com.cowave.hub.admin.domain.auth.entity.HubLdap;
-import com.cowave.hub.admin.domain.auth.entity.HubLdapUser;
+import com.cowave.hub.admin.domain.auth.entity.SysLdap;
+import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
 import com.cowave.hub.admin.service.auth.remote.LdapRemoteService;
 import com.cowave.zoo.http.client.asserts.HttpException;
 import lombok.RequiredArgsConstructor;
@@ -40,29 +40,29 @@ public class LdapRemoteServiceImpl implements LdapRemoteService {
     private final ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy;
 
     @Override
-    public boolean authenticate(HubLdap config, String filter, String password) {
+    public boolean authenticate(SysLdap config, String filter, String password) {
         LdapTemplate ldapTemplate = getLdapTemplate(config);
         return ldapTemplate.authenticate("", filter, password);
     }
 
     @Override
-    public List<HubLdapUser> searchUser(HubLdap config, String filter) {
+    public List<SysLdapUser> searchUser(SysLdap config, String filter) {
         LdapTemplate ldapTemplate = getLdapTemplate(config);
         return ldapTemplate.search(config.getUserDn(), filter,
                 SearchControls.SUBTREE_SCOPE, new LdapAttributesMapper(config));
     }
 
-    private LdapTemplate getLdapTemplate(HubLdap hubLdap) {
+    private LdapTemplate getLdapTemplate(SysLdap sysLdap) {
         LdapContextSource source = new LdapContextSource();
         dirContextAuthenticationStrategy.ifUnique(source::setAuthenticationStrategy);
         PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
         try {
-            propertyMapper.from(hubLdap.getLdapUser()).to(source::setUserDn);
-            propertyMapper.from(hubLdap.getLdapPasswd()).to(source::setPassword);
-            propertyMapper.from(hubLdap.anonymousReadOnly()).to(source::setAnonymousReadOnly);
-            propertyMapper.from(hubLdap.getBaseDn()).to(source::setBase);
-            propertyMapper.from(hubLdap.determineUrls()).to(source::setUrls);
-            propertyMapper.from(hubLdap.getEnvironment()).to(
+            propertyMapper.from(sysLdap.getLdapUser()).to(source::setUserDn);
+            propertyMapper.from(sysLdap.getLdapPasswd()).to(source::setPassword);
+            propertyMapper.from(sysLdap.anonymousReadOnly()).to(source::setAnonymousReadOnly);
+            propertyMapper.from(sysLdap.getBaseDn()).to(source::setBase);
+            propertyMapper.from(sysLdap.determineUrls()).to(source::setUrls);
+            propertyMapper.from(sysLdap.getEnvironment()).to(
                     baseEnvironment -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
             source.afterPropertiesSet();
         } catch (Exception e) {

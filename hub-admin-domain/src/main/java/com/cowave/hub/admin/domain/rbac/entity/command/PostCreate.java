@@ -12,7 +12,7 @@
  */
 package com.cowave.hub.admin.domain.rbac.entity.command;
 
-import com.cowave.hub.admin.domain.rbac.entity.HubPost;
+import com.cowave.hub.admin.domain.rbac.entity.SysPost;
 import com.cowave.zoo.framework.access.security.AccessInfoSetter;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +24,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PostCreate extends HubPost implements AccessInfoSetter {
+public class PostCreate extends SysPost implements AccessInfoSetter {
 
     /**
      * 上级岗位id

@@ -15,10 +15,10 @@ package com.cowave.hub.admin.domain.rbac.entity.command;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.access.security.AccessInfoSetter;
 import com.cowave.zoo.tools.Collections;
-import com.cowave.hub.admin.domain.rbac.entity.HubUser;
-import com.cowave.hub.admin.domain.rbac.entity.HubUserDept;
-import com.cowave.hub.admin.domain.rbac.entity.HubUserRole;
-import com.cowave.hub.admin.domain.rbac.entity.HubUserDiagram;
+import com.cowave.hub.admin.domain.rbac.entity.SysUser;
+import com.cowave.hub.admin.domain.rbac.entity.SysUserDept;
+import com.cowave.hub.admin.domain.rbac.entity.SysUserRole;
+import com.cowave.hub.admin.domain.rbac.entity.SysUserDiagram;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class UserCreate extends HubUser implements AccessInfoSetter {
+public class UserCreate extends SysUser implements AccessInfoSetter {
 
     /**
 	 * 角色id列表
@@ -47,22 +47,22 @@ public class UserCreate extends HubUser implements AccessInfoSetter {
 	 */
 	private List<String> deptPostIds;
 
-    public List<HubUserRole> getUserRoles(){
-        return Collections.copyToList(roleIds, roleId -> new HubUserRole(getUserId(), roleId));
+    public List<SysUserRole> getUserRoles(){
+        return Collections.copyToList(roleIds, roleId -> new SysUserRole(getUserId(), roleId));
     }
 
-    public List<HubUserDiagram> getUserParents(){
+    public List<SysUserDiagram> getUserParents(){
         if(CollectionUtils.isNotEmpty(parentIds)){
-            return Collections.copyToList(parentIds, parentId -> new HubUserDiagram(getUserId(), parentId, Access.tenantId()));
+            return Collections.copyToList(parentIds, parentId -> new SysUserDiagram(getUserId(), parentId, Access.tenantId()));
         }else{
-            return List.of(new HubUserDiagram(getUserId(), 0, Access.tenantId()));
+            return List.of(new SysUserDiagram(getUserId(), 0, Access.tenantId()));
         }
     }
 
-    public List<HubUserDept> getUserDeptPosts(){
+    public List<SysUserDept> getUserDeptPosts(){
         return Collections.copyToList(deptPostIds, v -> {
 				String[] arr = v.split("-");
-				return new HubUserDept(getUserId(), Integer.parseInt(arr[0]), Integer.parseInt(arr[1]));
+				return new SysUserDept(getUserId(), Integer.parseInt(arr[0]), Integer.parseInt(arr[1]));
 			});
     }
 }

@@ -12,8 +12,8 @@
  */
 package com.cowave.hub.admin.controller.auth.remote;
 
-import com.cowave.hub.admin.domain.auth.entity.HubLdap;
-import com.cowave.hub.admin.domain.auth.entity.HubLdapUser;
+import com.cowave.hub.admin.domain.auth.entity.SysLdap;
+import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
 import com.cowave.hub.admin.service.auth.remote.LdapRemoteService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -28,13 +28,13 @@ import java.util.List;
 public class LdapRemoteServiceTestImpl implements LdapRemoteService {
 
     @Override
-    public boolean authenticate(HubLdap config, String filter, String password) {
+    public boolean authenticate(SysLdap config, String filter, String password) {
         return true;
     }
 
     @Override
-    public List<HubLdapUser> searchUser(HubLdap config, String filter) {
-        HubLdapUser user = new HubLdapUser();
+    public List<SysLdapUser> searchUser(SysLdap config, String filter) {
+        SysLdapUser user = new SysLdapUser();
         user.setUserAccount("ldaptest");
         user.setUserName("LDAP测试用户");
         user.setUserEmail("ldaptest@cowave.com");

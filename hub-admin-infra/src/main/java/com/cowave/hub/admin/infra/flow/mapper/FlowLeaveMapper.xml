@@ -48,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         u.user_name apply_user_name,
         <include refid="LeaveField"/>
         from flow_leave l
-        left join hub_user u on l.apply_user = u.user_code
+        left join sys_user u on l.apply_user = u.user_code
         <where>
             <if test="leave.applyUser != null">
                 and l.apply_user = #{leave.applyUser}
@@ -77,7 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         u.user_name apply_user_name,
         <include refid="LeaveField"/>
         from flow_leave l
-        left join hub_user u on l.apply_user = u.user_code
+        left join sys_user u on l.apply_user = u.user_code
         where id = #{id}
     </select>
 </mapper>

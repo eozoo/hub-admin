@@ -19,7 +19,7 @@ import com.cowave.hub.admin.domain.auth.entity.command.ApiTokenCreate;
 import com.cowave.hub.admin.domain.auth.entity.vo.TokenVo;
 import com.cowave.hub.admin.domain.auth.repository.facade.HubTokenRepositoryFacade;
 import com.cowave.hub.admin.domain.rbac.entity.pto.MenuScopePto;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubMenuRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysMenuRepositoryFacade;
 import com.cowave.hub.admin.service.auth.ApiTokenService;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.access.AccessProperties;
@@ -65,7 +65,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
     private final RedisHelper redisHelper;
     private final HubTokenBiz tokenBiz;
     private final HubTokenRepositoryFacade tokenRepositoryFacade;
-    private final HubMenuRepositoryFacade menuRepositoryFacade;
+    private final SysMenuRepositoryFacade menuRepositoryFacade;
 
     @PostConstruct
     public void indexApiToken() {

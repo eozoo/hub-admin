@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.sys;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.sys.entity.HubFeedbackLike;
+import com.cowave.hub.admin.domain.sys.entity.SysFeedbackLike;
 import com.cowave.hub.admin.domain.sys.entity.pto.FeedbackStatPto;
 import com.cowave.hub.admin.domain.sys.entity.vo.FeedbackCommentVo;
 import com.cowave.hub.admin.domain.sys.entity.vo.FeedbackVo;
@@ -85,7 +85,7 @@ public class HubFeedbackControllerTest extends SpringTest {
         Assertions.assertTrue(readData(mvcResult, "/data", new TypeReference<Boolean>() {}), "首次点赞应返回true");
         // 点赞人列表
         mvcResult = mockGet("/api/v1/feedback/like?targetType=1&targetId=" + feedbackId, accessToken);
-        List<HubFeedbackLike> likers = readData(mvcResult, "/data", new TypeReference<>() {});
+        List<SysFeedbackLike> likers = readData(mvcResult, "/data", new TypeReference<>() {});
         Assertions.assertFalse(likers.isEmpty(), "点赞后至少应有1条点赞记录");
         Assertions.assertEquals("cowave-sys-liubei", likers.get(0).getUserCode());
         // 取消点赞
@@ -112,7 +112,7 @@ public class HubFeedbackControllerTest extends SpringTest {
         Assertions.assertTrue(readData(mvcResult, "/data", new TypeReference<Boolean>() {}), "首次评论点赞应返回true");
         // 评论点赞人列表
         mvcResult = mockGet("/api/v1/feedback/like?targetType=2&targetId=" + commentId, accessToken);
-        List<HubFeedbackLike> commentLikers = readData(mvcResult, "/data", new TypeReference<List<HubFeedbackLike>>() {});
+        List<SysFeedbackLike> commentLikers = readData(mvcResult, "/data", new TypeReference<List<SysFeedbackLike>>() {});
         Assertions.assertFalse(commentLikers.isEmpty(), "评论点赞后至少应有1条记录");
         // 取消评论点赞
         mvcResult = mockPatch("/api/v1/feedback/like/comment/" + commentId, "", accessToken);

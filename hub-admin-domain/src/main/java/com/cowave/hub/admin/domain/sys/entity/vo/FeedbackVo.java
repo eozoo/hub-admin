@@ -12,7 +12,7 @@
  */
 package com.cowave.hub.admin.domain.sys.entity.vo;
 
-import com.cowave.hub.admin.domain.sys.entity.HubFeedback;
+import com.cowave.hub.admin.domain.sys.entity.SysFeedback;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class FeedbackVo extends HubFeedback {
+public class FeedbackVo extends SysFeedback {
 
     /**
      * 当前用户是否已点赞

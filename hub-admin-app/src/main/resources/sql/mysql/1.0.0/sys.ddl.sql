@@ -1,6 +1,6 @@
 -- 系统配置
-drop table if exists hub_config;
-CREATE TABLE hub_config
+drop table if exists sys_config;
+CREATE TABLE sys_config
 (
     config_id    int auto_increment primary key comment '参数id',
     tenant_id    varchar(64) comment '租户id',
@@ -16,11 +16,11 @@ CREATE TABLE hub_config
     update_by    varchar(64) comment '更新人',
     update_time  datetime comment '更新时间'
 ) comment='系统配置';
-create unique index hub_config_config_key on hub_config(tenant_id, config_key);
+create unique index sys_config_config_key on sys_config(tenant_id, config_key);
 
 -- 字典数据
-drop table if exists hub_dict;
-create table hub_dict(
+drop table if exists sys_dict;
+create table sys_dict(
     id bigint auto_increment primary key comment '主键',
     parent_code varchar(100) comment '父字典编码',
     dict_code varchar(100) comment '字典编码',
@@ -38,11 +38,11 @@ create table hub_dict(
     update_by varchar(64) comment '更新人',
     update_time datetime comment '更新时间'
 ) comment='字典数据';
-create unique index hub_dict_uk on hub_dict(dict_code);
+create unique index sys_dict_uk on sys_dict(dict_code);
 
 -- 系统公告
-drop table if exists hub_notice;
-create table hub_notice
+drop table if exists sys_notice;
+create table sys_notice
 (
     notice_id     bigint auto_increment primary key comment '公告id',
     tenant_id     varchar(64) comment '租户id',
@@ -66,8 +66,8 @@ create table hub_notice
 ) comment='系统公告';
 
 -- 公告已读
-drop table if exists hub_notice_user;
-create table hub_notice_user
+drop table if exists sys_notice_user;
+create table sys_notice_user
 (
     id          bigint auto_increment primary key comment '主键',
     notice_id   bigint comment '公告id',
@@ -76,11 +76,11 @@ create table hub_notice_user
     read_back   varchar(512) comment '读反馈',
     read_time   datetime comment '读时间'
 ) comment='公告已读';
-create unique index hub_notice_user_uk on hub_notice_user(user_code, notice_id);
+create unique index sys_notice_user_uk on sys_notice_user(user_code, notice_id);
 
 -- 附件信息
-drop table if exists hub_attach;
-create table hub_attach
+drop table if exists sys_attach;
+create table sys_attach
 (
     attach_id     bigint auto_increment primary key comment '附件id',
     tenant_id     varchar(64) comment '租户id',
@@ -97,11 +97,11 @@ create table hub_attach
     update_by     varchar(64) comment '更新人',
     update_time   datetime comment '更新时间'
 ) comment='附件信息';
-create index hub_attach_master on hub_attach(owner_id, owner_module, attach_type);
+create index sys_attach_master on sys_attach(owner_id, owner_module, attach_type);
 
 -- 系统告警
-drop table if exists hub_alarm;
-create table hub_alarm(
+drop table if exists sys_alarm;
+create table sys_alarm(
     id            bigint auto_increment primary key comment '告警id',
     alarm_code    varchar(128) not null comment '唯一编码',
     alarm_type    bigint comment '告警类型',
@@ -120,11 +120,11 @@ create table hub_alarm(
     resolve_time  datetime comment '处理时间',
     resolve_type  smallint default 1 comment '处理方式：1:手动 2:自动'
 ) comment='系统告警';
-create index hub_alarm_alarm_code on hub_alarm(alarm_code);
+create index sys_alarm_alarm_code on sys_alarm(alarm_code);
 
 -- 告警类型
-drop table if exists hub_alarm_type;
-create table hub_alarm_type(
+drop table if exists sys_alarm_type;
+create table sys_alarm_type(
     id          bigint auto_increment primary key comment '主键',
     type_name   varchar(128) comment '类型名称',
     type_view   varchar(128) comment '类型表单',

@@ -14,8 +14,8 @@ package com.cowave.hub.admin.service.auth;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
-import com.cowave.hub.admin.domain.auth.entity.HubLdap;
-import com.cowave.hub.admin.domain.auth.entity.HubLdapUser;
+import com.cowave.hub.admin.domain.auth.entity.SysLdap;
+import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
 
 /**
  * @author shanhuiming
@@ -30,20 +30,20 @@ public interface LdapService {
     /**
      * 获取配置
      */
-    HubLdap getLdap(String tenantId);
+    SysLdap getLdap(String tenantId);
 
     /**
      * 修改配置
      */
-    void editLdap(String tenantId, HubLdap hubLdap);
+    void editLdap(String tenantId, SysLdap sysLdap);
 
     /**
      * 测试配置
      */
-    void validConfig(HubLdap hubLdap);
+    void validConfig(SysLdap sysLdap);
 
     /**
      * 用户列表
      */
-    Page<HubLdapUser> listUser(String tenantId, String ldapAccount);
+    Page<SysLdapUser> listUser(String tenantId, String ldapAccount);
 }

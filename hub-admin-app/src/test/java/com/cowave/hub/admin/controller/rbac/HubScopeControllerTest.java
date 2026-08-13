@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.rbac;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.rbac.entity.HubScope;
+import com.cowave.hub.admin.domain.rbac.entity.SysScope;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -68,16 +68,16 @@ public class HubScopeControllerTest extends SpringTest {
         mockPost("/api/v1/scope", body, accessToken);
         // 列表，验证新增
         mvcResult = mockGet("/api/v1/scope?scopeModule=" + scopeModule + "&page=1&pageSize=100", accessToken);
-        List<HubScope> scopeList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysScope> scopeList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertEquals(1, scopeList.size());
-        HubScope scope = scopeList.get(0);
+        SysScope scope = scopeList.get(0);
         Integer scopeId = scope.getScopeId();
         Assertions.assertEquals(scopeModule, scope.getScopeModule());
         Assertions.assertEquals(scopeName, scope.getScopeName());
         Assertions.assertEquals(1, scope.getScopeStatus().intValue());
         // 详情
         mvcResult = mockGet("/api/v1/scope/" + scopeId, accessToken);
-        HubScope info = readData(mvcResult, "/data", new TypeReference<>() {});
+        SysScope info = readData(mvcResult, "/data", new TypeReference<>() {});
         Assertions.assertEquals(scopeId, info.getScopeId());
         Assertions.assertEquals(scopeModule, info.getScopeModule());
         Assertions.assertEquals(scopeName, info.getScopeName());

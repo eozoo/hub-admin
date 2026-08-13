@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.service;
 
 import com.alibaba.fastjson.JSON;
-import com.cowave.hub.admin.domain.sys.biz.HubAlarmBiz;
+import com.cowave.hub.admin.domain.sys.biz.SysAlarmBiz;
 import com.cowave.zoo.http.client.response.Response;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.access.AccessExceptionHandler;
@@ -37,7 +37,7 @@ public class AdminExceptionHandler implements AccessExceptionHandler {
 
     private final ApplicationProperties applicationProperties;
 
-    private final HubAlarmBiz alarmBiz;
+    private final SysAlarmBiz alarmBiz;
 
     @Override
     public void handler(Exception e, int status, Response<Void> response) {

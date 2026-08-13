@@ -19,7 +19,7 @@ import com.cowave.hub.admin.domain.flow.entity.pto.LeaveInfoPto;
 import com.cowave.hub.admin.domain.flow.entity.query.LeaveQuery;
 import com.cowave.hub.admin.domain.flow.biz.FlowLeaveBiz;
 import com.cowave.hub.admin.domain.flow.repository.facade.FlowLeaveRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubUserRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.service.flow.FlowInstanceService;
 import com.cowave.hub.admin.service.flow.LeaveFlowService;
 import com.cowave.zoo.framework.access.Access;
@@ -54,7 +54,7 @@ public class LeaveFlowServiceImpl implements LeaveFlowService {
     private final FlowInstanceService flowInstanceService;
     private final FlowLeaveBiz leaveBiz;
     private final FlowLeaveRepositoryFacade leaveRepositoryFacade;
-    private final HubUserRepositoryFacade userRepositoryFacade;
+    private final SysUserRepositoryFacade userRepositoryFacade;
 
     @Override
     public Page<LeaveInfoPto> list(LeaveQuery query) {

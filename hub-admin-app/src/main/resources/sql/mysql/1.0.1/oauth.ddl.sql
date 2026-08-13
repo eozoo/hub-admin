@@ -1,6 +1,6 @@
 -- oauth 授权服务
-drop table if exists hub_oauth;
-create table hub_oauth
+drop table if exists sys_oauth;
+create table sys_oauth
 (
     tenant_id     varchar(64) primary key comment '租户id',
     server_type   varchar(64) comment '服务类型',
@@ -18,11 +18,11 @@ create table hub_oauth
     update_by     varchar(64) comment '更新人',
     update_time   datetime comment '更新时间'
 ) comment='OAuth服务';
-create unique index hub_oauth_unique on hub_oauth(tenant_id, server_type);
+create unique index sys_oauth_unique on sys_oauth(tenant_id, server_type);
 
 -- oauth 授权用户
-drop table if exists hub_oauth_user;
-create table hub_oauth_user
+drop table if exists sys_oauth_user;
+create table sys_oauth_user
 (
     id           bigint auto_increment primary key comment 'id',
     tenant_id    varchar(64) comment '租户id',
@@ -35,11 +35,11 @@ create table hub_oauth_user
     create_time  datetime comment '创建时间',
     update_time  datetime comment '更新时间'
 ) comment='授权用户';
-create unique index hub_oauth_user_unique on hub_oauth_user(tenant_id, server_type, user_account);
+create unique index sys_oauth_user_unique on sys_oauth_user(tenant_id, server_type, user_account);
 
 -- oauth 授权应用
-drop table if exists hub_oauth_app;
-create table hub_oauth_app
+drop table if exists hub_app;
+create table hub_app
 (
     id            int auto_increment primary key comment 'id',
     tenant_id     varchar(64) comment '租户id',
@@ -58,8 +58,8 @@ create table hub_oauth_app
 ) comment='OAuth应用';
 
 -- OAuth应用菜单信息
-drop table if exists hub_oauth_app_menu;
-create table hub_oauth_app_menu
+drop table if exists hub_app_menu;
+create table hub_app_menu
 (
     menu_id      int auto_increment primary key comment '菜单id',
     parent_id    int default 0 comment '父菜单id',

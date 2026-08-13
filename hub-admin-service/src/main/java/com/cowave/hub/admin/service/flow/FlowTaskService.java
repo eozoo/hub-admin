@@ -16,8 +16,8 @@ import com.cowave.zoo.http.client.response.Response;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.hub.admin.domain.flow.entity.FlowTask;
 import com.cowave.hub.admin.domain.flow.entity.command.TaskComplete;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubUserRepositoryFacade;
-import com.cowave.hub.admin.domain.sys.biz.HubNoticeBiz;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
+import com.cowave.hub.admin.domain.sys.biz.SysNoticeBiz;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,8 +48,8 @@ public class FlowTaskService {
     private final FormService formService;
     private final RuntimeService runtimeService;
     private final HistoryService historyService;
-    private final HubNoticeBiz noticeBiz;
-    private final HubUserRepositoryFacade userRepositoryFacade;
+    private final SysNoticeBiz noticeBiz;
+    private final SysUserRepositoryFacade userRepositoryFacade;
 
     /**
      * 全部待办

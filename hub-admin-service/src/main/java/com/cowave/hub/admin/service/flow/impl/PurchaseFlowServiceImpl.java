@@ -19,7 +19,7 @@ import com.cowave.hub.admin.domain.flow.entity.pto.PurchaseInfoPto;
 import com.cowave.hub.admin.domain.flow.entity.query.PurchaseQuery;
 import com.cowave.hub.admin.domain.flow.biz.FlowPurchaseBiz;
 import com.cowave.hub.admin.domain.flow.repository.facade.FlowPurchaseRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubUserRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.service.flow.PurchaseFlowService;
 import com.cowave.zoo.framework.access.Access;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ public class PurchaseFlowServiceImpl implements PurchaseFlowService {
     private final IdentityService identityService;
     private final FlowPurchaseBiz purchaseBiz;
     private final FlowPurchaseRepositoryFacade purchaseRepositoryFacade;
-    private final HubUserRepositoryFacade userRepositoryFacade;
+    private final SysUserRepositoryFacade userRepositoryFacade;
 
     @Override
     public Page<PurchaseInfoPto> list(PurchaseQuery query) {

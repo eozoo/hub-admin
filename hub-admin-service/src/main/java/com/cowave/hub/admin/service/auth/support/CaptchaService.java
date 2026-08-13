@@ -13,13 +13,13 @@
 package com.cowave.hub.admin.service.auth.support;
 
 import cn.hutool.core.util.IdUtil;
-import com.cowave.hub.admin.domain.sys.repository.facade.HubConfigRepositoryFacade;
+import com.cowave.hub.admin.domain.sys.repository.facade.SysConfigRepositoryFacade;
 import com.cowave.zoo.http.client.asserts.HttpAsserts;
 import com.cowave.zoo.http.client.asserts.I18Messages;
 import com.cowave.zoo.framework.helper.redis.RedisHelper;
 import com.cowave.hub.admin.domain.auth.entity.vo.CaptchaVo;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuth;
-import com.cowave.hub.admin.domain.auth.repository.facade.HubOAuthRepositoryFacade;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuth;
+import com.cowave.hub.admin.domain.auth.repository.facade.SysOAuthRepositoryFacade;
 import com.google.code.kaptcha.Producer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -76,11 +76,11 @@ public class CaptchaService {
     private final RedisHelper redisHelper;
     private final JavaMailSender mailSender;
     private final SecureRandom random = new SecureRandom();
-    private final HubOAuthRepositoryFacade oauthRepositoryFacade;
-    private final HubConfigRepositoryFacade configRepositoryFacade;
+    private final SysOAuthRepositoryFacade oauthRepositoryFacade;
+    private final SysConfigRepositoryFacade configRepositoryFacade;
 
     public CaptchaVo captcha(String tenantId) throws IOException {
-        HubOAuth gitlabServer = oauthRepositoryFacade.queryByServerType(tenantId, "gitlab");
+        SysOAuth gitlabServer = oauthRepositoryFacade.queryByServerType(tenantId, "gitlab");
         String oauthUrl = gitlabServer.gitlabAuthorizeUrl();
         boolean registerOnOff = configRepositoryFacade.queryConfigValue(tenantId, "hub.registerOnOff");
         boolean captchaOnOff = configRepositoryFacade.queryConfigValue(tenantId, "hub.captchaOnOff");

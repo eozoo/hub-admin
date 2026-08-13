@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.rbac;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.rbac.entity.HubPost;
+import com.cowave.hub.admin.domain.rbac.entity.SysPost;
 import com.cowave.hub.admin.domain.rbac.entity.pto.PostInfoPto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
@@ -64,9 +64,9 @@ public class HubPostControllerTest extends SpringTest {
         mockPost("/api/v1/post", body, accessToken);
         // 列表，验证新增
         mvcResult = mockGet("/api/v1/post?postName=" + postName + "&page=1&pageSize=100", accessToken);
-        List<HubPost> postList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysPost> postList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertEquals(1, postList.size());
-        HubPost post = postList.get(0);
+        SysPost post = postList.get(0);
         Integer postId = post.getPostId();
         Assertions.assertEquals(postName, post.getPostName());
         // 详情
@@ -126,7 +126,7 @@ public class HubPostControllerTest extends SpringTest {
         String accessToken = "Bearer " + readString(mvcResult, "/data/accessToken");
         // 岗位列表
         mvcResult = mockGet("/api/v1/post?page=1&pageSize=100", accessToken);
-        List<HubPost> postList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysPost> postList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertFalse(postList.isEmpty(), "岗位列表至少应有1条");
         // 岗位详情（postId=1 总经理）
         mvcResult = mockGet("/api/v1/post/1", accessToken);

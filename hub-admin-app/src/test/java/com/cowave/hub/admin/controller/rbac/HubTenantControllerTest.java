@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.rbac;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.rbac.entity.HubTenant;
+import com.cowave.hub.admin.domain.rbac.entity.SysTenant;
 import com.cowave.hub.admin.domain.rbac.entity.pto.TenantManagerPto;
 import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -71,15 +71,15 @@ public class HubTenantControllerTest extends SpringTest {
         mockPost("/api/v1/tenant", body, accessToken);
         // 列表，验证新增
         mvcResult = mockGet("/api/v1/tenant?tenantId=" + tenantId + "&page=1&pageSize=100", accessToken);
-        List<HubTenant> tenantList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysTenant> tenantList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertEquals(1, tenantList.size());
-        HubTenant tenant = tenantList.get(0);
+        SysTenant tenant = tenantList.get(0);
         Assertions.assertEquals(tenantId, tenant.getTenantId());
         Assertions.assertEquals(tenantName, tenant.getTenantName());
         Assertions.assertEquals(EnableStatus.ENABLE, tenant.getStatus());
         // 详情
         mvcResult = mockGet("/api/v1/tenant/" + tenantId, accessToken);
-        HubTenant info = readData(mvcResult, "/data", new TypeReference<>() {});
+        SysTenant info = readData(mvcResult, "/data", new TypeReference<>() {});
         Assertions.assertEquals(tenantId, info.getTenantId());
         Assertions.assertEquals(tenantName, info.getTenantName());
         Assertions.assertEquals("zhangsan", info.getTenantUser());

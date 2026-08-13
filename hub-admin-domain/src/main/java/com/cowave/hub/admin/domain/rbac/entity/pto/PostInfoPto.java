@@ -12,7 +12,7 @@
  */
 package com.cowave.hub.admin.domain.rbac.entity.pto;
 
-import com.cowave.hub.admin.domain.rbac.entity.HubPost;
+import com.cowave.hub.admin.domain.rbac.entity.SysPost;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +21,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PostInfoPto extends HubPost {
+public class PostInfoPto extends SysPost {
 
     /**
      * 上级岗位id

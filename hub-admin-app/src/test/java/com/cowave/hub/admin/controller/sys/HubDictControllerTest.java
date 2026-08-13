@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.sys;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.sys.entity.HubDict;
+import com.cowave.hub.admin.domain.sys.entity.SysDict;
 import com.cowave.hub.admin.domain.sys.entity.pto.DictPto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
@@ -150,7 +150,7 @@ public class HubDictControllerTest extends SpringTest {
         Assertions.assertNotNull(detail.getDictCode(), "字典码不应为空");
         // 按编码获取字典（使用预置的 job_task_bean，dictCode=job_task_bean）
         mvcResult = mockGet("/api/v1/dict/code/job_task_bean", accessToken);
-        HubDict dictByCode = readData(mvcResult, "/data", new TypeReference<>() {});
+        SysDict dictByCode = readData(mvcResult, "/data", new TypeReference<>() {});
         Assertions.assertNotNull(dictByCode);
         Assertions.assertEquals("job_task_bean", dictByCode.getDictCode());
         // 按类型获取字典列表（job_task 类型下有6个任务类型字典项）

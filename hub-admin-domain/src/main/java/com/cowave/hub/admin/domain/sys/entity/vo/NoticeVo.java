@@ -12,7 +12,7 @@
  */
 package com.cowave.hub.admin.domain.sys.entity.vo;
 
-import com.cowave.hub.admin.domain.sys.entity.HubNotice;
+import com.cowave.hub.admin.domain.sys.entity.SysNotice;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +21,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class NoticeVo extends HubNotice {
+public class NoticeVo extends SysNotice {
 
     /**
 	 * 创建人名称

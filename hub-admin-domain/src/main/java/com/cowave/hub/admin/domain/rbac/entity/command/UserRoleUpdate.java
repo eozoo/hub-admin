@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.domain.rbac.entity.command;
 
 import com.cowave.zoo.tools.Collections;
-import com.cowave.hub.admin.domain.rbac.entity.HubUserRole;
+import com.cowave.hub.admin.domain.rbac.entity.SysUserRole;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,7 +47,7 @@ public class UserRoleUpdate {
     @NotEmpty(message = "{admin.role.ids.null}")
     private List<Integer> roleIds;
 
-    public List<HubUserRole> getUserRoles(){
-        return Collections.copyToList(roleIds, v -> new HubUserRole(userId, v));
+    public List<SysUserRole> getUserRoles(){
+        return Collections.copyToList(roleIds, v -> new SysUserRole(userId, v));
     }
 }

@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.domain.sys.entity.pto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.cowave.hub.admin.domain.sys.entity.HubDict;
+import com.cowave.hub.admin.domain.sys.entity.SysDict;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +22,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class DictPto extends HubDict {
+public class DictPto extends SysDict {
 
     /**
      * 分组编码

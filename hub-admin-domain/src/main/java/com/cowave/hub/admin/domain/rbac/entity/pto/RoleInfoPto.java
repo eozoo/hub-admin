@@ -12,7 +12,7 @@
  */
 package com.cowave.hub.admin.domain.rbac.entity.pto;
 
-import com.cowave.hub.admin.domain.rbac.entity.HubRole;
+import com.cowave.hub.admin.domain.rbac.entity.SysRole;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class RoleInfoPto extends HubRole {
+public class RoleInfoPto extends SysRole {
 
     /**
 	 * 角色菜单

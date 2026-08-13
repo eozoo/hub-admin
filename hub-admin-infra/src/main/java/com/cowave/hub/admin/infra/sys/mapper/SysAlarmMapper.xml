@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.sys.mapper.SysAlarmMapper">
+    <resultMap id="alarmMap" type="com.cowave.hub.admin.domain.sys.entity.pto.AlarmPto">
+        <result column="id"               property="id"/>
+        <result column="alarm_code"       property="alarmCode"/>
+        <result column="alarm_type"       property="alarmType"/>
+        <result column="alarm_level"      property="alarmLevel"/>
+        <result column="source_id"        property="sourceId"/>
+        <result column="source_name"      property="sourceName"/>
+        <result column="source_type"      property="sourceType"/>
+        <result column="alarm_status"     property="alarmStatus"/>
+        <result column="alarm_times"      property="alarmTimes" />
+        <result column="first_time"       property="firstTime"/>
+        <result column="last_time"        property="lastTime"/>
+        <result column="alarm_desc"       property="alarmDesc"/>
+        <result column="alarm_content"    property="alarmContent" typeHandler="com.cowave.zoo.framework.support.mybatis.handler.JsonObjectHandler"/>
+        <result column="resolve_user"     property="resolveUser"/>
+        <result column="resolve_msg"      property="resolveMsg"/>
+        <result column="resolve_time"     property="resolveTime"/>
+        <result column="resolve_type"     property="resolveType"/>
+        <result column="type_view"        property="viewPath"/>
+        <result column="type_name"        property="typeName"/>
+    </resultMap>
+
+    <sql id="alarmField">
+        a.id,
+        a.alarm_code,
+        a.alarm_type,
+        a.alarm_level,
+        a.source_id,
+        a.source_name,
+        a.source_type,
+        a.alarm_status,
+        a.alarm_times,
+        a.first_time,
+        a.last_time,
+        a.alarm_desc,
+        a.alarm_content,
+        a.resolve_user,
+        a.resolve_msg,
+        a.resolve_time,
+        a.resolve_type
+    </sql>
+
+    <sql id="alarmTypeField">
+        t.id           id,
+        t.type_name    typeName,
+        t.type_view    typeView,
+        t.description  description
+    </sql>
+
+    <select id="typeList" resultType="com.cowave.hub.admin.domain.sys.entity.pto.AlarmTypePto">
+        select
+        <include refid="alarmTypeField"/>
+        from sys_alarm_type t
+        <where>
+		    <if test="type.typeName != null">
+				and t.type_name = #{type.typeName}
+			</if>
+		</where>
+    </select>
+
+    <insert id="insertType" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO sys_alarm_type(type_name,type_view,description)
+        values(#{typeName},#{typeView},#{description})
+    </insert>
+
+    <update id="updateType">
+        update sys_alarm_type
+        set type_name   = #{typeName},
+            type_view   = #{typeView},
+            description = #{description}
+        where id = #{id}
+	</update>
+
+	<delete id="deleteType">
+        delete from sys_alarm_type where id = #{id}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into sys_alarm(alarm_code,
+                              alarm_type,
+                              alarm_level,
+                              source_id,
+                              source_name,
+                              source_type,
+                              alarm_desc,
+                              alarm_content,
+                              first_time,
+                              last_time)
+        values(#{alarmCode},
+               #{alarmType},
+               #{alarmLevel},
+               #{sourceId},
+               #{sourceName},
+               #{sourceType},
+               #{alarmDesc},
+               #{alarmContent,jdbcType=OTHER,typeHandler=com.cowave.zoo.framework.support.mybatis.handler.JsonObjectHandler},
+               #{firstTime},
+               #{lastTime})
+    </insert>
+
+    <insert id="alarmIncrease">
+        update sys_alarm
+        set alarm_times = alarm_times + 1,
+            last_time   = #{lastTime}
+        where alarm_code = #{alarmCode}
+          and alarm_status = 0
+    </insert>
+
+    <select id="list" resultMap="alarmMap">
+        select
+        t.type_view, t.type_name,
+        <include refid="alarmField"/>
+        from sys_alarm a
+        left join sys_alarm_type t on a.alarm_type = t.id
+        <where>
+		    <if test="alarm.sourceName != null">
+				and a.source_name = #{alarm.sourceName}
+			</if>
+			<if test="alarm.beginTime != null">
+                <![CDATA[
+				and first_time >= #{alarm.beginTime}
+				]]>
+			</if>
+			<if test="alarm.endTime != null">
+                <![CDATA[
+				and first_time <= #{alarm.endTime}
+				]]>
+			</if>
+		</where>
+		ORDER BY a.alarm_level DESC
+    </select>
+
+    <select id="info" resultMap="alarmMap">
+        select
+        t.type_view, t.type_name,
+        <include refid="alarmField"/>
+        from sys_alarm a
+        left join sys_alarm_type t on a.alarm_type = t.id
+		where a.id = #{id}
+    </select>
+
+    <delete id="delete">
+        delete from sys_alarm where id = #{id}
+    </delete>
+
+    <update id="updateHandle">
+        update sys_alarm
+        set resolve_type = #{handleType},
+            resolve_msg  = #{handleMsg},
+            resolve_time = #{handleTime},
+            alarm_status = #{alarmStatus}
+        where alarm_status = 0
+          and id = #{id}
+    </update>
+</mapper>
+
+
+
+
+
+

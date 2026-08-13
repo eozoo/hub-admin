@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.rbac.mapper.SysDeptPostMapper">
+
+    <select id="getConfiguredPosts" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.DeptPostPto">
+        select d.post_id postId,
+               p.post_name postName,
+               p.post_type postType,
+               d.is_default isDefault
+        from sys_dept_post d
+        join sys_post p on d.post_id = p.post_id
+        where dept_id = #{query.deptId} and p.tenant_id = #{tenantId}
+        <if test="query.postName != null and query.postName != ''">
+            and p.post_name like concat('%', #{query.postName}, '%')
+        </if>
+        <if test="query.postType != null and query.postType != ''">
+            and p.post_type = #{query.postType}
+        </if>
+        order by p.post_type
+    </select>
+
+    <select id="getUnConfiguredPosts" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.DeptPostPto" databaseId="postgres">
+        with pids as (select post_id from sys_post except select post_id from sys_dept_post where dept_id = #{query.deptId})
+        select p.post_id   postId,
+               p.post_name postName,
+               p.post_type postType
+        from pids
+        join sys_post p on pids.post_id = p.post_id
+        where p.tenant_id = #{tenantId}
+        <if test="query.postName != null and query.postName != ''">
+            and p.post_name like concat('%', #{query.postName}, '%')
+        </if>
+        <if test="query.postType != null and query.postType != ''">
+            and p.post_type = #{query.postType}
+        </if>
+        order by p.post_type
+    </select>
+
+    <select id="getUnConfiguredPosts" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.DeptPostPto" databaseId="mysql">
+        select
+            p.post_id as postId,
+            p.post_name as postName,
+            p.post_type as postType
+        from sys_post p
+        where p.tenant_id = #{tenantId}
+          and not exists (select 1 from sys_dept_post dp
+                                   where dp.post_id = p.post_id and dp.dept_id = #{query.deptId})
+        <if test="query.postName != null and query.postName != ''">
+            and p.post_name like concat('%', #{query.postName}, '%')
+        </if>
+        <if test="query.postType != null and query.postType != ''">
+            and p.post_type = #{query.postType}
+        </if>
+        order by p.post_type
+    </select>
+
+    <insert id="insertDeptPosts" databaseId="postgres">
+        insert into sys_dept_post(dept_id, post_id, is_default) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.deptId}, #{item.postId}, #{item.isDefault})
+        </foreach>
+        on conflict(dept_id, post_id) do update set
+        is_default = excluded.is_default
+    </insert>
+
+    <insert id="insertDeptPosts" databaseId="mysql">
+        insert into sys_dept_post(dept_id, post_id, is_default)
+        select t.dept_id, t.post_id, t.is_default
+        from (
+            <foreach collection="list" item="item" separator="union all">
+                select
+                    #{item.deptId} as dept_id,
+                    #{item.postId} as post_id,
+                    #{item.isDefault} as is_default
+            </foreach>
+        ) t
+        where exists (select 1 from sys_dept where sys_dept.dept_id = t.dept_id and sys_dept.tenant_id = #{tenantId})
+        on duplicate key update
+        is_default = values(is_default)
+    </insert>
+
+    <select id="queryDeptPosts" resultType="com.cowave.hub.admin.domain.rbac.entity.SysDeptPost">
+        select dept_id, post_id, is_default
+        from sys_dept_post
+        where (dept_id, post_id) in (
+        <foreach collection="list" item="item" separator=",">
+            (#{item.deptId}, #{item.postId})
+        </foreach>
+        )
+    </select>
+
+    <select id="deptWithMultiDefaultPost" resultType="java.lang.Integer">
+        select dept_id from sys_dept_post where is_default = 1 group by dept_id having count(1) > 1
+    </select>
+
+    <resultMap id="postDiagramMap" type="com.cowave.hub.admin.domain.rbac.entity.pto.TreeNode">
+        <result column="dept_id"     property="pid"/>
+        <collection property="children" javaType="list" ofType="cn.hutool.core.lang.tree.Tree">
+            <result column="child_id"     property="id"/>
+            <result column="post_name"    property="label"/>
+            <result column="content"      property="content"/>
+        </collection>
+    </resultMap>
+
+    <select id="listDeptPostDiagramNode" resultMap="postDiagramMap">
+        select p.post_name,
+               COALESCE(dp.dept_id, 0) as dept_id,
+               case WHEN dp.dept_id is null then concat('0-', p.post_id) else concat(d.dept_id, '-', p.post_id) end as child_id,
+               case WHEN dp.dept_id is null then p.post_name else concat(d.dept_name, '/', p.post_name) end as content
+        from sys_post p
+        left join sys_dept_post dp on dp.post_id = p.post_id
+        left join sys_dept d on d.dept_id = dp.dept_id
+        where p.tenant_id = #{tenantId}
+    </select>
+
+</mapper>

@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.sys;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.sys.entity.HubNoticeLike;
+import com.cowave.hub.admin.domain.sys.entity.SysNoticeLike;
 import com.cowave.hub.admin.domain.sys.entity.vo.NoticeCommentVo;
 import com.cowave.hub.admin.domain.sys.entity.vo.NoticeVo;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -211,7 +211,7 @@ public class HubNoticeControllerTest extends SpringTest {
         Assertions.assertEquals("true", liked, "首次点赞应返回true");
         // 点赞人列表
         mvcResult = mockGet("/api/v1/notice/msg/likers?targetType=2&targetId=" + commentId, accessToken);
-        List<HubNoticeLike> likers = readData(mvcResult, "/data", new TypeReference<>() {});
+        List<SysNoticeLike> likers = readData(mvcResult, "/data", new TypeReference<>() {});
         Assertions.assertFalse(likers.isEmpty(), "点赞后至少应有1条点赞记录");
         // 取消评论点赞
         mvcResult = mockPost("/api/v1/notice/msg/comment/like/" + commentId, "{}", accessToken);

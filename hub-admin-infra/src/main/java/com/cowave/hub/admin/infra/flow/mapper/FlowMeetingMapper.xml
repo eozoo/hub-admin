@@ -52,7 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         u.user_name apply_user_name,
         <include refid="MeetingField"/>
         from flow_meeting m
-        left join hub_user u on m.apply_user = u.user_code
+        left join sys_user u on m.apply_user = u.user_code
         <where>
             <if test="meeting.meetingRoom != null">
                 and m.meeting_room = #{meeting.meetingRoom}
@@ -78,7 +78,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         u.user_name apply_user_name,
         <include refid="MeetingField"/>
         from flow_meeting m
-        left join hub_user u on m.apply_user = u.user_code
+        left join sys_user u on m.apply_user = u.user_code
         where id = #{id}
     </select>
 

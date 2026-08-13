@@ -12,7 +12,7 @@
  */
 package com.cowave.hub.admin.domain.rbac.entity.pto;
 
-import com.cowave.hub.admin.domain.rbac.entity.HubUser;
+import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class UserInfoPto extends HubUser {
+public class UserInfoPto extends SysUser {
 
     /**
      * 角色列表

@@ -15,8 +15,8 @@ package com.cowave.hub.admin.domain.rbac.entity.command;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.access.security.AccessInfoSetter;
 import com.cowave.zoo.tools.Collections;
-import com.cowave.hub.admin.domain.rbac.entity.HubDept;
-import com.cowave.hub.admin.domain.rbac.entity.HubDeptDiagram;
+import com.cowave.hub.admin.domain.rbac.entity.SysDept;
+import com.cowave.hub.admin.domain.rbac.entity.SysDeptDiagram;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class DeptCreate extends HubDept implements AccessInfoSetter {
+public class DeptCreate extends SysDept implements AccessInfoSetter {
 
     /**
 	 * 上级部门Id列表
@@ -37,11 +37,11 @@ public class DeptCreate extends HubDept implements AccessInfoSetter {
 	@NotEmpty(message = "{admin.dept.parentIds.null}")
 	private List<Integer> parentIds;
 
-    public List<HubDeptDiagram> getDeptParents(){
+    public List<SysDeptDiagram> getDeptParents(){
         if(CollectionUtils.isNotEmpty(parentIds)){
-            return Collections.copyToList(parentIds, parentId -> new HubDeptDiagram(getDeptId(), parentId, Access.tenantId()));
+            return Collections.copyToList(parentIds, parentId -> new SysDeptDiagram(getDeptId(), parentId, Access.tenantId()));
         }else{
-            return List.of(new HubDeptDiagram(getDeptId(), 0, Access.tenantId()));
+            return List.of(new SysDeptDiagram(getDeptId(), 0, Access.tenantId()));
         }
     }
 }

@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.rbac.mapper.SysUserMapper">
+
+    <resultMap id="profileMap" type="com.cowave.hub.admin.domain.auth.entity.pto.UserProfile">
+        <result column="user_id"       property="userId"/>
+        <result column="user_type"     property="userType"/>
+        <result column="user_account"  property="userAccount"/>
+        <result column="user_name"     property="userName"/>
+        <result column="user_email"    property="userEmail"/>
+        <result column="user_phone"    property="userPhone"/>
+        <result column="user_sex"      property="userSex"/>
+        <result column="user_code"     property="userCode"/>
+        <result column="create_time"   property="createTime"/>
+        <result column="mfa"           property="mfa"/>
+        <collection property="roles" javaType="list" ofType="java.lang.String">
+            <result column="role_name"/>
+        </collection>
+        <collection property="depts" javaType="list" ofType="java.lang.String">
+            <result column="deptName"/>
+        </collection>
+        <collection property="parents" javaType="list" ofType="java.lang.String">
+            <result column="parentName"/>
+        </collection>
+    </resultMap>
+
+    <select id="getUserProfile" resultMap="profileMap" databaseId="postgres">
+        select u.user_id,
+               u.user_type,
+               u.user_account,
+               u.user_name,
+               u.user_email,
+               u.user_phone,
+               u.user_sex,
+               u.user_code,
+               u.create_time,
+               u.mfa,
+               r.role_name,
+               d.dept_name || '/' || p.post_name deptName,
+               pu.user_name                      parentName
+        from sys_user u
+        left join sys_user_role ur on u.user_id = ur.user_id
+        left join sys_role r on ur.role_id = r.role_id
+        left join sys_user_dept ud on u.user_id = ud.user_id
+        left join sys_dept d on ud.dept_id = d.dept_id
+        left join sys_post p on ud.post_id = p.post_id
+        left join sys_user_diagram t on u.user_id = t.user_id
+        left join sys_user pu on t.parent_id = pu.user_id
+        where u.user_id = #{userId}
+    </select>
+
+    <select id="getUserProfile" resultMap="profileMap" databaseId="mysql">
+        select u.user_id,
+               u.user_type,
+               u.user_account,
+               u.user_name,
+               u.user_email,
+               u.user_phone,
+               u.user_sex,
+               u.user_code,
+               u.create_time,
+               u.mfa,
+               r.role_name,
+               CONCAT(d.dept_name, '/', p.post_name) deptName,
+               pu.user_name                      parentName
+        from sys_user u
+        left join sys_user_role ur on u.user_id = ur.user_id
+        left join sys_role r on ur.role_id = r.role_id
+        left join sys_user_dept ud on u.user_id = ud.user_id
+        left join sys_dept d on ud.dept_id = d.dept_id
+        left join sys_post p on ud.post_id = p.post_id
+        left join sys_user_diagram t on u.user_id = t.user_id
+        left join sys_user pu on t.parent_id = pu.user_id
+        where u.user_id = #{userId}
+    </select>
+
+    <sql id="userColumns">
+        u.user_id,
+        u.user_type,
+        u.user_code,
+        u.user_name,
+        u.user_account,
+        u.user_sex,
+        u.user_phone,
+        u.user_email,
+        u.user_status,
+        u.user_rank,
+        u.remark,
+        u.create_by,
+        u.create_time,
+        u.update_by,
+        u.update_time
+    </sql>
+
+    <resultMap id="userMap" type="com.cowave.hub.admin.domain.rbac.entity.SysUser">
+        <result column="user_id"       property="userId"/>
+        <result column="user_type"     property="userType"/>
+        <result column="user_code"     property="userCode"/>
+        <result column="user_name"     property="userName"/>
+        <result column="user_account"  property="userAccount"/>
+        <result column="user_sex"      property="userSex"/>
+        <result column="user_phone"    property="userPhone"/>
+        <result column="user_email"    property="userEmail"/>
+        <result column="user_rank"     property="userRank"/>
+        <result column="user_status"   property="userStatus"/>
+        <result column="remark"        property="remark"/>
+        <result column="create_by"     property="createBy"/>
+        <result column="create_time"   property="createTime"/>
+        <result column="update_by"     property="updateBy"/>
+        <result column="update_time"   property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="userListDtoMap" type="com.cowave.hub.admin.domain.rbac.entity.pto.UserListPto" extends="userMap">
+        <collection property="deptPosts" javaType="list" ofType="com.cowave.hub.admin.domain.rbac.entity.pto.UserListPto$SysUserDeptPost">
+            <result column="dept_id"      property="deptId"/>
+            <result column="dept_name"    property="deptName"/>
+            <result column="post_id"      property="postId"/>
+            <result column="post_name"    property="postName"/>
+            <result column="is_default"   property="isDefault"/>
+            <result column="is_leader"    property="isLeader"/>
+        </collection>
+    </resultMap>
+
+    <select id="list" resultMap="userListDtoMap">
+        select u.*,
+        d.dept_id, d.dept_name, p.post_id, p.post_name,
+        ud.is_default, ud.is_leader
+        from(select
+             <include refid="userColumns"/>
+             from sys_user u
+             where u.tenant_id = #{tenantId}
+             <if test="query.userName != null and query.userName != ''">
+                 and u.user_name like concat('%', #{query.userName}, '%')
+             </if>
+             <if test="query.userPhone != null and query.userPhone != ''">
+                 and u.user_phone like concat('%', #{query.userPhone}, '%')
+             </if>
+             <if test="query.userRank != null">
+                 and u.user_rank = #{query.userRank}
+             </if>
+             order by u.user_id
+             limit #{query.pageSize} offset #{query.offset}
+        ) u
+        left join sys_user_dept ud on u.user_id = ud.user_id
+        left join sys_dept d on ud.dept_id = d.dept_id
+        left join sys_post p on ud.post_id = p.post_id
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(1)
+        from sys_user u
+        where u.tenant_id = #{tenantId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+        <if test="query.userRank != null">
+            and u.user_rank = #{query.userRank}
+        </if>
+    </select>
+
+    <select id="listOfDept" resultMap="userListDtoMap" databaseId="postgres">
+        select u.*,
+        d.dept_id, d.dept_name, p.post_id, p.post_name,
+        ud.is_default, ud.is_leader
+        from(with d as(
+                with recursive tree (dept_id, parent_id) as(
+                    select t1.dept_id, t1.parent_id from sys_dept_diagram t1 where dept_id = #{query.deptId}
+                    union
+                    select t2.dept_id, t2.parent_id from sys_dept_diagram t2 join tree on t2.parent_id = tree.dept_id
+                )
+                select tree.dept_id, dept.dept_name, dept.tenant_id from tree JOIN sys_dept dept on tree.dept_id = dept.dept_id
+            )
+            select distinct on(u.user_id)
+            <include refid="userColumns"/>
+            from d
+            join sys_user_dept ud on d.dept_id = ud.dept_id
+            join sys_user u on ud.user_id = u.user_id
+            where d.tenant_id = #{tenantId}
+            <if test="query.userName != null and query.userName != ''">
+                and u.user_name like concat('%', #{query.userName}, '%')
+            </if>
+            <if test="query.userPhone != null and query.userPhone != ''">
+                and u.user_phone like concat('%', #{query.userPhone}, '%')
+            </if>
+            <if test="query.userRank != null">
+                and u.user_rank = #{query.userRank}
+            </if>
+            order by u.user_id
+            limit #{query.pageSize} offset #{query.offset}
+        ) u
+        left join sys_user_dept ud on u.user_id = ud.user_id
+        left join sys_dept d on ud.dept_id = d.dept_id
+        left join sys_post p on ud.post_id = p.post_id
+    </select>
+
+    <select id="listOfDept" resultMap="userListDtoMap" databaseId="mysql">
+        with recursive tree as (
+            select t1.dept_id, t1.parent_id
+            from sys_dept_diagram t1
+            where t1.dept_id = #{query.deptId}
+            union
+            select t2.dept_id, t2.parent_id
+            from sys_dept_diagram t2
+            join tree on t2.parent_id = tree.dept_id
+        ), d as (
+            select tree.dept_id, dept.dept_name, dept.tenant_id
+            from tree
+            join sys_dept dept on tree.dept_id = dept.dept_id
+        ), filtered_users as (
+            select
+                <include refid="userColumns"/>,
+                row_number() over (partition by u.user_id order by u.user_id) as rn
+            from d
+            join sys_user_dept ud on d.dept_id = ud.dept_id
+            join sys_user u on ud.user_id = u.user_id
+            where d.tenant_id = #{tenantId}
+            <if test="query.userName != null and query.userName != ''">
+                and u.user_name like concat('%', #{query.userName}, '%')
+            </if>
+            <if test="query.userPhone != null and query.userPhone != ''">
+                and u.user_phone like concat('%', #{query.userPhone}, '%')
+            </if>
+            <if test="query.userRank != null">
+                and u.user_rank = #{query.userRank}
+            </if>
+            group by u.user_id
+            order by u.user_id
+            limit #{query.pageSize} offset #{query.offset}
+        )
+        select fu.*,
+               ud.dept_id, d.dept_name,
+               ud.post_id, p.post_name,
+               ud.is_default, ud.is_leader
+        from filtered_users fu
+        left join sys_user_dept ud on fu.user_id = ud.user_id
+        left join sys_dept d on ud.dept_id = d.dept_id
+        left join sys_post p on ud.post_id = p.post_id
+        where fu.rn = 1
+    </select>
+
+    <select id="countOfDept" resultType="java.lang.Integer" databaseId="postgres">
+        with d as(
+            with recursive tree (dept_id, parent_id) as(
+                select t1.dept_id, t1.parent_id from sys_dept_diagram t1 where dept_id = #{query.deptId}
+                union
+                select t2.dept_id, t2.parent_id from sys_dept_diagram t2 join tree on t2.parent_id = tree.dept_id
+            )
+            select tree.dept_id, dept.dept_name, dept.tenant_id from tree JOIN sys_dept dept on tree.dept_id = dept.dept_id
+        )
+        select count(distinct u.user_id)
+        from d
+        join sys_user_dept ud on d.dept_id = ud.dept_id
+        join sys_user u on ud.user_id = u.user_id
+        where d.tenant_id = #{tenantId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+        <if test="query.userRank != null">
+            and u.user_rank = #{query.userRank}
+        </if>
+    </select>
+
+    <select id="countOfDept" resultType="java.lang.Integer" databaseId="mysql">
+        with recursive tree as (
+            select t1.dept_id, t1.parent_id
+            from sys_dept_diagram t1
+            where t1.dept_id = #{query.deptId}
+            union
+            select t2.dept_id, t2.parent_id
+            from sys_dept_diagram t2
+            join tree on t2.parent_id = tree.dept_id
+        ), d as (
+            select tree.dept_id, dept.dept_name, dept.tenant_id
+            from tree
+            join sys_dept dept on tree.dept_id = dept.dept_id
+        )
+        select count(distinct u.user_id)
+        from d
+        join sys_user_dept ud on d.dept_id = ud.dept_id
+        join sys_user u on ud.user_id = u.user_id
+        where d.tenant_id = #{tenantId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+        <if test="query.userRank != null">
+            and u.user_rank = #{query.userRank}
+        </if>
+    </select>
+
+    <resultMap id="userInfoDtoMap" type="com.cowave.hub.admin.domain.rbac.entity.pto.UserInfoPto" extends="userMap">
+        <collection property="roleIds" javaType="list" ofType="java.lang.Long">
+            <result column="role_id"/>
+        </collection>
+        <collection property="parentIds" javaType="list" ofType="java.lang.Long">
+            <result column="parent_id"/>
+        </collection>
+        <collection property="deptPostIds" javaType="list" ofType="java.lang.String">
+            <result column="dept_post_id"/>
+        </collection>
+    </resultMap>
+
+    <select id="getById" resultMap="userInfoDtoMap" databaseId="postgres">
+        select ur.role_id, ud.dept_id || '-' || ud.post_id dept_post_id, t.parent_id,
+        <include refid="userColumns"/>
+        from sys_user u
+        left join sys_user_role ur on u.user_id = ur.user_id
+        left join sys_user_dept ud on u.user_id = ud.user_id
+        left join sys_user_diagram t on u.user_id = t.user_id and t.parent_id > 0
+        where u.tenant_id = #{tenantId} and u.user_id = #{userId}
+    </select>
+
+    <select id="getById" resultMap="userInfoDtoMap" databaseId="mysql">
+        select ur.role_id, concat(ud.dept_id, '-', ud.post_id) as dept_post_id, t.parent_id,
+        <include refid="userColumns"/>
+        from sys_user u
+        left join sys_user_role ur on u.user_id = ur.user_id
+        left join sys_user_dept ud on u.user_id = ud.user_id
+        left join sys_user_diagram t on u.user_id = t.user_id and t.parent_id > 0
+        where u.tenant_id = #{tenantId} and u.user_id = #{userId}
+    </select>
+
+    <insert id="batchInsert" databaseId="postgres">
+        insert into sys_user(tenant_id,
+                             user_type,
+                             user_code,
+                             user_name,
+                             user_account,
+                             user_passwd,
+                             user_sex,
+                             user_phone,
+                             user_email,
+                             user_status,
+                             remark,
+                             create_by,
+                             update_by,
+                             create_time,
+                             update_time
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.tenantId},
+             #{item.userType},
+             #{item.userCode},
+             #{item.userName},
+             #{item.userAccount},
+             #{item.userPasswd},
+             #{item.userSex},
+             #{item.userPhone},
+             #{item.userEmail},
+             #{item.userStatus},
+             #{item.remark},
+             #{item.createBy},
+             #{item.createBy},
+             #{item.createTime},
+             #{item.createTime})
+        </foreach>
+        <if test="overwrite == false">
+            on conflict(tenant_id, user_type, user_account) do nothing
+        </if>
+        <if test="overwrite == true">
+            on conflict(tenant_id, user_type, user_account) do update set
+            user_name   = excluded.user_name,
+            user_sex    = excluded.user_sex,
+            user_phone  = excluded.user_phone,
+            user_email  = excluded.user_email,
+            user_status = excluded.user_status,
+            remark      = excluded.remark,
+            update_by   = excluded.update_by,
+            update_time = excluded.update_time
+        </if>
+    </insert>
+
+    <insert id="batchInsert" databaseId="mysql">
+        insert
+        <if test="overwrite == false">ignore</if>
+        into sys_user(tenant_id, user_type, user_code, user_name, user_account,
+                      user_passwd, user_sex, user_phone, user_email, user_status,
+                      remark, create_by, update_by, create_time, update_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.tenantId},
+             #{item.userType},
+             #{item.userCode},
+             #{item.userName},
+             #{item.userAccount},
+             #{item.userPasswd},
+             #{item.userSex},
+             #{item.userPhone},
+             #{item.userEmail},
+             #{item.userStatus},
+             #{item.remark},
+             #{item.createBy},
+             #{item.createBy},
+             #{item.createTime},
+             #{item.createTime})
+        </foreach>
+        <if test="overwrite == true">
+            on duplicate key update
+                user_name = values(user_name),
+                user_sex = values(user_sex),
+                user_phone = values(user_phone),
+                user_email = values(user_email),
+                user_status = values(user_status),
+                remark = values(remark),
+                update_by = values(update_by),
+                update_time = values(update_time)
+        </if>
+    </insert>
+
+    <select id="getUserCandidates" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.UserNamePto">
+        select u.user_id userId, u.user_name userName
+        from sys_user_dept ud
+        inner join (select dept_id from sys_user_dept where user_id = #{userId} and is_default = 1) as d on ud.dept_id = d.dept_id
+        inner join sys_user u on ud.user_id = u.user_id
+        where ud.is_leader = 1 and u.tenant_id = #{tenantId}
+    </select>
+
+    <select id="listTenantManager" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.TenantManagerPto">
+        select u.tenant_id tenantId,
+               u.user_id userId,
+               u.user_name userName,
+               u.user_account userAccount,
+               u.create_time createTime,
+               u.update_time updateTime
+        from sys_user u
+        join sys_user_role ur on u.user_id = ur.user_id
+        join sys_role r on ur.role_id = r.role_id
+        where u.tenant_id = #{tenantId}
+          and r.role_code = 'sysAdmin'
+    </select>
+
+    <update id="removeTenantManager" databaseId="postgres">
+        DELETE
+        FROM sys_user_role ur USING sys_user u, sys_role r
+        WHERE ur.user_id = u.user_id
+          AND ur.role_id = r.role_id
+          AND r.role_code = 'sysAdmin'
+          AND u.tenant_id = #{tenantId}
+          AND u.user_id IN
+        <foreach collection="userIds"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="removeTenantManager" databaseId="mysql">
+        DELETE ur FROM sys_user_role ur
+        INNER JOIN sys_user u ON ur.user_id = u.user_id
+        INNER JOIN sys_role r ON ur.role_id = r.role_id
+        WHERE r.role_code = 'sysAdmin'
+        AND u.tenant_id = #{tenantId}
+        AND u.user_id IN
+        <foreach collection="userIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>

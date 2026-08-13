@@ -14,9 +14,9 @@ package com.cowave.hub.admin.controller.auth;
 
 import com.cowave.zoo.http.client.response.Response;
 import com.cowave.zoo.framework.access.Access;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthApp;
+import com.cowave.hub.admin.domain.auth.entity.HubApp;
 import com.cowave.hub.admin.domain.auth.entity.command.RoleAppGrant;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthAppMenu;
+import com.cowave.hub.admin.domain.auth.entity.HubAppMenu;
 import com.cowave.hub.admin.domain.auth.entity.vo.OAuthAppCard;
 import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
 import com.cowave.hub.admin.service.auth.OAuthAppService;
@@ -45,7 +45,7 @@ public class OAuthAppController {
      */
     @PreAuthorize("@permits.hasPermit('oauth:app:query')")
     @GetMapping
-    public Response<Response.Page<HubOAuthApp>> listOauthApp(String clientName) {
+    public Response<Response.Page<HubApp>> listOauthApp(String clientName) {
         return Response.page(OAuthAppService.listOauthApp(Access.tenantId(), clientName));
     }
 
@@ -54,7 +54,7 @@ public class OAuthAppController {
      */
     @PreAuthorize("@permits.hasPermit('oauth:app:create')")
     @PostMapping
-    public Response<HubOAuthApp> createOauthApp(@RequestBody HubOAuthApp oauthApp) {
+    public Response<HubApp> createOauthApp(@RequestBody HubApp oauthApp) {
         return Response.success(OAuthAppService.createOauthApp(Access.tenantId(), oauthApp));
     }
 
@@ -108,7 +108,7 @@ public class OAuthAppController {
 	 * @param menuStatus 菜单状态
 	 */
 	@GetMapping("/menu/{appId}")
-	public Response<Response.Page<HubOAuthAppMenu>> listAppMenus(
+	public Response<Response.Page<HubAppMenu>> listAppMenus(
             @PathVariable Integer appId, String menuName, EnableStatus menuStatus){
 		return Response.page(OAuthAppService.listAppMenus(appId, menuName, menuStatus));
 	}

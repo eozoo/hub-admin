@@ -1,6 +1,6 @@
 -- 租户信息
-drop table if exists hub_tenant;
-create table hub_tenant
+drop table if exists sys_tenant;
+create table sys_tenant
 (
     tenant_id    varchar(64) primary key comment '租户id',
     tenant_name  varchar(128) comment '租户名称',
@@ -24,8 +24,8 @@ create table hub_tenant
 ) comment='租户信息';
 
 -- 部门信息
-drop table if exists hub_dept;
-create table hub_dept(
+drop table if exists sys_dept;
+create table sys_dept(
     dept_id     int auto_increment primary key comment '部门id',
     tenant_id   varchar(64) comment '租户id',
     dept_code   varchar(64) comment '部门编码',
@@ -40,11 +40,11 @@ create table hub_dept(
     update_by   varchar(64) comment '更新人',
     update_time datetime comment '更新时间'
 ) comment='部门信息';
-create unique index hub_dept_dept_code on hub_dept(tenant_id, dept_code);
+create unique index sys_dept_dept_code on sys_dept(tenant_id, dept_code);
 
 -- 部门关系
-drop table if exists hub_dept_diagram;
-create table hub_dept_diagram(
+drop table if exists sys_dept_diagram;
+create table sys_dept_diagram(
     parent_id int not null comment '上级部门id',
     dept_id   int not null comment '部门id',
     tenant_id varchar(64) comment '租户id',
@@ -52,8 +52,8 @@ create table hub_dept_diagram(
 ) comment='部门关系';
 
 -- 岗位信息
-drop table if exists hub_post;
-create table hub_post(
+drop table if exists sys_post;
+create table sys_post(
     post_id     int auto_increment primary key comment '岗位id',
     tenant_id   varchar(64) comment '租户id',
     post_code   varchar(64) comment '岗位编码',
@@ -69,8 +69,8 @@ create table hub_post(
 ) comment='岗位信息';
 
 -- 岗位关系
-drop table if exists hub_post_diagram;
-create table hub_post_diagram(
+drop table if exists sys_post_diagram;
+create table sys_post_diagram(
     parent_id int not null comment '上级岗位id',
     post_id   int not null comment '岗位id',
     tenant_id varchar(64) comment '租户id',
@@ -78,8 +78,8 @@ create table hub_post_diagram(
 ) comment='岗位关系';
 
 -- 部门岗位
-drop table if exists hub_dept_post;
-create table hub_dept_post(
+drop table if exists sys_dept_post;
+create table sys_dept_post(
     dept_id    int not null comment '部门id',
     post_id    int not null comment '岗位id',
     is_default smallint default 0 comment '是否部门默认岗位',
@@ -87,8 +87,8 @@ create table hub_dept_post(
 ) comment='部门岗位';
 
 -- 用户信息
-drop table if exists hub_user;
-create table hub_user
+drop table if exists sys_user;
+create table sys_user
 (
     user_id      int auto_increment primary key comment '用户id',
     user_code    varchar(64) comment '用户编码',
@@ -109,12 +109,12 @@ create table hub_user
     update_by    varchar(64) comment '更新人',
     update_time  datetime comment '更新时间'
 ) comment='用户信息';
-create unique index hub_user_user_code on hub_user(user_code);
-create unique index hub_user_user_account on hub_user(tenant_id, user_type, user_account);
+create unique index sys_user_user_code on sys_user(user_code);
+create unique index sys_user_user_account on sys_user(tenant_id, user_type, user_account);
 
 -- 用户关系
-drop table if exists hub_user_diagram;
-create table hub_user_diagram
+drop table if exists sys_user_diagram;
+create table sys_user_diagram
 (
     parent_id int not null comment '上级用户id',
     user_id   int not null comment '用户id',
@@ -123,8 +123,8 @@ create table hub_user_diagram
 ) comment='用户关系';
 
 -- 用户部门
-drop table if exists hub_user_dept;
-create table hub_user_dept(
+drop table if exists sys_user_dept;
+create table sys_user_dept(
     user_id    int not null comment '用户id',
     dept_id    int not null comment '部门id',
     post_id    int default -1 comment '岗位id',
@@ -134,8 +134,8 @@ create table hub_user_dept(
 ) comment='用户部门';
 
 -- 角色信息
-drop table if exists hub_role;
-create table hub_role(
+drop table if exists sys_role;
+create table sys_role(
     role_id     int auto_increment primary key comment '角色id',
     tenant_id   varchar(64) comment '租户id',
     role_code   varchar(100) not null comment '角色编码',
@@ -147,19 +147,19 @@ create table hub_role(
     update_by   varchar(64) comment '更新人',
     update_time datetime comment '更新时间'
 ) comment='角色信息';
-create unique index hub_role_role_code on hub_role(tenant_id, role_code);
+create unique index sys_role_role_code on sys_role(tenant_id, role_code);
 
 -- 用户角色
-drop table if exists hub_user_role;
-create table hub_user_role(
+drop table if exists sys_user_role;
+create table sys_user_role(
     user_id int not null comment '用户id',
     role_id int not null comment '角色id',
     primary key (user_id, role_id)
 ) comment='用户角色';
 
 -- 菜单信息
-drop table if exists hub_menu;
-create table hub_menu
+drop table if exists sys_menu;
+create table sys_menu
 (
     menu_id      int auto_increment primary key comment '菜单id',
     parent_id    int default 0 comment '父菜单id',
@@ -186,8 +186,8 @@ create table hub_menu
 ) comment='菜单信息';
 
 -- 角色菜单
-drop table if exists hub_role_menu;
-create table hub_role_menu
+drop table if exists sys_role_menu;
+create table sys_role_menu
 (
     role_id  int not null comment '角色id',
     menu_id  int not null comment '菜单id',
@@ -196,8 +196,8 @@ create table hub_role_menu
 ) comment='角色菜单';
 
 -- 数据权限
-drop table if exists hub_scope;
-CREATE TABLE hub_scope
+drop table if exists sys_scope;
+CREATE TABLE sys_scope
 (
     scope_id      int auto_increment primary key comment '权限id',
     tenant_id     varchar(64) comment '租户id',

@@ -13,8 +13,8 @@
 package com.cowave.hub.admin.kafka.consumer;
 
 import com.alibaba.fastjson.JSON;
-import com.cowave.hub.admin.domain.sys.entity.HubOperation;
-import com.cowave.hub.admin.service.sys.HubOperationService;
+import com.cowave.hub.admin.domain.sys.entity.SysOperation;
+import com.cowave.hub.admin.service.sys.SysOperationService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -27,11 +27,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class HubOperationConsumer {
 
-    private final HubOperationService operationService;
+    private final SysOperationService operationService;
 
     @KafkaListener(topics = {"${spring.access.oplog-kafka:hub-oplog}"})
     public void consume(ConsumerRecord<?, ?> message) {
-        HubOperation operation = JSON.parseObject(String.valueOf(message.value()), HubOperation.class);
+        SysOperation operation = JSON.parseObject(String.valueOf(message.value()), SysOperation.class);
         operationService.saveLog(operation);
     }
 }

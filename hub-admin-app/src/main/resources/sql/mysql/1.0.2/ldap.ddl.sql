@@ -1,6 +1,6 @@
 -- ldap 配置
-drop table if exists hub_ldap;
-create table hub_ldap
+drop table if exists sys_ldap;
+create table sys_ldap
 (
     tenant_id        varchar(64) primary key comment '租户id',
     ldap_status      smallint default 0 comment 'Ldap状态',
@@ -28,8 +28,8 @@ create table hub_ldap
 ) comment='ldap配置';
 
 -- ldap 用户
-drop table if exists hub_ldap_user;
-create table hub_ldap_user
+drop table if exists sys_ldap_user;
+create table sys_ldap_user
 (
     id           bigint auto_increment primary key comment 'id',
     tenant_id    varchar(64) comment '租户id',
@@ -45,4 +45,4 @@ create table hub_ldap_user
     create_time  datetime comment '创建时间',
     update_time  datetime comment '更新时间'
 ) comment='ldap用户';
-create unique index hub_ldap_user_unique on hub_ldap_user(tenant_id, user_account);
+create unique index sys_ldap_user_unique on sys_ldap_user(tenant_id, user_account);

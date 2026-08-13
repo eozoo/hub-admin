@@ -1,5 +1,5 @@
 -- 系统配置
-INSERT INTO hub_config (config_id, tenant_id, config_name, config_key, config_value, value_parser, value_type, is_default, remark, create_by, create_time, update_by, update_time) VALUES
+INSERT INTO sys_config (config_id, tenant_id, config_name, config_key, config_value, value_parser, value_type, is_default, remark, create_by, create_time, update_by, update_time) VALUES
 (1, '#', '账号管理-初始密码', 'hub.initPassword', '123456', NULL, NULL, 1, '初始密码', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (2, '#', '账号自助-开启用户注册', 'hub.registerOnOff', 'true', NULL, 'bool', 1, '开启注册用户功能 true/false', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (3, '#', '账号自助-验证码开关', 'hub.captchaOnOff', 'true', NULL, 'bool', 1, '开启验证码功能 true/false', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
@@ -14,7 +14,7 @@ INSERT INTO hub_config (config_id, tenant_id, config_name, config_key, config_va
 (12, 'cowave', '账号自助-验证码类型', 'hub.captchaType', 'math', NULL, NULL, 1, '验证码类型 math/char', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
 
 -- 字典数据
-INSERT INTO hub_dict (parent_code, dict_code, dict_name, dict_value, value_parser, value_type, dict_order, is_default, css, status, remark, create_by, create_time, update_by, update_time) VALUES
+INSERT INTO sys_dict (parent_code, dict_code, dict_name, dict_value, value_parser, value_type, dict_order, is_default, css, status, remark, create_by, create_time, update_by, update_time) VALUES
 ('root', 'group', 'dict.name.root', 'group', NULL, NULL, 0, 0, NULL, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 ('group', 'domain_module', 'dict.name.domain_module', NULL, NULL, NULL, 0, 0, NULL, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),

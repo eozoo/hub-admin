@@ -15,7 +15,7 @@ package com.cowave.hub.admin.socketio.event;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.listener.DataListener;
-import com.cowave.hub.admin.service.sys.HubNoticeService;
+import com.cowave.hub.admin.service.sys.SysNoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +28,7 @@ import static com.cowave.hub.admin.domain.AdminSocketIoNames.EVENT_SERVER_NOTICE
 @RequiredArgsConstructor
 public class GetNoticeCountEvent implements DataListener<String> {
 
-    private final HubNoticeService noticeService;
+    private final SysNoticeService noticeService;
 
     @Override
     public void onData(SocketIOClient client, String userCode, AckRequest ackSender) {

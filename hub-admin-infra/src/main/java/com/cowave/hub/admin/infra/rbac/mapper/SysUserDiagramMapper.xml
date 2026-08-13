@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.rbac.mapper.SysUserDiagramMapper">
+
+    <select id="listDiagramNodes" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.UserDiagramPto">
+        select t.user_id   id,
+               t.parent_id pid,
+               u.user_name as label,
+               u.user_rank userRank
+        from sys_user_diagram t
+        left join sys_user u ON t.user_id = u.user_id
+        where t.tenant_id = #{tenantId}
+        order by t.parent_id, t.user_id
+    </select>
+
+    <select id="childIds" resultType="java.lang.Integer">
+        with recursive tree (user_id, parent_id) as
+            (select t1.user_id, t1.parent_id from sys_user_diagram t1 where user_id = #{userId} union
+            select t2.user_id, t2.parent_id from sys_user_diagram t2 join tree on t2.parent_id = tree.user_id)
+        select distinct tree.user_id from tree JOIN sys_user u on tree.user_id = u.user_id
+    </select>
+</mapper>

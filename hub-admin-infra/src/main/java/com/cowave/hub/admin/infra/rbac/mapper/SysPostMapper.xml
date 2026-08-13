@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.rbac.mapper.SysPostMapper">
+    <sql id="postField">
+        p.post_id     postId,
+        p.post_code   postCode,
+        p.post_name   postName,
+        p.post_level  postLevel,
+	    p.post_type   postType,
+        p.post_status postStatus,
+        p.remark,
+        p.create_by    createBy,
+        p.create_time  createTime,
+        p.update_by    updateBy,
+        p.update_time  updateTime
+    </sql>
+
+    <select id="pageList" resultType="com.cowave.hub.admin.domain.rbac.entity.SysPost">
+        select
+        <include refid="postField"/>
+        <choose>
+            <when test="query.deptId != null">
+                from sys_dept_post dp, sys_post p
+                where p.tenant_id = #{tenantId} and dp.dept_id = #{query.deptId} and p.post_id = dp.post_id
+            </when>
+            <otherwise>
+                from sys_post p where p.tenant_id = #{tenantId}
+            </otherwise>
+        </choose>
+        <if test="query.postType != null and query.postType != ''">
+            and p.post_type = #{query.postType}
+        </if>
+        <if test="query.postName != null and query.postName != ''">
+            and p.post_name like concat('%', #{query.postName}, '%')
+        </if>
+        order by p.post_type, p.post_id
+    </select>
+
+    <select id="list" resultType="com.cowave.hub.admin.domain.rbac.entity.SysPost">
+        select
+        <include refid="postField"/>
+        <choose>
+            <when test="query.deptId != null">
+                from sys_dept_post dp, sys_post p
+                where p.tenant_id = #{tenantId} and dp.dept_id = #{query.deptId} and p.post_id = dp.post_id
+            </when>
+            <otherwise>
+                from sys_post p where p.tenant_id = #{tenantId}
+            </otherwise>
+        </choose>
+        <if test="query.postType != null and query.postType != ''">
+            and p.post_type = #{query.postType}
+        </if>
+        <if test="query.postName != null and query.postName != ''">
+            and p.post_name like concat('%', #{query.postName}, '%')
+        </if>
+        order by p.post_type, p.post_id
+    </select>
+
+    <select id="info" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.PostInfoPto">
+        select
+        t.parent_id parentId,
+        <include refid="postField"/>
+        from sys_post p
+        left join sys_post_diagram t on p.post_id = t.post_id
+        where p.tenant_id = #{tenantId} and p.post_id = #{postId}
+    </select>
+
+    <select id="getCandidatesByCode" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.UserNamePto">
+        select u.user_id userId, u.user_name userName
+        from sys_user u, sys_post p, sys_user_dept up
+        where p.tenant_id = #{tenantId} and p.post_code = #{postCode}
+          and p.post_id = up.post_id and up.user_id = u.user_id
+    </select>
+
+    <select id="getNameOfDeptPost" resultType="java.lang.String">
+        select concat(d.dept_name, '/', p.post_name) from sys_dept d, sys_post p
+        where d.tenant_id = #{tenantId} and d.dept_id = #{deptId}
+          and p.tenant_id = #{tenantId} and p.post_id = #{postId}
+    </select>
+</mapper>

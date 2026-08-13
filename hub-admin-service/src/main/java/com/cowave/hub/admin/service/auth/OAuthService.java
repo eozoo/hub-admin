@@ -14,8 +14,8 @@ package com.cowave.hub.admin.service.auth;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuth;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthUser;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuth;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
 import com.cowave.hub.admin.domain.auth.entity.command.OAuth2CodeReq;
 import com.cowave.hub.admin.domain.auth.entity.command.OAuth2TokenReq;
 import com.cowave.hub.admin.domain.auth.entity.query.OAuthUserQuery;
@@ -37,17 +37,17 @@ public interface OAuthService {
     /**
      * 获取授权服务配置
      */
-    HubOAuth getOauth(String tenantId, String serverType);
+    SysOAuth getOauth(String tenantId, String serverType);
 
     /**
      * 修改授权服务配置
      */
-    void editOauth(String tenantId, HubOAuth oauth);
+    void editOauth(String tenantId, SysOAuth oauth);
 
     /**
      * 用户列表
      */
-    Page<HubOAuthUser> listUser(String tenantId, OAuthUserQuery query);
+    Page<SysOAuthUser> listUser(String tenantId, OAuthUserQuery query);
 
     /**
      * 应用获取授权码

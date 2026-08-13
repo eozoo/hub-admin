@@ -12,7 +12,7 @@
  */
 package com.cowave.hub.admin.domain.rbac.entity.pto;
 
-import com.cowave.hub.admin.domain.rbac.entity.HubDept;
+import com.cowave.hub.admin.domain.rbac.entity.SysDept;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class DeptInfoPto extends HubDept {
+public class DeptInfoPto extends SysDept {
 
     /**
 	 * 上级部门Id列表

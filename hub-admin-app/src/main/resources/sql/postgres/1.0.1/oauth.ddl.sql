@@ -1,6 +1,6 @@
 -- oauth 授权服务
-drop table if exists hub_oauth;
-create table hub_oauth
+drop table if exists sys_oauth;
+create table sys_oauth
 (
     tenant_id     character varying(64) primary key,
     server_type   character varying(64),
@@ -18,26 +18,26 @@ create table hub_oauth
     update_by     character varying(64),
     update_time   timestamp
 );
-create unique index hub_oauth_unique on hub_oauth(tenant_id, server_type);
-comment on table hub_oauth is 'OAuth服务';
-comment on column hub_oauth.status is '状态 0 关闭 1开启';
-comment on column hub_oauth.role_code is '用户角色';
-comment on column hub_oauth.server_type is '服务类型';
-comment on column hub_oauth.app_id is '应用id';
-comment on column hub_oauth.app_secret is '应用密钥';
-comment on column hub_oauth.auth_url is '授权服务url';
-comment on column hub_oauth.redirect_url is '应用回调地址';
-comment on column hub_oauth.grant_type is '授权类型';
-comment on column hub_oauth.response_type is '响应类型';
-comment on column hub_oauth.auth_scope is '授权范围';
-comment on column hub_oauth.create_by is '创建人';
-comment on column hub_oauth.create_time is '创建时间';
-comment on column hub_oauth.update_by is '更新人';
-comment on column hub_oauth.update_time is '更新时间';
+create unique index sys_oauth_unique on sys_oauth(tenant_id, server_type);
+comment on table sys_oauth is 'OAuth服务';
+comment on column sys_oauth.status is '状态 0 关闭 1开启';
+comment on column sys_oauth.role_code is '用户角色';
+comment on column sys_oauth.server_type is '服务类型';
+comment on column sys_oauth.app_id is '应用id';
+comment on column sys_oauth.app_secret is '应用密钥';
+comment on column sys_oauth.auth_url is '授权服务url';
+comment on column sys_oauth.redirect_url is '应用回调地址';
+comment on column sys_oauth.grant_type is '授权类型';
+comment on column sys_oauth.response_type is '响应类型';
+comment on column sys_oauth.auth_scope is '授权范围';
+comment on column sys_oauth.create_by is '创建人';
+comment on column sys_oauth.create_time is '创建时间';
+comment on column sys_oauth.update_by is '更新人';
+comment on column sys_oauth.update_time is '更新时间';
 
 -- oauth 授权用户
-drop table if exists hub_oauth_user;
-create table hub_oauth_user
+drop table if exists sys_oauth_user;
+create table sys_oauth_user
 (
     id           bigserial primary key,
     tenant_id    character varying(64),
@@ -50,21 +50,21 @@ create table hub_oauth_user
     create_time  timestamp,
     update_time  timestamp
 );
-create unique index hub_oauth_user_unique on hub_oauth_user(tenant_id, server_type, user_account);
-comment on table hub_oauth_user is '授权用户';
-comment on column hub_oauth_user.id is 'id';
-comment on column hub_oauth_user.server_type is '应用类型';
-comment on column hub_oauth_user.user_name is '用户名称';
-comment on column hub_oauth_user.user_account is '用户账号';
-comment on column hub_oauth_user.user_avatar is '用户头像';
-comment on column hub_oauth_user.user_email is '用户邮箱';
-comment on column hub_oauth_user.user_dept is '用户部门';
-comment on column hub_oauth_user.create_time is '创建时间';
-comment on column hub_oauth_user.update_time is '更新时间';
+create unique index sys_oauth_user_unique on sys_oauth_user(tenant_id, server_type, user_account);
+comment on table sys_oauth_user is '授权用户';
+comment on column sys_oauth_user.id is 'id';
+comment on column sys_oauth_user.server_type is '应用类型';
+comment on column sys_oauth_user.user_name is '用户名称';
+comment on column sys_oauth_user.user_account is '用户账号';
+comment on column sys_oauth_user.user_avatar is '用户头像';
+comment on column sys_oauth_user.user_email is '用户邮箱';
+comment on column sys_oauth_user.user_dept is '用户部门';
+comment on column sys_oauth_user.create_time is '创建时间';
+comment on column sys_oauth_user.update_time is '更新时间';
 
 -- oauth 授权应用
-drop table if exists hub_oauth_app;
-create table hub_oauth_app
+drop table if exists hub_app;
+create table hub_app
 (
     id            serial primary key,
     tenant_id     character varying(64),
@@ -81,22 +81,22 @@ create table hub_oauth_app
     update_by     character varying(64),
     update_time   timestamp
 );
-comment on table hub_oauth_app is 'OAuth应用';
-comment on column hub_oauth_app.id is 'id';
-comment on column hub_oauth_app.client_name is '应用名称';
-comment on column hub_oauth_app.client_id is '应用id';
-comment on column hub_oauth_app.client_secret is '应用密钥';
-comment on column hub_oauth_app.grant_type is '授权类型';
-comment on column hub_oauth_app.auth_scope is '授权范围';
-comment on column hub_oauth_app.redirect_url is '重定向地址';
-comment on column hub_oauth.create_by is '创建人';
-comment on column hub_oauth.create_time is '创建时间';
-comment on column hub_oauth.update_by is '更新人';
-comment on column hub_oauth.update_time is '更新时间';
+comment on table hub_app is 'OAuth应用';
+comment on column hub_app.id is 'id';
+comment on column hub_app.client_name is '应用名称';
+comment on column hub_app.client_id is '应用id';
+comment on column hub_app.client_secret is '应用密钥';
+comment on column hub_app.grant_type is '授权类型';
+comment on column hub_app.auth_scope is '授权范围';
+comment on column hub_app.redirect_url is '重定向地址';
+comment on column sys_oauth.create_by is '创建人';
+comment on column sys_oauth.create_time is '创建时间';
+comment on column sys_oauth.update_by is '更新人';
+comment on column sys_oauth.update_time is '更新时间';
 
 -- 菜单信息
-drop table if exists hub_oauth_app_menu;
-create table hub_oauth_app_menu
+drop table if exists hub_app_menu;
+create table hub_app_menu
 (
     menu_id      serial primary key,
     parent_id    int4                   default 0,

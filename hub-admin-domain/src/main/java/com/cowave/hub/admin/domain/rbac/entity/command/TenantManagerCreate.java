@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.domain.rbac.entity.command;
 
 import com.cowave.hub.admin.domain.rbac.enums.UserType;
-import com.cowave.hub.admin.domain.rbac.entity.HubUser;
+import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,13 +52,13 @@ public class TenantManagerCreate {
     @NotBlank(message = "{admin.user.passwd.null}")
     private String userPasswd;
 
-    public HubUser newSysUser() {
-        HubUser hubUser = new HubUser();
-        hubUser.setUserType(UserType.SYS);
-        hubUser.setUserCode(UserType.SYS.newCode(tenantId, userAccount));
-        hubUser.setTenantId(tenantId);
-        hubUser.setUserName(userName);
-        hubUser.setUserAccount(userAccount);
-        return hubUser;
+    public SysUser newSysUser() {
+        SysUser sysUser = new SysUser();
+        sysUser.setUserType(UserType.SYS);
+        sysUser.setUserCode(UserType.SYS.newCode(tenantId, userAccount));
+        sysUser.setTenantId(tenantId);
+        sysUser.setUserName(userName);
+        sysUser.setUserAccount(userAccount);
+        return sysUser;
     }
 }

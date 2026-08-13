@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.service.auth.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthApp;
+import com.cowave.hub.admin.domain.auth.entity.HubApp;
 import com.cowave.hub.admin.domain.rbac.entity.*;
 import com.cowave.zoo.http.client.asserts.HttpAsserts;
 import com.cowave.zoo.http.client.response.HttpResponse;
@@ -24,25 +24,25 @@ import com.cowave.zoo.framework.access.security.AccessUserDetails;
 import com.cowave.zoo.framework.access.security.BearerTokenService;
 import com.cowave.zoo.framework.helper.redis.RedisHelper;
 import com.cowave.zoo.tools.Collections;
-import com.cowave.hub.admin.domain.auth.biz.HubOAuthBiz;
-import com.cowave.hub.admin.domain.auth.repository.facade.HubOAuthRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.biz.HubUserBiz;
-import com.cowave.hub.admin.domain.auth.repository.facade.HubOAuthAppRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubRoleRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubTenantRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubUserRepositoryFacade;
+import com.cowave.hub.admin.domain.auth.biz.SysOAuthBiz;
+import com.cowave.hub.admin.domain.auth.repository.facade.SysOAuthRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.biz.SysUserBiz;
+import com.cowave.hub.admin.domain.auth.repository.facade.HubAppRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysRoleRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysTenantRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.domain.auth.entity.bo.GitlabUser;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuth;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuth;
 import com.cowave.hub.admin.domain.auth.entity.bo.GitlabToken;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthUser;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
 import com.cowave.hub.admin.domain.auth.entity.bo.OAuth2CodeBo;
 import com.cowave.hub.admin.domain.auth.entity.command.OAuth2CodeReq;
 import com.cowave.hub.admin.domain.auth.entity.command.OAuth2TokenReq;
 import com.cowave.hub.admin.domain.auth.entity.query.OAuthUserQuery;
 import com.cowave.hub.admin.domain.auth.entity.vo.OAuth2CodeVo;
-import com.cowave.hub.admin.domain.sys.entity.HubOperation;
+import com.cowave.hub.admin.domain.sys.entity.SysOperation;
 import com.cowave.hub.admin.domain.rbac.enums.SuccessStatus;
-import com.cowave.hub.admin.domain.sys.biz.HubOperationBiz;
+import com.cowave.hub.admin.domain.sys.biz.SysOperationBiz;
 import com.cowave.hub.admin.domain.auth.repository.facade.UserDetailsRepositoryFacade;
 import com.cowave.hub.admin.service.auth.remote.GitlabRemoteService;
 import com.cowave.hub.admin.service.auth.OAuthService;
@@ -77,21 +77,21 @@ import static com.cowave.hub.admin.domain.sys.enums.OpModule.SYSTEM_AUTH;
 public class OAuthServiceImpl implements OAuthService {
     private final BearerTokenService bearerTokenService;
     private final RedisHelper redisHelper;
-    private final HubUserBiz userBiz;
-    private final HubOAuthBiz oauthBiz;
-    private final HubUserRepositoryFacade userRepositoryFacade;
-    private final HubRoleRepositoryFacade roleRepositoryFacade;
-    private final HubTenantRepositoryFacade tenantRepositoryFacade;
-    private final HubOAuthRepositoryFacade oauthRepositoryFacade;
-    private final HubOAuthAppRepositoryFacade oauthAppRepositoryFacade;
-    private final HubOperationBiz operationBiz;
+    private final SysUserBiz userBiz;
+    private final SysOAuthBiz oauthBiz;
+    private final SysUserRepositoryFacade userRepositoryFacade;
+    private final SysRoleRepositoryFacade roleRepositoryFacade;
+    private final SysTenantRepositoryFacade tenantRepositoryFacade;
+    private final SysOAuthRepositoryFacade oauthRepositoryFacade;
+    private final HubAppRepositoryFacade oauthAppRepositoryFacade;
+    private final SysOperationBiz operationBiz;
     private final GitlabRemoteService gitlabRemoteService;
     private final UserDetailsRepositoryFacade userDetailsRepositoryFacade;
 
     @Override
     public AccessUserDetails gitlabCallback(String tenantId, String code) {
         // 根据授权码兑换令牌
-        HubOAuth oauth = oauthRepositoryFacade.queryByServerType(tenantId, GITLAB.getVal());
+        SysOAuth oauth = oauthRepositoryFacade.queryByServerType(tenantId, GITLAB.getVal());
 
         HttpResponse<GitlabToken> tokenResponse = gitlabRemoteService.getGitlabToken(oauth.getAuthUrl(),
                 oauth.getAppId(), oauth.getAppSecret(),
@@ -107,7 +107,7 @@ public class OAuthServiceImpl implements OAuthService {
 
         // Gitlab用户信息
         assert gitlabUser != null;
-        HubOAuthUser oauthUserHub = oauthRepositoryFacade.queryUserByAccount(tenantId, GITLAB.getVal(), gitlabUser.getUsername());
+        SysOAuthUser oauthUserHub = oauthRepositoryFacade.queryUserByAccount(tenantId, GITLAB.getVal(), gitlabUser.getUsername());
         if (oauthUserHub != null) {
             oauthUserHub.setUserName(gitlabUser.getName());
             oauthUserHub.setUserEmail(gitlabUser.getEmail());
@@ -126,32 +126,32 @@ public class OAuthServiceImpl implements OAuthService {
 
         // 对应系统用户
         String userCode = GITLAB.newCode(tenantId, oauthUserHub.getUserAccount());
-        HubUser hubUser = userRepositoryFacade.queryByCode(userCode);
-        if(hubUser == null){
-            hubUser = new HubUser();
-            hubUser.setUserCode(userCode);
-            hubUser.setTenantId(tenantId);
-            hubUser.setUserType(GITLAB);
-            hubUser.setUserAccount(oauthUserHub.getUserAccount());
-            hubUser.setUserName(oauthUserHub.getUserName());
-            hubUser.setUserEmail(oauthUserHub.getUserEmail());
-            userBiz.createTenantManager(hubUser);
+        SysUser sysUser = userRepositoryFacade.queryByCode(userCode);
+        if(sysUser == null){
+            sysUser = new SysUser();
+            sysUser.setUserCode(userCode);
+            sysUser.setTenantId(tenantId);
+            sysUser.setUserType(GITLAB);
+            sysUser.setUserAccount(oauthUserHub.getUserAccount());
+            sysUser.setUserName(oauthUserHub.getUserName());
+            sysUser.setUserEmail(oauthUserHub.getUserEmail());
+            userBiz.createTenantManager(sysUser);
             // role
-            HubRole hubRole = roleRepositoryFacade.queryByCode(tenantId, oauth.getRoleCode());
-            if(hubRole != null) {
-                userBiz.saveUserRole(hubUser.getUserId(), hubRole.getRoleId());
+            SysRole sysRole = roleRepositoryFacade.queryByCode(tenantId, oauth.getRoleCode());
+            if(sysRole != null) {
+                userBiz.saveUserRole(sysUser.getUserId(), sysRole.getRoleId());
             }
             // 用户关系
-            userBiz.saveUserDiagram(hubUser.getUserId(), 0, tenantId);
+            userBiz.saveUserDiagram(sysUser.getUserId(), 0, tenantId);
         }else{
-            hubUser.setUserName(oauthUserHub.getUserName());
-            hubUser.setUserEmail(oauthUserHub.getUserEmail());
-            userBiz.updateGitlabUser(hubUser);
+            sysUser.setUserName(oauthUserHub.getUserName());
+            sysUser.setUserEmail(oauthUserHub.getUserEmail());
+            userBiz.updateGitlabUser(sysUser);
         }
 
         // 创建令牌
-        HubTenant hubTenant = tenantRepositoryFacade.queryById(tenantId);
-        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(GITLAB, hubTenant, hubUser, true);
+        SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
+        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(GITLAB, sysTenant, sysUser, true);
         bearerTokenService.assignAccessRefreshToken(userDetails);
 
         // 登录日志
@@ -167,26 +167,26 @@ public class OAuthServiceImpl implements OAuthService {
     }
 
     @Override
-    public HubOAuth getOauth(String tenantId, String serverType) {
+    public SysOAuth getOauth(String tenantId, String serverType) {
         return oauthRepositoryFacade.queryByServerType(tenantId, serverType);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void editOauth(String tenantId, HubOAuth oauth) {
+    public void editOauth(String tenantId, SysOAuth oauth) {
         oauth.setTenantId(tenantId);
         oauthBiz.editOauth(oauth);
     }
 
     @Override
-    public Page<HubOAuthUser> listUser(String tenantId, OAuthUserQuery query) {
+    public Page<SysOAuthUser> listUser(String tenantId, OAuthUserQuery query) {
         return oauthRepositoryFacade.queryUserPage(tenantId, query.getServerType(), query.getUserAccount());
     }
 
     @Override
     public OAuth2CodeVo getClientCode(OAuth2CodeReq codeReq) {
         // 验证应用id
-        HubOAuthApp oauthApp = oauthAppRepositoryFacade.queryByClientId(codeReq.getClientId());
+        HubApp oauthApp = oauthAppRepositoryFacade.queryByClientId(codeReq.getClientId());
         HttpAsserts.notNull(oauthApp, BAD_REQUEST, "{admin.oauth.name.not.exist}");
 
         // 所属租户是否允许授权这个应用
@@ -251,7 +251,7 @@ public class OAuthServiceImpl implements OAuthService {
         HttpAsserts.notNull(oAuth2CodeBo, BAD_REQUEST, "{admin.oauth.code.expire}");
 
         // 验证应用id
-        HubOAuthApp oauthApp = oauthAppRepositoryFacade.queryByClientId(tokenReq.getClientId());
+        HubApp oauthApp = oauthAppRepositoryFacade.queryByClientId(tokenReq.getClientId());
         HttpAsserts.notNull(oauthApp, BAD_REQUEST, "{admin.oauth.name.not.exist}");
 
         // 验证授权码是否发放给该应用（授权码绑定 client_id，防止跨应用使用）
@@ -283,25 +283,25 @@ public class OAuthServiceImpl implements OAuthService {
         redisHelper.delete(OAUTH_CODE.formatted(tokenReq.getCode()));
 
         // 创建令牌
-        HubUser hubUser = userRepositoryFacade.queryByCode(oAuth2CodeBo.getUserCode());
-        HubTenant hubTenant = tenantRepositoryFacade.queryById(hubUser.getTenantId());
-        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(hubUser.getUserType(), hubTenant, hubUser, false);
+        SysUser sysUser = userRepositoryFacade.queryByCode(oAuth2CodeBo.getUserCode());
+        SysTenant sysTenant = tenantRepositoryFacade.queryById(sysUser.getTenantId());
+        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(sysUser.getUserType(), sysTenant, sysUser, false);
         userDetails.setOauthId(oauthApp.getClientId());
         userDetails.setOauthName(oauthApp.getClientName());
         bearerTokenService.assignOauthToken(userDetails);
 
         // 授权日志
-        HubOperation hubOperation = new HubOperation();
-        hubOperation.setOpStatus(SuccessStatus.SUCCESS);
-        hubOperation.setOpModule(SYSTEM);
-        hubOperation.setOpType(SYSTEM_AUTH);
-        hubOperation.setOpAction(LOGIN_OAUTH);
-        hubOperation.setOpDesc("授权应用'" + oauthApp.getClientName() + "'访问");
-        hubOperation.setAccess(new AccessInfo(userDetails));
-        hubOperation.setIp(Access.accessIp());
-        hubOperation.setUrl(Access.accessMethod() + " " + Access.accessUrl());
-        hubOperation.setOpTime(Access.accessTime());
-        operationBiz.save(hubOperation);
+        SysOperation sysOperation = new SysOperation();
+        sysOperation.setOpStatus(SuccessStatus.SUCCESS);
+        sysOperation.setOpModule(SYSTEM);
+        sysOperation.setOpType(SYSTEM_AUTH);
+        sysOperation.setOpAction(LOGIN_OAUTH);
+        sysOperation.setOpDesc("授权应用'" + oauthApp.getClientName() + "'访问");
+        sysOperation.setAccess(new AccessInfo(userDetails));
+        sysOperation.setIp(Access.accessIp());
+        sysOperation.setUrl(Access.accessMethod() + " " + Access.accessUrl());
+        sysOperation.setOpTime(Access.accessTime());
+        operationBiz.save(sysOperation);
         return userDetails;
     }
 

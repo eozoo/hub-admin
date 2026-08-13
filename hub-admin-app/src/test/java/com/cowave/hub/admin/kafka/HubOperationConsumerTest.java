@@ -15,7 +15,7 @@ package com.cowave.hub.admin.kafka;
 import com.alibaba.fastjson.JSON;
 import com.cowave.hub.admin.SpringTest;
 import com.cowave.hub.admin.domain.rbac.enums.SuccessStatus;
-import com.cowave.hub.admin.domain.sys.entity.HubOperation;
+import com.cowave.hub.admin.domain.sys.entity.SysOperation;
 import com.cowave.zoo.framework.access.security.AccessInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
@@ -47,7 +47,7 @@ public class HubOperationConsumerTest extends SpringTest {
         String testModule = "单元测试模块";
         AccessInfo accessInfo = new AccessInfo();
         accessInfo.setAccessTenantId("cowave");
-        HubOperation operation = new HubOperation();
+        SysOperation operation = new SysOperation();
         operation.setAccess(accessInfo);
         operation.setOpModule(testModule);
         operation.setOpType("单元测试类型");
@@ -68,7 +68,7 @@ public class HubOperationConsumerTest extends SpringTest {
         String accessToken = "Bearer " + readString(mvcResult, "/data/accessToken");
         // 查询操作日志验证消费
         mvcResult = mockGet("/api/v1/oplog?page=1&pageSize=100&opModule=" + testModule, accessToken);
-        List<HubOperation> opList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysOperation> opList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertFalse(opList.isEmpty());
         Assertions.assertTrue(opList.stream().anyMatch(o -> testModule.equals(o.getOpModule())));
         // 退出登录

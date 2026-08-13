@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.domain.sys.entity.command;
 
 import com.cowave.zoo.framework.access.security.AccessInfoSetter;
-import com.cowave.hub.admin.domain.sys.entity.HubNotice;
+import com.cowave.hub.admin.domain.sys.entity.SysNotice;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class NoticeCreate extends HubNotice implements AccessInfoSetter {
+public class NoticeCreate extends SysNotice implements AccessInfoSetter {
 
     /**
 	 * 图片附件

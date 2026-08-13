@@ -14,8 +14,8 @@ package com.cowave.hub.admin.controller.auth;
 
 import com.cowave.zoo.http.client.response.Response;
 import com.cowave.zoo.framework.access.Access;
-import com.cowave.hub.admin.domain.auth.entity.HubLdap;
-import com.cowave.hub.admin.domain.auth.entity.HubLdapUser;
+import com.cowave.hub.admin.domain.auth.entity.SysLdap;
+import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
 import com.cowave.hub.admin.service.auth.LdapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,7 +39,7 @@ public class LdapController {
      */
     @PreAuthorize("@permits.hasPermit('hub:ldap:query')")
     @GetMapping
-    public Response<HubLdap> getLdap() {
+    public Response<SysLdap> getLdap() {
         return Response.success(ldapService.getLdap(Access.tenantId()));
     }
 
@@ -48,8 +48,8 @@ public class LdapController {
      */
     @PreAuthorize("@permits.hasPermit('hub:ldap:edit')")
     @PatchMapping
-    public Response<Void> editLdap(@Validated @RequestBody HubLdap hubLdap) {
-        ldapService.editLdap(Access.tenantId(), hubLdap);
+    public Response<Void> editLdap(@Validated @RequestBody SysLdap sysLdap) {
+        ldapService.editLdap(Access.tenantId(), sysLdap);
         return Response.success();
     }
 
@@ -58,8 +58,8 @@ public class LdapController {
      */
     @PreAuthorize("@permits.hasPermit('hub:ldap:edit')")
     @PostMapping("/valid")
-    public Response<Void> validConfig(@Validated @RequestBody HubLdap hubLdap) {
-        ldapService.validConfig(hubLdap);
+    public Response<Void> validConfig(@Validated @RequestBody SysLdap sysLdap) {
+        ldapService.validConfig(sysLdap);
         return Response.success();
     }
 
@@ -69,7 +69,7 @@ public class LdapController {
      */
     @PreAuthorize("@permits.hasPermit('hub:ldap:query')")
     @GetMapping(value = {"/user"})
-    public Response<Response.Page<HubLdapUser>> listUser(String ldapAccount) {
+    public Response<Response.Page<SysLdapUser>> listUser(String ldapAccount) {
         return Response.page(ldapService.listUser(Access.tenantId(), ldapAccount));
     }
 }

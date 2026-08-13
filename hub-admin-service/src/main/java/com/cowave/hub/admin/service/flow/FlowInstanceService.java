@@ -19,7 +19,7 @@ import com.cowave.hub.admin.domain.flow.entity.FlowInstance;
 import com.cowave.hub.admin.domain.flow.entity.FlowTask;
 import com.cowave.hub.admin.domain.flow.entity.FlowVariable;
 import com.cowave.hub.admin.domain.flow.repository.facade.FlowExecutionRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubUserRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.flowable.bpmn.model.BpmnModel;
@@ -59,7 +59,7 @@ public class FlowInstanceService {
     private final RepositoryService repositoryService;
     private final ProcessEngineConfiguration engineConfiguration;
     private final FlowExecutionRepositoryFacade executionRepositoryFacade;
-    private final HubUserRepositoryFacade userRepositoryFacade;
+    private final SysUserRepositoryFacade userRepositoryFacade;
 
     /**
      * 列表

@@ -12,7 +12,7 @@
  */
 package com.cowave.hub.admin.domain.auth.entity.bo;
 
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthUser;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
 import com.cowave.hub.admin.domain.rbac.enums.UserType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -64,8 +64,8 @@ public class GitlabUser {
         private String externUid;
     }
 
-    public static HubOAuthUser oAuthUser(GitlabUser gitlabUser){
-        HubOAuthUser oauthUserHub = new HubOAuthUser();
+    public static SysOAuthUser oAuthUser(GitlabUser gitlabUser){
+        SysOAuthUser oauthUserHub = new SysOAuthUser();
         oauthUserHub.setServerType(UserType.GITLAB.getVal());
         oauthUserHub.setUserName(gitlabUser.name);
         oauthUserHub.setUserAccount(gitlabUser.username);

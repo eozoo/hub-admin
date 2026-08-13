@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.auth;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.auth.entity.HubLdap;
+import com.cowave.hub.admin.domain.auth.entity.SysLdap;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.*;
 import org.springframework.test.web.servlet.MvcResult;
@@ -46,12 +46,12 @@ public class LdapControllerTest extends SpringTest {
         String accessToken = "Bearer " + readString(mvcResult, "/data/accessToken");
         // 获取配置
         mvcResult = mockGet("/api/v1/ldap", accessToken);
-        HubLdap hubLdap = readData(mvcResult, "/data", new TypeReference<>(){});
+        SysLdap sysLdap = readData(mvcResult, "/data", new TypeReference<>(){});
         // 测试配置
-        mockPost("/api/v1/ldap/valid", writeString(hubLdap), accessToken);
+        mockPost("/api/v1/ldap/valid", writeString(sysLdap), accessToken);
         // 修改配置
-        hubLdap.setRoleCode("sysAdmin");
-        mockPatch("/api/v1/ldap", writeString(hubLdap), accessToken);
+        sysLdap.setRoleCode("sysAdmin");
+        mockPatch("/api/v1/ldap", writeString(sysLdap), accessToken);
         // 获取验证
         mvcResult = mockGet("/api/v1/ldap", accessToken);
         String roleCode = readString(mvcResult, "/data/roleCode");

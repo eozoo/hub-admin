@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.domain.rbac.entity.pto;
 
 import com.cowave.hub.admin.domain.rbac.enums.YesNo;
-import com.cowave.hub.admin.domain.rbac.entity.HubUser;
+import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,7 +26,7 @@ import static com.cowave.hub.admin.domain.rbac.enums.YesNo.NO;
  */
 @Getter
 @Setter
-public class UserListPto extends HubUser {
+public class UserListPto extends SysUser {
 
     /**
      * 部门岗位

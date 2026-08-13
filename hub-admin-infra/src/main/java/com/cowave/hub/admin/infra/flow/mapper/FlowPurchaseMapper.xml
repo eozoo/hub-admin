@@ -44,7 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         u.user_name apply_user_name,
         <include refid="PurchaseField"/>
         from flow_purchase p
-        left join hub_user u on p.apply_user = u.user_code
+        left join sys_user u on p.apply_user = u.user_code
         <where>
             <if test="purchase.applyUser != null">
                 and p.apply_user = #{purchase.applyUser}
@@ -70,7 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         u.user_name apply_user_name,
         <include refid="PurchaseField"/>
         from flow_purchase p
-        left join hub_user u on p.apply_user = u.user_code
+        left join sys_user u on p.apply_user = u.user_code
         where id = #{id}
     </select>
 </mapper>

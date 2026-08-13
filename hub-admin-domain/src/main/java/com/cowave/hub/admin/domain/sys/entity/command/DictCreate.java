@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.domain.sys.entity.command;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.cowave.hub.admin.domain.sys.entity.HubDict;
+import com.cowave.hub.admin.domain.sys.entity.SysDict;
 import com.cowave.zoo.framework.access.security.AccessInfoSetter;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +23,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class DictCreate extends HubDict implements AccessInfoSetter {
+public class DictCreate extends SysDict implements AccessInfoSetter {
 
     /**
      * 类型编码

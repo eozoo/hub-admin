@@ -14,14 +14,14 @@ package com.cowave.hub.admin.service.auth.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.hub.admin.domain.auth.entity.command.RoleAppGrant;
-import com.cowave.hub.admin.domain.auth.biz.HubOAuthAppBiz;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthApp;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuthAppMenu;
+import com.cowave.hub.admin.domain.auth.biz.HubAppBiz;
+import com.cowave.hub.admin.domain.auth.entity.HubApp;
+import com.cowave.hub.admin.domain.auth.entity.HubAppMenu;
 import com.cowave.hub.admin.domain.rbac.entity.HubRoleApp;
 import com.cowave.hub.admin.domain.auth.entity.vo.OAuthAppCard;
 import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
-import com.cowave.hub.admin.domain.auth.repository.facade.HubOAuthAppRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.HubUserRepositoryFacade;
+import com.cowave.hub.admin.domain.auth.repository.facade.HubAppRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.service.auth.OAuthAppService;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.tools.Collections;
@@ -38,17 +38,17 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class OAuthAppServiceImpl implements OAuthAppService {
-    private final HubOAuthAppBiz oauthAppBiz;
-    private final HubOAuthAppRepositoryFacade oauthAppRepositoryFacade;
-    private final HubUserRepositoryFacade userRepositoryFacade;
+    private final HubAppBiz oauthAppBiz;
+    private final HubAppRepositoryFacade oauthAppRepositoryFacade;
+    private final SysUserRepositoryFacade userRepositoryFacade;
 
     @Override
-    public Page<HubOAuthApp> listOauthApp(String tenantId, String clientName) {
+    public Page<HubApp> listOauthApp(String tenantId, String clientName) {
         return oauthAppRepositoryFacade.queryPage(tenantId, clientName);
     }
 
     @Override
-    public HubOAuthApp createOauthApp(String tenantId, HubOAuthApp oauthApp) {
+    public HubApp createOauthApp(String tenantId, HubApp oauthApp) {
         return oauthAppBiz.createApp(tenantId, oauthApp);
     }
 
@@ -59,7 +59,7 @@ public class OAuthAppServiceImpl implements OAuthAppService {
 
     @Override
     public List<OAuthAppCard> queryOauthAppOptions(String tenantId) {
-        List<HubOAuthApp> appList = oauthAppRepositoryFacade.queryListByTenantId(tenantId);
+        List<HubApp> appList = oauthAppRepositoryFacade.queryListByTenantId(tenantId);
         return Collections.convertToList(appList, OAuthAppCard.class);
     }
 
@@ -70,7 +70,7 @@ public class OAuthAppServiceImpl implements OAuthAppService {
             return new ArrayList<>();
         }
 
-        List<HubOAuthApp> appList;
+        List<HubApp> appList;
         if (roleIdList.contains(1)) {
             appList = oauthAppRepositoryFacade.queryListByTenantId(Access.tenantId());
         } else {
@@ -95,7 +95,7 @@ public class OAuthAppServiceImpl implements OAuthAppService {
     }
 
     @Override
-    public List<HubOAuthAppMenu> listAppMenus(Integer appId, String menuName, EnableStatus menuStatus) {
+    public List<HubAppMenu> listAppMenus(Integer appId, String menuName, EnableStatus menuStatus) {
         return oauthAppRepositoryFacade.queryListMenus(appId, menuName, menuStatus);
     }
 }

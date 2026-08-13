@@ -12,8 +12,8 @@
  */
 package com.cowave.hub.admin.domain.rbac.entity.pto;
 
-import com.cowave.hub.admin.domain.rbac.entity.HubMenu;
-import com.cowave.hub.admin.domain.rbac.entity.HubScope;
+import com.cowave.hub.admin.domain.rbac.entity.SysMenu;
+import com.cowave.hub.admin.domain.rbac.entity.SysScope;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class MenuTreePto extends HubMenu {
+public class MenuTreePto extends SysMenu {
 
     /**
      * 数据权限id
@@ -34,5 +34,5 @@ public class MenuTreePto extends HubMenu {
     /**
      * 数据权限列表
      */
-    private List<HubScope> scopes;
+    private List<SysScope> scopes;
 }

@@ -13,9 +13,9 @@
 package com.cowave.hub.admin.controller.sys;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.rbac.entity.HubPost;
+import com.cowave.hub.admin.domain.rbac.entity.SysPost;
 import com.cowave.hub.admin.domain.rbac.entity.pto.UserListPto;
-import com.cowave.hub.admin.domain.sys.entity.HubOperation;
+import com.cowave.hub.admin.domain.sys.entity.SysOperation;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ public class HubOperationControllerTest extends SpringTest {
         mockPost("/api/v1/post", body, accessToken);
         // 列表获取postId
         mvcResult = mockGet("/api/v1/post?postName=" + postName + "&page=1&pageSize=100", accessToken);
-        List<HubPost> postList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysPost> postList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertEquals(1, postList.size());
         Integer postId = postList.get(0).getPostId();
         // 修改岗位（产生 opAction=op_edit 日志）
@@ -85,18 +85,18 @@ public class HubOperationControllerTest extends SpringTest {
         // 操作日志列表（默认分页查询）
         Thread.sleep(1000);
         mvcResult = mockGet("/api/v1/oplog?page=1&pageSize=100", accessToken);
-        List<HubOperation> opList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysOperation> opList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertFalse(opList.isEmpty(), "操作日志列表至少应有1条（含本次岗位操作产生的日志）");
         Long total = readData(mvcResult, "/data/total", new TypeReference<>() {});
         Assertions.assertTrue(total >= 1);
         // 按opType筛选（module_post，验证岗位相关日志）
         Thread.sleep(1000);
         mvcResult = mockGet("/api/v1/oplog?opType=module_post&page=1&pageSize=100", accessToken);
-        List<HubOperation> postOpList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysOperation> postOpList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         int opSize = postOpList.size();
         Assertions.assertTrue(opSize >= 3, "岗位操作至少包含新增、修改、删除3条日志");
         // 验证日志字段完整性
-        HubOperation firstOp = postOpList.get(0);
+        SysOperation firstOp = postOpList.get(0);
         Assertions.assertNotNull(firstOp.getId(), "日志id不应为空");
         Assertions.assertEquals("domain_system", firstOp.getOpModule());
         Assertions.assertEquals("module_post", firstOp.getOpType());
@@ -157,7 +157,7 @@ public class HubOperationControllerTest extends SpringTest {
         mockDelete("/api/v1/user/" + userId, accessToken);
         // 操作日志列表（验证有日志）
         mvcResult = mockGet("/api/v1/oplog?page=1&pageSize=100", accessToken);
-        List<HubOperation> opList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysOperation> opList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertFalse(opList.isEmpty(), "操作日志列表至少应有1条");
         // 清空日志
         mockDelete("/api/v1/oplog/clean", accessToken);

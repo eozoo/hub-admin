@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.auth;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.auth.entity.HubOAuth;
+import com.cowave.hub.admin.domain.auth.entity.SysOAuth;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.*;
 import org.springframework.test.web.servlet.MvcResult;
@@ -45,10 +45,10 @@ public class OAuthControllerTest extends SpringTest {
         String accessToken = "Bearer " + readString(mvcResult, "/data/accessToken");
         // 获取授权服务配置
         mvcResult = mockGet("/api/v1/oauth/config/gitlab", accessToken);
-        HubOAuth hubOAuth = readData(mvcResult, "/data", new TypeReference<>(){});
+        SysOAuth sysOAuth = readData(mvcResult, "/data", new TypeReference<>(){});
         // 修改配置
-        hubOAuth.setRoleCode("sysAdmin");
-        mockPatch("/api/v1/oauth/config", writeString(hubOAuth), accessToken);
+        sysOAuth.setRoleCode("sysAdmin");
+        mockPatch("/api/v1/oauth/config", writeString(sysOAuth), accessToken);
         // 获取验证
         mvcResult = mockGet("/api/v1/oauth/config/gitlab", accessToken);
         String roleCode = readString(mvcResult, "/data/roleCode");

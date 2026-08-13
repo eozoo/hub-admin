@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.controller.rbac;
 
 import com.cowave.hub.admin.SpringTest;
-import com.cowave.hub.admin.domain.rbac.entity.HubRole;
+import com.cowave.hub.admin.domain.rbac.entity.SysRole;
 import com.cowave.hub.admin.domain.rbac.entity.pto.RoleInfoPto;
 import com.cowave.hub.admin.domain.rbac.entity.pto.RoleUserPto;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -65,9 +65,9 @@ public class HubRoleControllerTest extends SpringTest {
         mockPost("/api/v1/role", body, accessToken);
         // 列表，验证新增
         mvcResult = mockGet("/api/v1/role?roleName=" + roleName + "&page=1&pageSize=100", accessToken);
-        List<HubRole> roleList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysRole> roleList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertEquals(1, roleList.size());
-        HubRole role = roleList.get(0);
+        SysRole role = roleList.get(0);
         Integer roleId = role.getRoleId();
         Assertions.assertEquals(roleName, role.getRoleName());
         Assertions.assertEquals("test_role_crud", role.getRoleCode());
@@ -147,7 +147,7 @@ public class HubRoleControllerTest extends SpringTest {
         mockPost("/api/v1/role", body, accessToken);
         // 列表获取roleId
         mvcResult = mockGet("/api/v1/role?roleName=" + roleName + "&page=1&pageSize=100", accessToken);
-        List<HubRole> roleList = readData(mvcResult, "/data/list", new TypeReference<>() {});
+        List<SysRole> roleList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         Assertions.assertEquals(1, roleList.size());
         Integer roleId = roleList.get(0).getRoleId();
         // 未授权用户列表

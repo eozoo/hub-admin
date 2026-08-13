@@ -13,13 +13,13 @@
 package com.cowave.hub.admin.infra.auth.dao;
 
 import com.cowave.hub.admin.domain.auth.repository.facade.UserDetailsRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.entity.HubDept;
-import com.cowave.hub.admin.domain.rbac.entity.HubTenant;
-import com.cowave.hub.admin.domain.rbac.entity.HubUser;
+import com.cowave.hub.admin.domain.rbac.entity.SysDept;
+import com.cowave.hub.admin.domain.rbac.entity.SysTenant;
+import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import com.cowave.hub.admin.domain.rbac.enums.UserType;
-import com.cowave.hub.admin.infra.rbac.mapper.HubDeptMapper;
-import com.cowave.hub.admin.infra.rbac.mapper.HubMenuMapper;
-import com.cowave.hub.admin.infra.rbac.mapper.HubRoleMapper;
+import com.cowave.hub.admin.infra.rbac.mapper.SysDeptMapper;
+import com.cowave.hub.admin.infra.rbac.mapper.SysMenuMapper;
+import com.cowave.hub.admin.infra.rbac.mapper.SysRoleMapper;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
 import com.cowave.zoo.framework.configuration.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
@@ -37,38 +37,38 @@ import static com.cowave.zoo.framework.access.security.Permission.ROLE_ADMIN;
 @Repository
 public class UserDetailsDao implements UserDetailsRepositoryFacade {
     private final ApplicationProperties applicationProperties;
-    private final HubDeptMapper hubDeptMapper;
-    private final HubMenuMapper hubMenuMapper;
-    private final HubRoleMapper hubRoleMapper;
+    private final SysDeptMapper sysDeptMapper;
+    private final SysMenuMapper sysMenuMapper;
+    private final SysRoleMapper sysRoleMapper;
 
     @Override
-    public AccessUserDetails queryUserDetails(UserType userType, HubTenant hubTenant, HubUser hubUser, boolean validAccess) {
+    public AccessUserDetails queryUserDetails(UserType userType, SysTenant sysTenant, SysUser sysUser, boolean validAccess) {
         AccessUserDetails userDetails = AccessUserDetails.newUserDetails();
         userDetails.setAccessValid(validAccess);
         userDetails.setAuthType(userType.getVal());
         // 用户信息
-        userDetails.setUserType(hubUser.getUserType().getVal());
-        userDetails.setTenantId(hubUser.getTenantId());
-        userDetails.setUserId(hubUser.getUserId());
-        userDetails.setUserCode(hubUser.getUserCode());
-        userDetails.setUsername(hubUser.getUserAccount());
-        userDetails.setUserNick(hubUser.getUserName());
-        userDetails.setUserPasswd(hubUser.getUserPasswd());
+        userDetails.setUserType(sysUser.getUserType().getVal());
+        userDetails.setTenantId(sysUser.getTenantId());
+        userDetails.setUserId(sysUser.getUserId());
+        userDetails.setUserCode(sysUser.getUserCode());
+        userDetails.setUsername(sysUser.getUserAccount());
+        userDetails.setUserNick(sysUser.getUserName());
+        userDetails.setUserPasswd(sysUser.getUserPasswd());
         // 部门信息
-        HubDept userDept = hubDeptMapper.getPrimaryDeptByUserId(hubUser.getUserId());
+        SysDept userDept = sysDeptMapper.getPrimaryDeptByUserId(sysUser.getUserId());
         if (userDept != null) {
             userDetails.setDeptId(userDept.getDeptId());
             userDetails.setDeptCode(userDept.getDeptCode());
             userDetails.setDeptName(userDept.getDeptName());
         }
         // 角色信息
-        List<String> roleCodes = hubRoleMapper.getRoleCodesByUserId(hubUser.getUserId());
+        List<String> roleCodes = sysRoleMapper.getRoleCodesByUserId(sysUser.getUserId());
         userDetails.setRoles(roleCodes);
         // 权限信息
         if(roleCodes.contains(ROLE_ADMIN)){
             userDetails.setPermissions(List.of(PERMIT_ADMIN));
         }else{
-            List<String> permitCodes = hubMenuMapper.listPermitsByUserId(hubUser.getTenantId(), hubUser.getUserId());
+            List<String> permitCodes = sysMenuMapper.listPermitsByUserId(sysUser.getTenantId(), sysUser.getUserId());
             userDetails.setPermissions(permitCodes);
         }
         // 集群信息
@@ -76,7 +76,7 @@ public class UserDetailsDao implements UserDetailsRepositoryFacade {
         userDetails.setClusterLevel(applicationProperties.getClusterLevel());
         userDetails.setClusterName(applicationProperties.getClusterName());
         // 租户首页
-        userDetails.setTenantIndex(hubTenant.getViewIndex());
+        userDetails.setTenantIndex(sysTenant.getViewIndex());
         return userDetails;
     }
 }
