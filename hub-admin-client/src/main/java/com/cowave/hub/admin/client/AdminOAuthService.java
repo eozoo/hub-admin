@@ -39,11 +39,19 @@ public class AdminOAuthService {
      * 获取授权令牌
      */
     public AccessUserDetails getAuthorizeToken(String code) {
+        return getAuthorizeToken(code, null);
+    }
+
+    /**
+     * 获取授权令牌（支持 PKCE code_verifier）
+     */
+    public AccessUserDetails getAuthorizeToken(String code, String codeVerifier) {
         OAuth2TokenRequest tokenRequest = new OAuth2TokenRequest();
         tokenRequest.setCode(code);
         tokenRequest.setClientId(accessProperties.oauthAppId());
         tokenRequest.setClientSecret(accessProperties.oauthAppSecret());
         tokenRequest.setRedirectUri(accessProperties.oauthAppRedirectUri());
+        tokenRequest.setCodeVerifier(codeVerifier);
         Response<AccessUserDetails> response =
                 adminOAuthClient.getAuthorizeToken(accessProperties.oauthTokenUri(), tokenRequest);
         return response.getData();

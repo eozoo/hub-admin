@@ -32,6 +32,11 @@ public class OAuth2CodeBo {
     private String userCode;
 
     /**
+     * 应用ID（授权码绑定，换token时校验一致性）
+     */
+    private String clientId;
+
+    /**
      * 应用状态
      */
     private String state;
@@ -42,7 +47,12 @@ public class OAuth2CodeBo {
     private String redirectUri;
 
     /**
-     * PKCE校验
+     * PKCE code_challenge（授权请求时由客户端传入，换 token 时用于验证 code_verifier）
      */
-    private String codeVerifier;
+    private String codeChallenge;
+
+    /**
+     * PKCE code_challenge_method（S256 / plain）
+     */
+    private String codeChallengeMethod;
 }

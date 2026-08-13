@@ -52,17 +52,17 @@ public interface OAuthService {
     /**
      * 应用获取授权码
      */
-    OAuth2CodeVo getClientCode(OAuth2CodeReq codeCreate);
+    OAuth2CodeVo getClientCode(OAuth2CodeReq codeReq);
 
     /**
-     * 应用地址回调
+     * 应用回调（用户确认）
      */
     void clientRedirect(String code, HttpServletResponse response) throws IOException;
 
     /**
      * 应用获取令牌
      */
-    AccessUserDetails getClientToken(OAuth2TokenReq tokenCreate);
+    AccessUserDetails getClientToken(OAuth2TokenReq tokenReq);
 
     /**
      * 应用刷新令牌

@@ -12,7 +12,6 @@
  */
 package com.cowave.hub.admin.service.auth.impl;
 
-import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.hub.admin.domain.auth.entity.HubOAuthApp;
 import com.cowave.hub.admin.domain.rbac.entity.*;
@@ -55,6 +54,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -181,9 +184,9 @@ public class OAuthServiceImpl implements OAuthService {
     }
 
     @Override
-    public OAuth2CodeVo getClientCode(OAuth2CodeReq codeCreate) {
+    public OAuth2CodeVo getClientCode(OAuth2CodeReq codeReq) {
         // 验证应用id
-        HubOAuthApp oauthApp = oauthAppRepositoryFacade.queryByClientId(codeCreate.getClientId());
+        HubOAuthApp oauthApp = oauthAppRepositoryFacade.queryByClientId(codeReq.getClientId());
         HttpAsserts.notNull(oauthApp, BAD_REQUEST, "{admin.oauth.name.not.exist}");
 
         // 所属租户是否允许授权这个应用
@@ -199,7 +202,7 @@ public class OAuthServiceImpl implements OAuthService {
         }
 
         // 校验返回类型
-        HttpAsserts.isTrue(StringUtils.equalsIgnoreCase("code", codeCreate.getResponseType()),
+        HttpAsserts.isTrue(StringUtils.equalsIgnoreCase("code", codeReq.getResponseType()),
                 BAD_REQUEST, "{admin.oauth.resp.invalid}");
 
         // 验证授权类型
@@ -207,7 +210,7 @@ public class OAuthServiceImpl implements OAuthService {
                 BAD_REQUEST, "{admin.oauth.grant.invalid}");
 
         // 验证回调地址
-        HttpAsserts.isTrue(StringUtils.equalsIgnoreCase(oauthApp.getRedirectUrl(), codeCreate.getRedirectUri()),
+        HttpAsserts.isTrue(StringUtils.equalsIgnoreCase(oauthApp.getRedirectUrl(), codeReq.getRedirectUri()),
                 BAD_REQUEST, "{admin.oauth.redirect.invalid}");
 
         // 生成随机code
@@ -215,14 +218,15 @@ public class OAuthServiceImpl implements OAuthService {
 
         OAuth2CodeBo oAuth2CodeBo = new OAuth2CodeBo();
         oAuth2CodeBo.setUserCode(Access.userCode());
-        oAuth2CodeBo.setState(codeCreate.getState());
+        oAuth2CodeBo.setClientId(codeReq.getClientId());
+        oAuth2CodeBo.setState(codeReq.getState());
         oAuth2CodeBo.setRedirectUri(oauthApp.getRedirectUrl());
 
-        // PKCE校验（这里简单示意下只支持md5）
-        if(StringUtils.isNotBlank(codeCreate.getCodeChallenge())
-                && "md5".equalsIgnoreCase(codeCreate.getCodeChallengeMethod())){
-            String codeVerifier = SecureUtil.md5(codeCreate.getCodeChallenge());
-            oAuth2CodeBo.setCodeVerifier(codeVerifier);
+        // PKCE: 存储 code_challenge 和 method（S256 / plain），在换 token 时验证 code_verifier
+        if (StringUtils.isNotBlank(codeReq.getCodeChallenge())) {
+            oAuth2CodeBo.setCodeChallenge(codeReq.getCodeChallenge());
+            oAuth2CodeBo.setCodeChallengeMethod(
+                    StringUtils.defaultIfBlank(codeReq.getCodeChallengeMethod(), "plain"));
         }
 
         // 绑定用户信息
@@ -235,33 +239,48 @@ public class OAuthServiceImpl implements OAuthService {
         OAuth2CodeBo oAuth2CodeBo = redisHelper.getValue(OAUTH_CODE.formatted(code));
         HttpAsserts.notNull(oAuth2CodeBo, BAD_REQUEST, "{admin.oauth.code.expire}");
         // 回调
-        String redirectUrl = oAuth2CodeBo.getRedirectUri() + "?code=" + code + "&state=" + oAuth2CodeBo.getState();
+        String redirectUrl = oAuth2CodeBo.getRedirectUri();
+        redirectUrl += (redirectUrl.contains("?") ? "&" : "?") + "code=" + code + "&state=" + oAuth2CodeBo.getState();
         response.sendRedirect(redirectUrl);
     }
 
     @Override
-    public AccessUserDetails getClientToken(OAuth2TokenReq tokenCreate) {
+    public AccessUserDetails getClientToken(OAuth2TokenReq tokenReq) {
         // 获取授权code
-        OAuth2CodeBo oAuth2CodeBo = redisHelper.getValue(OAUTH_CODE.formatted(tokenCreate.getCode()));
+        OAuth2CodeBo oAuth2CodeBo = redisHelper.getValue(OAUTH_CODE.formatted(tokenReq.getCode()));
         HttpAsserts.notNull(oAuth2CodeBo, BAD_REQUEST, "{admin.oauth.code.expire}");
 
         // 验证应用id
-        HubOAuthApp oauthApp = oauthAppRepositoryFacade.queryByClientId(tokenCreate.getClientId());
+        HubOAuthApp oauthApp = oauthAppRepositoryFacade.queryByClientId(tokenReq.getClientId());
         HttpAsserts.notNull(oauthApp, BAD_REQUEST, "{admin.oauth.name.not.exist}");
 
+        // 验证授权码是否发放给该应用（授权码绑定 client_id，防止跨应用使用）
+        HttpAsserts.equals(oAuth2CodeBo.getClientId(), tokenReq.getClientId(),
+                BAD_REQUEST, "{admin.oauth.client.invalid}");
+
         // 验证回调地址
-        HttpAsserts.isTrue(StringUtils.equalsIgnoreCase(oauthApp.getRedirectUrl(), tokenCreate.getRedirectUri()),
+        HttpAsserts.isTrue(StringUtils.equalsIgnoreCase(oauthApp.getRedirectUrl(), tokenReq.getRedirectUri()),
                 BAD_REQUEST, "{admin.oauth.redirect.invalid}");
 
         // 验证应用密钥
-        HttpAsserts.isTrue(StringUtils.equals(tokenCreate.getClientSecret(), oauthApp.getClientSecret()),
+        HttpAsserts.isTrue(StringUtils.equals(tokenReq.getClientSecret(), oauthApp.getClientSecret()),
                 BAD_REQUEST, "{admin.oauth.secret.invalid}");
 
-        // PKCE校验
-        if(StringUtils.isNotBlank(oAuth2CodeBo.getCodeVerifier())){
-            HttpAsserts.isTrue(StringUtils.equals(oAuth2CodeBo.getCodeVerifier(), tokenCreate.getCodeVerifier()),
-                BAD_REQUEST, "{admin.oauth.pkce.invalid}");
+        // PKCE 校验：用 code_verifier 重新计算 challenge，与授权请求时存储的值比对
+        if (StringUtils.isNotBlank(oAuth2CodeBo.getCodeChallenge())) {
+            String computedChallenge;
+            if ("S256".equalsIgnoreCase(oAuth2CodeBo.getCodeChallengeMethod())) {
+                computedChallenge = computeS256Challenge(tokenReq.getCodeVerifier());
+            } else {
+                // plain: challenge == verifier
+                computedChallenge = tokenReq.getCodeVerifier();
+            }
+            HttpAsserts.isTrue(StringUtils.equals(oAuth2CodeBo.getCodeChallenge(), computedChallenge),
+                    BAD_REQUEST, "{admin.oauth.pkce.invalid}");
         }
+
+        // 授权码一次性使用：校验全部通过后立即删除，防止重放
+        redisHelper.delete(OAUTH_CODE.formatted(tokenReq.getCode()));
 
         // 创建令牌
         HubUser hubUser = userRepositoryFacade.queryByCode(oAuth2CodeBo.getUserCode());
@@ -294,5 +313,18 @@ public class OAuthServiceImpl implements OAuthService {
     @Override
     public void revokeClientToken(String tenantId, String authType, String userAccount, String appId) {
         bearerTokenService.revokeOauthToken(tenantId, authType, userAccount, appId);
+    }
+
+    /**
+     * PKCE S256: code_challenge = BASE64URL(SHA256(code_verifier))
+     */
+    private String computeS256Challenge(String codeVerifier) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
+        }
     }
 }

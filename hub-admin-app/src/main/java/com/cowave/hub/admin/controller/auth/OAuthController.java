@@ -80,12 +80,12 @@ public class OAuthController {
      * 应用获取授权码
      */
 	@PostMapping("/client/authorize/code")
-	public Response<OAuth2CodeVo> getClientCode(@Validated @RequestBody OAuth2CodeReq codeCreate){
-		return Response.success(oauthService.getClientCode(codeCreate));
+	public Response<OAuth2CodeVo> getClientCode(@Validated @RequestBody OAuth2CodeReq codeReq){
+		return Response.success(oauthService.getClientCode(codeReq));
 	}
 
     /**
-     * 应用回调
+     * 应用回调（用户确认）
      */
 	@AnonymousGetMapping("/client/redirect/{code}")
 	public void clientRedirect(@PathVariable String code, HttpServletResponse response) throws IOException {
@@ -96,8 +96,8 @@ public class OAuthController {
      * 应用获取令牌
      */
     @AnonymousPostMapping("/client/authorize/token")
-	public Response<AccessUserDetails> getClientToken(@Validated @RequestBody OAuth2TokenReq tokenCreate){
-		return Response.success(oauthService.getClientToken(tokenCreate));
+	public Response<AccessUserDetails> getClientToken(@Validated @RequestBody OAuth2TokenReq tokenReq){
+		return Response.success(oauthService.getClientToken(tokenReq));
 	}
 
     /**

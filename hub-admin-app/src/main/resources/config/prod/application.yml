@@ -29,7 +29,7 @@ spring:
   mail:
     host: smtp.163.com
     username: cowaveAdmin@163.com
-    password: TQQWRIRSQLTEELPT
+    password: WKTSJr7Wn9qhcUzv
 
 flowable:
   database-schema-update: true
