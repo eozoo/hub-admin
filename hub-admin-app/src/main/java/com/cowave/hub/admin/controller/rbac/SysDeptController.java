@@ -60,7 +60,7 @@ public class SysDeptController {
     /**
      * 列表
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:query')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:query')")
     @GetMapping
     public Response<Response.Page<DeptListPto>> list(DeptQuery query) {
         return Response.page(deptService.list(Access.tenantId(), query));
@@ -71,7 +71,7 @@ public class SysDeptController {
      *
      * @param deptId 部门id
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:query')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:query')")
     @GetMapping("/{deptId}")
     public Response<DeptInfoPto> info(@PathVariable Integer deptId) {
         return Response.success(deptService.info(Access.tenantId(), deptId));
@@ -81,7 +81,7 @@ public class SysDeptController {
      * 新增
      */
     @Operation(module = SYSTEM, type = SYSTEM_DEPT, action = CREATE, desc = "新增部门：#{#dept.deptName}")
-    @PreAuthorize("@permits.hasPermit('hub:dept:create')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:create')")
     @PostMapping
     public Response<Void> create(@Validated @RequestBody DeptCreate dept) {
         deptService.create(Access.tenantId(), dept);
@@ -94,7 +94,7 @@ public class SysDeptController {
      * @param deptIds 部门id列表
      */
     @Operation(module = SYSTEM, type = SYSTEM_DEPT, action = DELETE, desc = "删除部门")
-    @PreAuthorize("@permits.hasPermit('hub:dept:delete')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:delete')")
     @DeleteMapping("/{deptIds}")
     public Response<Void> delete(@PathVariable List<Integer> deptIds) {
         deptService.delete(Access.tenantId(), deptIds);
@@ -105,7 +105,7 @@ public class SysDeptController {
      * 修改
      */
     @Operation(module = SYSTEM, type = SYSTEM_DEPT, action = EDIT, desc = "修改部门：#{#dept.deptName}")
-    @PreAuthorize("@permits.hasPermit('hub:dept:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:edit')")
     @PatchMapping
     public Response<Void> edit(@RequestBody DeptCreate dept) {
         deptService.edit(Access.tenantId(), dept);
@@ -115,7 +115,7 @@ public class SysDeptController {
     /**
      * 导出部门
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:export')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response) throws IOException {
         String sheet = "部门";
@@ -138,7 +138,7 @@ public class SysDeptController {
      *
      * @param deptId 部门id
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:diagram')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:diagram')")
     @GetMapping("/diagram")
     public Response<List<Tree<Integer>>> getDiagram(Integer deptId) {
         return Response.success(deptService.queryDiagram(Access.tenantId(), deptId));
@@ -163,7 +163,7 @@ public class SysDeptController {
     /**
      * 添加部门岗位
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:positions:add')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:positions:add')")
     @PostMapping("/posts")
     public Response<Void> addPosts(@Valid @RequestBody List<SysDeptPost> list) {
         deptService.addPosts(Access.tenantId(), list);
@@ -176,7 +176,7 @@ public class SysDeptController {
      * @param deptId 部门id
      * @param postIds 岗位id列表
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:positions:remove')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:positions:remove')")
     @DeleteMapping("/posts/{deptId}/{postIds}")
     public Response<Void> removePosts(@PathVariable Integer deptId, @PathVariable List<Integer> postIds) {
         deptService.removePosts(Access.tenantId(), deptId, postIds);
@@ -186,7 +186,7 @@ public class SysDeptController {
     /**
      * 获取部门岗位（已设置）
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:positions:query')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:positions:query')")
     @GetMapping("/posts/configured")
     public Response<Response.Page<DeptPostPto>> getConfiguredPosts(@Valid DeptPostQuery query) {
         return Response.page(deptService.queryConfiguredPosts(Access.tenantId(), query));
@@ -195,7 +195,7 @@ public class SysDeptController {
     /**
      * 获取部门岗位（未设置）
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:positions:query')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:positions:query')")
     @GetMapping("/posts/unConfigured")
     public Response<Response.Page<DeptPostPto>> getUnConfiguredPosts(@Valid DeptPostQuery query) {
         return Response.page(deptService.queryUnConfiguredPosts(Access.tenantId(), query));
@@ -204,7 +204,7 @@ public class SysDeptController {
     /**
      * 添加部门成员
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:members:add')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:members:add')")
     @PostMapping("/members")
     public Response<Void> addMembers(@Valid @RequestBody List<SysUserDept> list) {
         deptService.addMembers(Access.tenantId(), list);
@@ -217,7 +217,7 @@ public class SysDeptController {
      * @param deptId 部门id
      * @param userIds 用户id列表
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:members:remove')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:members:remove')")
     @DeleteMapping("/members/{deptId}/{userIds}")
     public Response<Void> removeMembers(@PathVariable Integer deptId, @PathVariable List<Integer> userIds) {
         deptService.removeMembers(Access.tenantId(), deptId, userIds);
@@ -227,7 +227,7 @@ public class SysDeptController {
     /**
      * 获取部门成员（已加入）
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:members:query')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:members:query')")
     @GetMapping("/members/joined")
     public Response<Response.Page<DeptUserPto>> getJoinedMembers(@Valid DeptUserQuery query) {
         return Response.page(deptService.queryJoinedMembers(Access.tenantId(), query));
@@ -236,7 +236,7 @@ public class SysDeptController {
     /**
      * 获取部门成员（未加入）
      */
-    @PreAuthorize("@permits.hasPermit('hub:dept:members:query')")
+    @PreAuthorize("@permits.hasPermit('sys:dept:members:query')")
     @GetMapping("/members/unJoined")
     public Response<Response.Page<DeptUserPto>> getUnJoinedMembers(@Valid DeptUserQuery query) {
         return Response.page(deptService.queryUnJoinedMembers(Access.tenantId(), query));

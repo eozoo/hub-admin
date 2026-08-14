@@ -77,6 +77,7 @@ public class LdapServiceImpl implements LdapService {
         HttpAsserts.isTrue(list.size() == 1, FORBIDDEN, "{admin.ldap.failed.user}");
         SysLdapUser newUser = list.get(0);
 
+        // Ldap用户信息
         SysLdapUser ldapUser = ldapRepositoryFacade.queryUserByAccount(tenantId, newUser.getUserAccount());
         if (ldapUser != null) {
             ldapUser.setUserName(newUser.getUserName());
@@ -94,6 +95,7 @@ public class LdapServiceImpl implements LdapService {
             ldapBiz.saveLdapUser(ldapUser);
         }
 
+        // 对应的SysUser信息
         String userCode = LDAP.newCode(tenantId, newUser.getUserAccount());
         SysUser sysUser = userRepositoryFacade.queryByCode(userCode);
         if (sysUser == null) {
@@ -105,7 +107,7 @@ public class LdapServiceImpl implements LdapService {
             sysUser.setUserName(newUser.getUserName());
             sysUser.setUserPhone(newUser.getUserPhone());
             sysUser.setUserEmail(newUser.getUserEmail());
-            userBiz.createTenantManager(sysUser);
+            userBiz.saveUser(sysUser);
             SysRole sysRole = roleRepositoryFacade.queryByCode(tenantId, sysLdap.getRoleCode());
             if (sysRole != null) {
                 userBiz.saveUserRole(sysUser.getUserId(), sysRole.getRoleId());
@@ -119,7 +121,7 @@ public class LdapServiceImpl implements LdapService {
         }
 
         SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
-        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(LDAP, sysTenant, sysUser, true);
+        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(sysTenant, sysUser, true);
         bearerTokenService.assignAccessRefreshToken(userDetails);
 
         OperationInfo operationInfo = OperationInfo.builder()

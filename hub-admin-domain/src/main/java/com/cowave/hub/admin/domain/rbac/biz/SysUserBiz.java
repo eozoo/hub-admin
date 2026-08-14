@@ -20,7 +20,6 @@ import com.cowave.hub.admin.domain.rbac.entity.command.TenantManagerRemove;
 import com.cowave.hub.admin.domain.rbac.entity.command.UserCreate;
 import com.cowave.hub.admin.domain.auth.entity.command.ProfileUpdate;
 import com.cowave.hub.admin.domain.rbac.entity.command.UserRoleUpdate;
-import com.cowave.hub.admin.domain.rbac.entity.pto.UserInfoPto;
 import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
 
 import java.util.List;
@@ -45,7 +44,7 @@ public interface SysUserBiz {
     /**
      * 删除用户（含角色、部门岗位、上下级），返回被删除的用户信息
      */
-    UserInfoPto deleteUser(String tenantId, Integer userId);
+    void deleteUser(String tenantId, Integer userId);
 
     /**
      * 修改用户（含角色、部门岗位、上下级）
@@ -85,7 +84,7 @@ public interface SysUserBiz {
     /**
      * 保存用户（auth域创建用户时调用，仅基本保存无关联数据）
      */
-    void createTenantManager(SysUser sysUser);
+    void saveUser(SysUser sysUser);
 
     /**
      * 移除租户管理员

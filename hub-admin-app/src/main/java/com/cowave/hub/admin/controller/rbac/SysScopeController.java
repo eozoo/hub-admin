@@ -43,7 +43,7 @@ public class SysScopeController {
     /**
 	 * 列表
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:scope:query')")
+	@PreAuthorize("@permits.hasPermit('sys:scope:query')")
 	@GetMapping
 	public Response<Response.Page<SysScope>> list(ScopeQuery query) {
 		return Response.page(scopeService.page(Access.tenantId(), query));
@@ -52,7 +52,7 @@ public class SysScopeController {
     /**
 	 * 详情
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:scope:query')")
+	@PreAuthorize("@permits.hasPermit('sys:scope:query')")
 	@GetMapping("/{scopeId}")
 	public Response<SysScope> info(@PathVariable Integer scopeId) {
 		return Response.success(scopeService.info(Access.tenantId(), scopeId));
@@ -61,7 +61,7 @@ public class SysScopeController {
     /**
      * 新增
      */
-    @PreAuthorize("@permits.hasPermit('hub:scope:create')")
+    @PreAuthorize("@permits.hasPermit('sys:scope:create')")
     @PostMapping
     public Response<Void> create(@RequestBody SysScope sysScope) {
         scopeService.create(Access.tenantId(), sysScope);
@@ -71,7 +71,7 @@ public class SysScopeController {
     /**
      * 删除
      */
-    @PreAuthorize("@permits.hasPermit('hub:scope:delete')")
+    @PreAuthorize("@permits.hasPermit('sys:scope:delete')")
     @DeleteMapping("/{scopeIds}")
     public Response<Void> delete(@PathVariable List<Integer> scopeIds) {
         scopeService.delete(Access.tenantId(), scopeIds);
@@ -81,7 +81,7 @@ public class SysScopeController {
     /**
      * 修改
      */
-    @PreAuthorize("@permits.hasPermit('hub:scope:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:scope:edit')")
     @PatchMapping
     public Response<Void> edit(@RequestBody ScopeNameUpdate nameUpdate) {
         scopeService.edit(Access.tenantId(), nameUpdate);
@@ -91,7 +91,7 @@ public class SysScopeController {
     /**
      * 修改状态
      */
-    @PreAuthorize("@permits.hasPermit('hub:scope:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:scope:edit')")
     @PatchMapping("/status")
     public Response<Void> switchStatus(@RequestBody ScopeStatusUpdate statusUpdate) {
         scopeService.switchStatus(Access.tenantId(), statusUpdate);
@@ -101,7 +101,7 @@ public class SysScopeController {
     /**
      * 修改权限内容
      */
-    @PreAuthorize("@permits.hasPermit('hub:scope:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:scope:edit')")
     @PatchMapping("/content")
     public Response<Void> editContent(@RequestBody ScopeInfoUpdate infoUpdate) {
         scopeService.editContent(Access.tenantId(), infoUpdate);

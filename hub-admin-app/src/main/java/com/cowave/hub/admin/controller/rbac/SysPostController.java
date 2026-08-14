@@ -55,7 +55,7 @@ public class SysPostController {
 	/**
 	 * 列表
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:post:query')")
+	@PreAuthorize("@permits.hasPermit('sys:post:query')")
 	@GetMapping
 	public Response<Response.Page<SysPost>> list(DeptPostQuery query) {
 		return Response.page(postService.pageList(Access.tenantId(), query));
@@ -66,7 +66,7 @@ public class SysPostController {
 	 *
 	 * @param postId 岗位id
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:post:query')")
+	@PreAuthorize("@permits.hasPermit('sys:post:query')")
 	@GetMapping("/{postId}")
 	public Response<PostInfoPto> info(@PathVariable Integer postId) {
 		return Response.success(postService.info(Access.tenantId(), postId));
@@ -76,7 +76,7 @@ public class SysPostController {
 	 * 新增
 	 */
 	@Operation(module = SYSTEM, type = SYSTEM_POST, action = CREATE, desc = "新增岗位：#{#post.postName}")
-	@PreAuthorize("@permits.hasPermit('hub:post:create')")
+	@PreAuthorize("@permits.hasPermit('sys:post:create')")
 	@PostMapping
 	public Response<Void> create(@Validated @RequestBody PostCreate post) {
 		postService.create(Access.tenantId(), post);
@@ -89,7 +89,7 @@ public class SysPostController {
 	 * @param postIds 岗位id列表
 	 */
 	@Operation(module = SYSTEM, type = SYSTEM_POST, action = DELETE, desc = "删除岗位")
-	@PreAuthorize("@permits.hasPermit('hub:post:delete')")
+	@PreAuthorize("@permits.hasPermit('sys:post:delete')")
 	@DeleteMapping("/{postIds}")
 	public Response<Void> delete(@PathVariable List<Integer> postIds) {
 		postService.delete(Access.tenantId(), postIds);
@@ -100,7 +100,7 @@ public class SysPostController {
 	 * 修改
 	 */
 	@Operation(module = SYSTEM, type = SYSTEM_POST, action = EDIT, desc = "修改岗位：#{#post.postName}")
-	@PreAuthorize("@permits.hasPermit('hub:post:edit')")
+	@PreAuthorize("@permits.hasPermit('sys:post:edit')")
 	@PatchMapping
 	public Response<Void> edit(@Validated @RequestBody PostCreate post) {
 		postService.edit(Access.tenantId(), post);
@@ -110,7 +110,7 @@ public class SysPostController {
 	/**
 	 * 导出岗位
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:post:export')")
+	@PreAuthorize("@permits.hasPermit('sys:post:export')")
 	@PostMapping("/export")
 	public void export(HttpServletResponse response, DeptPostQuery query) throws IOException {
 		String fileName = URLEncoder.encode("岗位数据", StandardCharsets.UTF_8).replace("\\+", "%20");
@@ -125,7 +125,7 @@ public class SysPostController {
 	/**
 	 * 岗位组织架构
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:post:diagram')")
+	@PreAuthorize("@permits.hasPermit('sys:post:diagram')")
 	@GetMapping("/diagram")
 	public Response<Tree<Integer>> getDiagram() {
 		return Response.success(postService.queryDiagram(Access.tenantId()));

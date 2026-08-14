@@ -42,7 +42,7 @@ public class SysTenantController {
     /**
      * 列表
      */
-    @PreAuthorize("@permits.hasPermit('hub:tenant:query')")
+    @PreAuthorize("@permits.hasPermit('sys:tenant:query')")
     @GetMapping
     public Response<Response.Page<SysTenant>> list(TenantQuery query) {
         return Response.page(tenantService.page(query));
@@ -51,7 +51,7 @@ public class SysTenantController {
     /**
      * 详情
      */
-    @PreAuthorize("@permits.hasPermit('hub:tenant:query')")
+    @PreAuthorize("@permits.hasPermit('sys:tenant:query')")
     @GetMapping("/{tenantId}")
     public Response<SysTenant> info(@PathVariable String tenantId) {
         return Response.success(tenantService.info(tenantId));
@@ -60,7 +60,7 @@ public class SysTenantController {
     /**
      * 新增
      */
-    @PreAuthorize("@permits.hasPermit('hub:tenant:creat')")
+    @PreAuthorize("@permits.hasPermit('sys:tenant:creat')")
     @PostMapping
     public Response<Void> create(@Validated @RequestBody TenantCreate tenantCreate) {
         tenantService.create(tenantCreate);
@@ -70,7 +70,7 @@ public class SysTenantController {
     /**
      * 修改
      */
-    @PreAuthorize("@permits.hasPermit('hub:tenant:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:tenant:edit')")
     @PatchMapping
     public Response<Void> edit(@Validated @RequestBody TenantCreate tenantCreate) {
         tenantService.edit(tenantCreate);
@@ -80,7 +80,7 @@ public class SysTenantController {
     /**
      * 修改状态
      */
-    @PreAuthorize("@permits.hasPermit('hub:tenant:status')")
+    @PreAuthorize("@permits.hasPermit('sys:tenant:status')")
     @PatchMapping("/status")
     public Response<Void> updateStatus(@RequestBody TenantStatusUpdate statusUpdate) {
         tenantService.updateStatus(statusUpdate);
@@ -90,7 +90,7 @@ public class SysTenantController {
     /**
      * 管理员列表
      */
-    @PreAuthorize("@permits.hasPermit('hub:tenant:manager:query')")
+    @PreAuthorize("@permits.hasPermit('sys:tenant:manager:query')")
     @GetMapping("/manager/{tenantId}")
     public Response<Response.Page<TenantManagerPto>> listManager(@PathVariable String tenantId) {
         return Response.page(tenantService.listManager(tenantId));
@@ -99,7 +99,7 @@ public class SysTenantController {
     /**
      * 创建管理员
      */
-    @PreAuthorize("@permits.hasPermit('hub:tenant:manager:create')")
+    @PreAuthorize("@permits.hasPermit('sys:tenant:manager:create')")
     @PostMapping("/manager")
     public Response<Void> createManager(@Validated @RequestBody TenantManagerCreate managerCreate) {
         tenantService.createManager(managerCreate);
@@ -109,7 +109,7 @@ public class SysTenantController {
     /**
      * 移除管理员
      */
-    @PreAuthorize("@permits.hasPermit('hub:tenant:manager:remove')")
+    @PreAuthorize("@permits.hasPermit('sys:tenant:manager:remove')")
     @PatchMapping("/manager/remove")
     public Response<Void> removeManager(@Validated @RequestBody TenantManagerRemove managerRemove) {
         tenantService.removeManager(managerRemove);

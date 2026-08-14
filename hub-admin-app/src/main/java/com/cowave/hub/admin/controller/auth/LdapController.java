@@ -37,7 +37,7 @@ public class LdapController {
     /**
      * 获取配置
      */
-    @PreAuthorize("@permits.hasPermit('hub:ldap:query')")
+    @PreAuthorize("@permits.hasPermit('sys:ldap:query')")
     @GetMapping
     public Response<SysLdap> getLdap() {
         return Response.success(ldapService.getLdap(Access.tenantId()));
@@ -46,7 +46,7 @@ public class LdapController {
     /**
      * 修改配置
      */
-    @PreAuthorize("@permits.hasPermit('hub:ldap:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:ldap:edit')")
     @PatchMapping
     public Response<Void> editLdap(@Validated @RequestBody SysLdap sysLdap) {
         ldapService.editLdap(Access.tenantId(), sysLdap);
@@ -56,7 +56,7 @@ public class LdapController {
     /**
      * 测试配置
      */
-    @PreAuthorize("@permits.hasPermit('hub:ldap:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:ldap:edit')")
     @PostMapping("/valid")
     public Response<Void> validConfig(@Validated @RequestBody SysLdap sysLdap) {
         ldapService.validConfig(sysLdap);
@@ -67,7 +67,7 @@ public class LdapController {
      * 用户列表
      * @param ldapAccount ladp账号
      */
-    @PreAuthorize("@permits.hasPermit('hub:ldap:query')")
+    @PreAuthorize("@permits.hasPermit('sys:ldap:query')")
     @GetMapping(value = {"/user"})
     public Response<Response.Page<SysLdapUser>> listUser(String ldapAccount) {
         return Response.page(ldapService.listUser(Access.tenantId(), ldapAccount));

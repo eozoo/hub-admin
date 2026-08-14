@@ -43,6 +43,11 @@ public class OnlineVo {
     private String authType;
 
     /**
+     * 用户类型
+     */
+    private String userType;
+
+    /**
      * 用户账号
      */
     private String userAccount;

@@ -12,12 +12,12 @@
  */
 package com.cowave.hub.admin.infra.auth.dao;
 
+import com.cowave.hub.admin.domain.auth.enums.AuthType;
 import com.cowave.hub.admin.domain.auth.repository.facade.UserDetailsRepositoryFacade;
 import com.cowave.hub.admin.domain.rbac.entity.SysDept;
 import com.cowave.hub.admin.domain.rbac.entity.SysTenant;
 import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import com.cowave.hub.admin.domain.rbac.entity.pto.PermitScopePto;
-import com.cowave.hub.admin.domain.rbac.enums.UserType;
 import com.cowave.hub.admin.infra.rbac.mapper.SysDeptMapper;
 import com.cowave.hub.admin.infra.rbac.mapper.SysMenuMapper;
 import com.cowave.hub.admin.infra.rbac.mapper.SysRoleMapper;
@@ -49,10 +49,10 @@ public class UserDetailsDao implements UserDetailsRepositoryFacade {
     private final SysRoleMapper sysRoleMapper;
 
     @Override
-    public AccessUserDetails queryUserDetails(UserType userType, SysTenant sysTenant, SysUser sysUser, boolean validAccess) {
+    public AccessUserDetails queryUserDetails(SysTenant sysTenant, SysUser sysUser, boolean validAccess) {
         AccessUserDetails userDetails = AccessUserDetails.newUserDetails();
         userDetails.setAccessValid(validAccess);
-        userDetails.setAuthType(userType.getVal());
+        userDetails.setAuthType(AuthType.SYS.getVal());
         // 用户信息
         userDetails.setUserType(sysUser.getUserType().getVal());
         userDetails.setTenantId(sysUser.getTenantId());

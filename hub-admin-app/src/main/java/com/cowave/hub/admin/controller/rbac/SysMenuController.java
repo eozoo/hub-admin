@@ -57,7 +57,7 @@ public class SysMenuController {
 	 * @param menuName 菜单名称
 	 * @param menuStatus 菜单状态
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:menu:query')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:query')")
 	@GetMapping
 	public Response<Response.Page<SysMenu>> list(String menuName, EnableStatus menuStatus){
 		return Response.page(menuService.list(menuName, menuStatus));
@@ -68,7 +68,7 @@ public class SysMenuController {
      *
      * @param menuId 菜单id
      */
-	@PreAuthorize("@permits.hasPermit('hub:menu:query')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:query')")
     @GetMapping("/{menuId}")
     public Response<SysMenu> info(@PathVariable Integer menuId) {
         return Response.success(menuService.info(menuId));
@@ -77,7 +77,7 @@ public class SysMenuController {
     /**
      * 新增
      */
-	@PreAuthorize("@permits.hasPermit('hub:menu:create')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:create')")
     @PostMapping
     public Response<Void> add(@Validated @RequestBody SysMenu sysMenu) {
 		menuService.add(sysMenu);
@@ -89,7 +89,7 @@ public class SysMenuController {
      *
      * @param menuId 菜单id
      */
-	@PreAuthorize("@permits.hasPermit('hub:menu:delete')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:delete')")
     @DeleteMapping("/{menuId}")
     public Response<Void> delete(@PathVariable Integer menuId) {
         menuService.delete(menuId);
@@ -99,7 +99,7 @@ public class SysMenuController {
     /**
      * 修改
      */
-	@PreAuthorize("@permits.hasPermit('hub:menu:edit')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:edit')")
     @PatchMapping
     public Response<Void> edit(@Validated @RequestBody SysMenu sysMenu) {
         menuService.edit(sysMenu);
@@ -109,7 +109,7 @@ public class SysMenuController {
 	/**
 	 * 导出菜单
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:menu:export')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:export')")
 	@PostMapping("/export")
 	public void export(HttpServletResponse response) throws IOException {
 		String fileName = URLEncoder.encode("菜单数据", StandardCharsets.UTF_8).replace("\\+", "%20");

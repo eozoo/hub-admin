@@ -18,6 +18,7 @@ import com.cowave.hub.admin.domain.rbac.entity.*;
 import com.cowave.zoo.http.client.asserts.HttpAsserts;
 import com.cowave.zoo.http.client.response.HttpResponse;
 import com.cowave.zoo.framework.access.Access;
+import com.cowave.zoo.framework.access.AccessProperties;
 import com.cowave.zoo.framework.access.operation.OperationInfo;
 import com.cowave.zoo.framework.access.security.AccessInfo;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
@@ -61,6 +62,7 @@ import java.util.Base64;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static com.cowave.hub.admin.domain.auth.enums.AuthType.OAUTH;
 import static com.cowave.hub.admin.domain.rbac.enums.UserType.GITLAB;
 import static com.cowave.zoo.http.client.constants.HttpCode.*;
 import static com.cowave.hub.admin.domain.AdminRedisKeys.*;
@@ -87,6 +89,7 @@ public class OAuthServiceImpl implements OAuthService {
     private final SysOperationBiz operationBiz;
     private final GitlabRemoteService gitlabRemoteService;
     private final UserDetailsRepositoryFacade userDetailsRepositoryFacade;
+    private final AccessProperties accessProperties;
 
     @Override
     public AccessUserDetails gitlabCallback(String tenantId, String code) {
@@ -135,7 +138,7 @@ public class OAuthServiceImpl implements OAuthService {
             sysUser.setUserAccount(oauthUserHub.getUserAccount());
             sysUser.setUserName(oauthUserHub.getUserName());
             sysUser.setUserEmail(oauthUserHub.getUserEmail());
-            userBiz.createTenantManager(sysUser);
+            userBiz.saveUser(sysUser);
             // role
             SysRole sysRole = roleRepositoryFacade.queryByCode(tenantId, oauth.getRoleCode());
             if(sysRole != null) {
@@ -151,7 +154,7 @@ public class OAuthServiceImpl implements OAuthService {
 
         // 创建令牌
         SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
-        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(GITLAB, sysTenant, sysUser, true);
+        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(sysTenant, sysUser, true);
         bearerTokenService.assignAccessRefreshToken(userDetails);
 
         // 登录日志
@@ -285,9 +288,18 @@ public class OAuthServiceImpl implements OAuthService {
         // 创建令牌
         SysUser sysUser = userRepositoryFacade.queryByCode(oAuth2CodeBo.getUserCode());
         SysTenant sysTenant = tenantRepositoryFacade.queryById(sysUser.getTenantId());
-        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(sysUser.getUserType(), sysTenant, sysUser, false);
+        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(sysTenant, sysUser, false);
         userDetails.setOauthId(oauthApp.getClientId());
         userDetails.setOauthName(oauthApp.getClientName());
+        userDetails.setAuthType(OAUTH.getVal());
+        // 授权访问的应用列表：签发方（hub-admin）+ 申请方（oauthId） + 授权的应用
+        List<String> apps = new ArrayList<>();
+        apps.add(oauthApp.getClientId());
+        String selfAppId = accessProperties.oauthAppId();
+        if (StringUtils.isNotBlank(selfAppId)) {
+            apps.add(selfAppId);
+        }
+        userDetails.setApps(apps);
         bearerTokenService.assignOauthToken(userDetails);
 
         // 授权日志

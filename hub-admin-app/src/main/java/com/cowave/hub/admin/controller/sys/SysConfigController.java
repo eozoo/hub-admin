@@ -46,7 +46,7 @@ public class SysConfigController {
     /**
      * 列表
      */
-    @PreAuthorize("@permits.hasPermit('hub:config:query')")
+    @PreAuthorize("@permits.hasPermit('sys:config:query')")
     @GetMapping
     public Response<Response.Page<SysConfig>> list(ConfigQuery query) {
         return Response.page(configService.page(Access.tenantId(), query));
@@ -55,7 +55,7 @@ public class SysConfigController {
     /**
      * 详情
      */
-    @PreAuthorize("@permits.hasPermit('hub:config:query')")
+    @PreAuthorize("@permits.hasPermit('sys:config:query')")
     @GetMapping("/{configId}")
     public Response<SysConfig> info(@PathVariable Integer configId) {
         return Response.success(configService.info(Access.tenantId(), configId));
@@ -64,7 +64,7 @@ public class SysConfigController {
     /**
      * 新增
      */
-    @PreAuthorize("@permits.hasPermit('hub:config:create')")
+    @PreAuthorize("@permits.hasPermit('sys:config:create')")
     @PostMapping
     public Response<Void> create(@RequestBody SysConfig sysConfig) {
         configService.add(sysConfig);
@@ -74,7 +74,7 @@ public class SysConfigController {
     /**
      * 删除
      */
-    @PreAuthorize("@permits.hasPermit('hub:config:delete')")
+    @PreAuthorize("@permits.hasPermit('sys:config:delete')")
     @DeleteMapping("/{configIds}")
     public Response<Void> delete(@PathVariable List<Integer> configIds) {
         configService.delete(Access.tenantId(), configIds);
@@ -84,7 +84,7 @@ public class SysConfigController {
     /**
      * 修改
      */
-    @PreAuthorize("@permits.hasPermit('hub:config:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:config:edit')")
     @PatchMapping
     public Response<Void> edit(@RequestBody SysConfig sysConfig) {
         configService.edit(sysConfig);
@@ -94,7 +94,7 @@ public class SysConfigController {
     /**
      * 导出
      */
-    @PreAuthorize("@permits.hasPermit('hub:config:export')")
+    @PreAuthorize("@permits.hasPermit('sys:config:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, ConfigQuery query) throws IOException {
         String fileName = URLEncoder.encode("系统参数", StandardCharsets.UTF_8).replace("\\+", "%20");
@@ -109,7 +109,7 @@ public class SysConfigController {
     /**
      * 重置恢复
      */
-    @PreAuthorize("@permits.hasPermit('hub:config:reset')")
+    @PreAuthorize("@permits.hasPermit('sys:config:reset')")
     @GetMapping("/reset")
     public Response<Void> resetConfig() {
         configService.resetConfig(Access.tenantId());

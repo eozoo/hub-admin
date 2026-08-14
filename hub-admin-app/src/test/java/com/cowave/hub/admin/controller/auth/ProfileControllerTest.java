@@ -121,7 +121,7 @@ public class ProfileControllerTest extends SpringTest {
                 {
                 "tokenName" : "Test-ApiToken",
                 "menuScopes" : [
-                  {"menuId":22, "scopeId":null}
+                  {"permit":"sys:user:query", "scopeId":null}
                 ]
                 }
                 """;

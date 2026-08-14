@@ -102,7 +102,7 @@ public class SysTenantServiceImpl implements SysTenantService {
 
         SysUser sysUser = managerCreate.newSysUser();
         sysUser.setUserPasswd(passwordEncoder.encode(managerCreate.getUserPasswd()));
-        userBiz.createTenantManager(sysUser);
+        userBiz.saveUser(sysUser);
         userBiz.saveUserRole(sysUser.getUserId(), 1);
         userBiz.saveUserDiagram(sysUser.getUserId(), 0, managerCreate.getTenantId());
     }

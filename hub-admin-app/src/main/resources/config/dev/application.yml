@@ -9,6 +9,8 @@ spring:
   access:
     filter:
       - /api/v1/*
+    oauth:
+      appId: hub-admin
     auth:
       enable: true
       mode: access-refresh

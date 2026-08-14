@@ -53,7 +53,7 @@ public class SysAttachController {
      *
      * @param attachId 附件id
      */
-    @PreAuthorize("@permits.hasPermit('hub:attach:download')")
+    @PreAuthorize("@permits.hasPermit('sys:attach:download')")
     @GetMapping("/{attachId}")
     public void download(HttpServletResponse response, @PathVariable Long attachId) throws Exception {
         attachService.download(response, attachId);
@@ -64,7 +64,7 @@ public class SysAttachController {
      *
      * @param attachId 附件id
      */
-    @PreAuthorize("@permits.hasPermit('hub:attach:preview')")
+    @PreAuthorize("@permits.hasPermit('sys:attach:preview')")
     @GetMapping("/preview/{attachId}")
     public Response<String> preview(@PathVariable Long attachId) throws Exception {
         return Response.success(attachService.preview(attachId));
@@ -73,7 +73,7 @@ public class SysAttachController {
     /**
      * 列表
      */
-    @PreAuthorize("@permits.hasPermit('hub:attach:query')")
+    @PreAuthorize("@permits.hasPermit('sys:attach:query')")
     @GetMapping
     public Response<Response.Page<SysAttach>> page(AttachQuery query) throws Exception {
         return Response.page(attachService.page(Access.tenantId(), query));
@@ -84,7 +84,7 @@ public class SysAttachController {
      *
      * @param attachIds 文件id列表
      */
-    @PreAuthorize("@permits.hasPermit('hub:attach:delete')")
+    @PreAuthorize("@permits.hasPermit('sys:attach:delete')")
     @DeleteMapping("/{attachIds}")
     public Response<Void> delete(@PathVariable List<Long> attachIds) throws Exception {
         attachService.delete(attachIds);

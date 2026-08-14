@@ -24,9 +24,19 @@ import lombok.RequiredArgsConstructor;
 public enum AuthType implements EnumVal<String> {
 
     /**
-     * 用户令牌
+     * 系统令牌
      */
-    API("api");
+    SYS("sys"),
+
+    /**
+     * Api令牌
+     */
+    API("api"),
+
+    /**
+     * OAuth令牌
+     */
+    OAUTH("oauth");
 
     private final String val;
 

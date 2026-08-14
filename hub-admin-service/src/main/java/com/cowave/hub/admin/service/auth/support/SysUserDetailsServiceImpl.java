@@ -61,7 +61,7 @@ public class SysUserDetailsServiceImpl implements TenantUserDetailsService {
 
         String mfaKey = sysUser.getMfa();
         if(StringUtils.isBlank(mfaKey)){
-            return userDetailsRepositoryFacade.queryUserDetails(SYS, sysTenant, sysUser, true);
+            return userDetailsRepositoryFacade.queryUserDetails(sysTenant, sysUser, true);
         }else{
             String mfaToken = mfaConfiguration.buildMfaToken(tenantId, userAccount);
             AccessUserDetails userDetails = new AccessUserDetails();

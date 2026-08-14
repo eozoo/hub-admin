@@ -64,17 +64,16 @@ public class SysUserBizImpl implements SysUserBiz {
 
     @CacheEvict(value = {USER_DIAGRAM, DEPT_USER_DIAGRAM}, key = "#tenantId")
     @Override
-    public UserInfoPto deleteUser(String tenantId, Integer userId) {
+    public void deleteUser(String tenantId, Integer userId) {
         UserInfoPto preUser = userRepository.queryInfo(tenantId, userId);
         if (preUser == null) {
-            return null;
+            return;
         }
         userRepository.removeById(userId);
         userRepository.removeUserRolesByUserId(userId);
         userRepository.removeUserDeptsByUserId(userId);
         userRepository.removeUserDiagramParentsByUserId(userId);
         userRepository.removeUserDiagramChildrenByUserId(userId);
-        return preUser;
     }
 
     @CacheEvict(value = {USER_DIAGRAM, DEPT_USER_DIAGRAM}, key = "#tenantId")
@@ -147,7 +146,7 @@ public class SysUserBizImpl implements SysUserBiz {
     }
 
     @Override
-    public void createTenantManager(SysUser sysUser) {
+    public void saveUser(SysUser sysUser) {
         userRepository.save(sysUser);
     }
 

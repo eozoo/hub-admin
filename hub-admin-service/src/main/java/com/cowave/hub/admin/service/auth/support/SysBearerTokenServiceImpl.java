@@ -15,6 +15,7 @@ package com.cowave.hub.admin.service.auth.support;
 import com.cowave.hub.admin.domain.AdminRedisKeys;
 import com.cowave.hub.admin.domain.auth.enums.AuthType;
 import com.cowave.zoo.framework.access.Access;
+import com.cowave.zoo.framework.access.AccessProperties;
 import com.cowave.zoo.framework.access.filter.AccessIdGenerator;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
 import com.cowave.zoo.framework.access.security.BearerTokenDelegate;
@@ -23,6 +24,7 @@ import com.cowave.zoo.framework.helper.redis.RedisHelper;
 import com.cowave.zoo.tools.NetUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,11 +43,14 @@ import static com.cowave.zoo.http.client.constants.HttpCode.UNAUTHORIZED;
 public class SysBearerTokenServiceImpl extends BearerTokenServiceImpl {
 
     private final RedisHelper redisHelper;
+    private final AccessProperties accessProperties;
 
     public SysBearerTokenServiceImpl(RedisHelper redisHelper, ObjectMapper objectMapper,
-                                     AccessIdGenerator accessIdGenerator, BearerTokenDelegate bearerTokenDelegate) {
+                                     AccessIdGenerator accessIdGenerator, BearerTokenDelegate bearerTokenDelegate,
+                                     AccessProperties accessProperties) {
         super(redisHelper, objectMapper, accessIdGenerator, bearerTokenDelegate);
         this.redisHelper = redisHelper;
+        this.accessProperties = accessProperties;
     }
 
     @Override
@@ -59,9 +64,17 @@ public class SysBearerTokenServiceImpl extends BearerTokenServiceImpl {
             }
             recordApiTokenAccess(userDetails);
             return true;
-        } else {
-            return super.validateUserDetails(userDetails, response, useRefreshToken);
         }
+        // OAuth令牌：授权应用列表校验
+        if (AuthType.OAUTH.getVal().equals(userDetails.getAuthType())) {
+            List<String> oauthApps = userDetails.getApps();
+            String selfAppId = accessProperties.oauthAppId();
+            if (StringUtils.isNotBlank(selfAppId) && !oauthApps.contains(selfAppId)) {
+                writeResponse(response, UNAUTHORIZED, "frame.oauth.invalid");
+                return false;
+            }
+        }
+        return super.validateUserDetails(userDetails, response, useRefreshToken);
     }
 
     private boolean validateApiToken(HttpServletResponse response, String accessId) throws IOException {

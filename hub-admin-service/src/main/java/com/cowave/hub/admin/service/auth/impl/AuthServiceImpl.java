@@ -113,7 +113,7 @@ public class AuthServiceImpl implements AuthService {
         sysUser.setUserName(userRegister.getUserName());
         sysUser.setUserAccount(userRegister.getUserAccount());
         sysUser.setUserPasswd(passwordEncoder.encode(initPasswd));
-        userBiz.createTenantManager(sysUser);
+        userBiz.saveUser(sysUser);
 
         SysRole sysRole = roleRepositoryFacade.queryByCode(tenantId, "role-readonly");
         if(sysRole != null) {
@@ -177,7 +177,7 @@ public class AuthServiceImpl implements AuthService {
         HttpAsserts.isTrue(MfaAuthVerifier.validateCode(mfaKey, mfaCode), BAD_REQUEST, "{admin.mfa.code.invalid}");
 
         SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
-        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(SYS, sysTenant, sysUser, true);
+        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(sysTenant, sysUser, true);
         bearerTokenService.assignAccessRefreshToken(userDetails);
         return userDetails;
     }
@@ -211,6 +211,7 @@ public class AuthServiceImpl implements AuthService {
             onlineList.add(OnlineVo.builder()
                     .refreshId(refresh.getRefreshId())
                     .authType(refresh.getAuthType())
+                    .userType(refresh.getUserType())
                     .userAccount(refresh.getUserAccount())
                     .userName(refresh.getUserName())
                     .cluster(refresh.getClusterName())
@@ -264,11 +265,11 @@ public class AuthServiceImpl implements AuthService {
         authVo.setTenantLogo(sysTenant.getLogo());
 
         // Avatar
-        if (GITLAB.equalsVal(userDetails.getAuthType())) {
+        if (GITLAB.equalsVal(userDetails.getUserType())) {
             SysOAuthUser oauthUser =
                     oauthRepositoryFacade.queryUserByAccount(tenantId, GITLAB.getVal(), userDetails.getUsername());
             authVo.setAvatar(oauthUser.getUserAvatar());
-        } else if (SYS.equalsVal(userDetails.getAuthType())) {
+        } else if (SYS.equalsVal(userDetails.getUserType())) {
             SysAttach avatar = attachBiz.previewLatestByOwner(String.valueOf(userId), SYSTEM_USER, AVATAR);
             if (avatar != null) {
                 authVo.setAvatar(avatar.getViewUrl());

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.cowave.hub.admin.domain.AdminRedisKeys.AUTH_CAPTCHA;
 
@@ -45,9 +46,11 @@ public class AuthControllerTest extends SpringTest {
     @Test
     public void login() throws Exception {
         // 邮箱验证码
-        mockGet("/api/v1/auth/public/captcha/email?email=shanhm1991@163.com");
-        String emailCode = redisHelper.keys("hub-admin:auth:captcha:*").stream().findFirst().map(
-                k -> k.replace("hub-admin:auth:captcha:", "")).orElse(null);
+        // mockGet("/api/v1/auth/public/captcha/email?email=shanhm1991@163.com");
+        // String emailCode = redisHelper.keys("hub-admin:auth:captcha:*").stream().findFirst().map(
+        //         k -> k.replace("hub-admin:auth:captcha:", "")).orElse(null);
+        String emailCode = "123456";
+        redisHelper.putExpire(AUTH_CAPTCHA.formatted(emailCode), "shanhm1991@163.com", 3, TimeUnit.MINUTES);
         // 注册用户
         String body = String.format("""
                 {

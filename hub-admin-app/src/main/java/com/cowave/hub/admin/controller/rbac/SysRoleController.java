@@ -57,7 +57,7 @@ public class SysRoleController {
     /**
      * 列表
      */
-    @PreAuthorize("@permits.hasPermit('hub:role:query')")
+    @PreAuthorize("@permits.hasPermit('sys:role:query')")
     @GetMapping
     public Response<Response.Page<SysRole>> list(RoleQuery query) {
         return Response.page(roleService.list(Access.tenantId(), query));
@@ -68,7 +68,7 @@ public class SysRoleController {
      *
      * @param roleId 角色id
      */
-    @PreAuthorize("@permits.hasPermit('hub:role:query')")
+    @PreAuthorize("@permits.hasPermit('sys:role:query')")
     @GetMapping("/{roleId}")
     public Response<RoleInfoPto> info(@PathVariable Integer roleId) {
         return Response.success(roleService.info(Access.tenantId(), roleId));
@@ -78,7 +78,7 @@ public class SysRoleController {
      * 新增
      */
     @Operation(module = SYSTEM, type = SYSTEM_ROLE, action = CREATE, desc = "新增角色：#{#role.roleName}")
-    @PreAuthorize("@permits.hasPermit('hub:role:create')")
+    @PreAuthorize("@permits.hasPermit('sys:role:create')")
     @PostMapping
     public Response<Void> add(@Validated @RequestBody SysRole role) {
         roleService.add(Access.tenantId(), role);
@@ -91,7 +91,7 @@ public class SysRoleController {
      * @param roleIds 角色id列表
      */
     @Operation(module = SYSTEM, type = SYSTEM_ROLE, action = DELETE, desc = "删除角色")
-    @PreAuthorize("@permits.hasPermit('hub:role:delete')")
+    @PreAuthorize("@permits.hasPermit('sys:role:delete')")
     @DeleteMapping("/{roleIds}")
     public Response<Void> delete(@PathVariable List<Integer> roleIds) {
         roleService.delete(Access.tenantId(), roleIds);
@@ -102,7 +102,7 @@ public class SysRoleController {
      * 修改
      */
     @Operation(module = SYSTEM, type = SYSTEM_ROLE, action = EDIT, desc = "修改角色：#{#role.roleName}")
-    @PreAuthorize("@permits.hasPermit('hub:role:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:role:edit')")
     @PatchMapping
     public Response<Void> edit(@Validated @RequestBody SysRole role) {
         roleService.edit(Access.tenantId(), role);
@@ -112,7 +112,7 @@ public class SysRoleController {
     /**
      * 修改菜单
      */
-    @PreAuthorize("@permits.hasPermit('hub:role:menus')")
+    @PreAuthorize("@permits.hasPermit('sys:role:menus')")
     @PatchMapping("/menus")
     public Response<Void> updateMenus(@RequestBody RoleMenuUpdate roleUpdate) {
         roleService.updateMenus(Access.tenantId(), roleUpdate);
@@ -122,7 +122,7 @@ public class SysRoleController {
     /**
      * 导出角色
      */
-    @PreAuthorize("@permits.hasPermit('hub:role:export')")
+    @PreAuthorize("@permits.hasPermit('sys:role:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, RoleQuery query) throws IOException {
     	String fileName = URLEncoder.encode("角色数据", StandardCharsets.UTF_8).replace("\\+", "%20");
@@ -137,7 +137,7 @@ public class SysRoleController {
     /**
      * 授权用户
      */
-    @PreAuthorize("@permits.hasPermit('hub:role:members:grant')")
+    @PreAuthorize("@permits.hasPermit('sys:role:members:grant')")
     @PostMapping("/user/grant")
     public Response<Void> grantUser(@Validated @RequestBody RoleUserUpdate roleUpdate) {
     	roleService.grantUser(Access.tenantId(), roleUpdate);
@@ -147,7 +147,7 @@ public class SysRoleController {
     /**
      * 取消用户
      */
-    @PreAuthorize("@permits.hasPermit('hub:role:members:cancel')")
+    @PreAuthorize("@permits.hasPermit('sys:role:members:cancel')")
     @PostMapping("/user/cancel")
     public Response<Void> cancelUser(@Validated @RequestBody RoleUserUpdate roleUpdate) {
     	roleService.cancelUser(Access.tenantId(), roleUpdate);
@@ -157,7 +157,7 @@ public class SysRoleController {
     /**
      * 用户列表（已授权）
      */
-    @PreAuthorize("@permits.hasPermit('hub:role:members:query')")
+    @PreAuthorize("@permits.hasPermit('sys:role:members:query')")
     @GetMapping("/users/authed")
     public Response<Response.Page<RoleUserPto>> getAuthedUser(@Valid RoleUserQuery query) {
     	return Response.page(roleService.queryAuthedUser(Access.tenantId(), query));
@@ -166,7 +166,7 @@ public class SysRoleController {
     /**
      * 用户列表（未授权）
      */
-    @PreAuthorize("@permits.hasPermit('hub:role:members:query')")
+    @PreAuthorize("@permits.hasPermit('sys:role:members:query')")
     @GetMapping("/users/unAuthed")
     public Response<Response.Page<RoleUserPto>> getUnAuthedUser(@Valid RoleUserQuery query) {
     	return Response.page(roleService.queryUnAuthedUser(Access.tenantId(), query));

@@ -49,7 +49,7 @@ public class SysDictController {
 	/**
 	 * 列表
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:dict:query')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:query')")
 	@GetMapping
 	public Response<List<DictPto>> list(DictQuery query) {
 		return Response.success(dictService.queryList(query));
@@ -58,7 +58,7 @@ public class SysDictController {
 	/**
 	 * 详情
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:dict:query')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:query')")
 	@GetMapping("/{dictId}")
 	public Response<DictPto> info(@PathVariable Long dictId) {
 		return Response.success(dictService.info(dictId));
@@ -67,7 +67,7 @@ public class SysDictController {
 	/**
 	 * 新增
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:dict:create')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:create')")
 	@PostMapping
 	public Response<Void> create(@RequestBody DictCreate dictCreate) {
 		dictService.add(dictCreate);
@@ -77,7 +77,7 @@ public class SysDictController {
 	/**
 	 * 删除
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:dict:delete')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:delete')")
 	@DeleteMapping("/{dictIds}")
 	public Response<Void> delete(@PathVariable List<Integer> dictIds) {
 		dictService.delete(dictIds);
@@ -87,7 +87,7 @@ public class SysDictController {
 	/**
 	 * 修改
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:dict:edit')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:edit')")
 	@PatchMapping
 	public Response<Void> edit(@RequestBody DictCreate dictCreate) {
 		dictService.edit(dictCreate);
@@ -97,7 +97,7 @@ public class SysDictController {
 	/**
 	 * 导出字典
 	 */
-	@PreAuthorize("@permits.hasPermit('hub:dict:export')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:export')")
 	@PostMapping ("/export")
 	public void export(HttpServletResponse response) throws IOException {
 		String fileName = URLEncoder.encode("字典数据", StandardCharsets.UTF_8).replace("\\+", "%20");
