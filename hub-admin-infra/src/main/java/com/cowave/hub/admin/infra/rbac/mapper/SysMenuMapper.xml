@@ -54,8 +54,8 @@
 		order by parentId, menuOrder
 	</select>
 
-    <select id="listPermitsByUserId" resultType="java.lang.String">
-		select distinct m.menu_permit
+    <select id="listPermitScopesByUserId" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.PermitScopePto">
+		select distinct m.menu_permit as permit, rm.scope_id as scopeId
 		from sys_user_role ur,
 			 sys_role r,
 			 sys_role_menu rm,
@@ -74,6 +74,7 @@
 		<result column="menuOrder"    property="menuOrder"/>
 		<result column="menuType"     property="menuType"/>
 		<result column="isProtected"  property="isProtected"/>
+		<result column="menuPermit"   property="menuPermit"/>
         <collection property="scopes" javaType="list" ofType="com.cowave.hub.admin.domain.rbac.entity.SysScope">
             <result column="scopeId"    property="scopeId"/>
             <result column="scopeName"  property="scopeName"/>
@@ -104,7 +105,8 @@
 			   m.menu_name    menuName,
 			   m.menu_order   menuOrder,
 			   m.menu_type    menuType,
-			   m.is_protected isProtected
+			   m.is_protected isProtected,
+			   m.menu_permit  menuPermit
 		from sys_menu m
 		left join sys_scope s on m.menu_module = s.scope_module and s.scope_status = 1 and s.tenant_id in ('#', #{tenantId})
 		where m.menu_status = 1
@@ -122,7 +124,8 @@
 			   m.menu_name    menuName,
 			   m.menu_order   menuOrder,
 			   m.menu_type    menuType,
-			   m.is_protected isProtected
+			   m.is_protected isProtected,
+			   m.menu_permit  menuPermit
 		from sys_role r, sys_role_menu rm, sys_menu m
 		left join sys_scope s on m.menu_module = s.scope_module and s.scope_status = 1 and s.tenant_id in ('#', #{tenantId})
 		where r.role_id = rm.role_id

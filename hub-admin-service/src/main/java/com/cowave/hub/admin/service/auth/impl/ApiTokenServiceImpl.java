@@ -18,8 +18,7 @@ import com.cowave.hub.admin.domain.auth.entity.HubTokenMenu;
 import com.cowave.hub.admin.domain.auth.entity.command.ApiTokenCreate;
 import com.cowave.hub.admin.domain.auth.entity.vo.TokenVo;
 import com.cowave.hub.admin.domain.auth.repository.facade.HubTokenRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.entity.pto.MenuScopePto;
-import com.cowave.hub.admin.domain.rbac.repository.facade.SysMenuRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac.entity.pto.PermitScopePto;
 import com.cowave.hub.admin.service.auth.ApiTokenService;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.access.AccessProperties;
@@ -44,6 +43,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +65,6 @@ public class ApiTokenServiceImpl implements ApiTokenService {
     private final RedisHelper redisHelper;
     private final HubTokenBiz tokenBiz;
     private final HubTokenRepositoryFacade tokenRepositoryFacade;
-    private final SysMenuRepositoryFacade menuRepositoryFacade;
 
     @PostConstruct
     public void indexApiToken() {
@@ -110,7 +109,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
                 tokenVo.setAccessUrl((String) accessInfo.get("url"));
                 tokenVo.setAccessTime((Date) accessInfo.get("time"));
             }
-            tokenVo.setMenuIds(tokenRepositoryFacade.queryMenuIdsByTokenId(tokenVo.getTokenId()));
+            tokenVo.setPermits(tokenRepositoryFacade.queryPermitsByTokenId(tokenVo.getTokenId()));
         }
         return list;
     }
@@ -119,20 +118,29 @@ public class ApiTokenServiceImpl implements ApiTokenService {
     public String creatApiToken(ApiTokenCreate tokenCreate) {
         tokenCreate.setUserCode(Access.userCode());
         tokenBiz.saveToken(tokenCreate);
-
+        // 操作权限
         List<String> permits = new ArrayList<>();
-        List<MenuScopePto> menuScopes = tokenCreate.getMenuScopes();
-        if (CollectionUtils.isNotEmpty(menuScopes)) {
-            permits = menuRepositoryFacade.queryPermitsByIds(
-                    Collections.copyToList(menuScopes, MenuScopePto::getMenuId));
+        // 数据权限
+        Map<String, List<Integer>> scopePermits = new HashMap<>();
+        List<PermitScopePto> menuScopes = tokenCreate.getMenuScopes();
+        for (PermitScopePto menuScope : menuScopes) {
+            String permit = menuScope.getPermit();
+            if (StringUtils.isBlank(permit)) {
+                continue;
+            }
+            permits.add(permit);
+
+            if (menuScope.getScopeId() != null) {
+                scopePermits.computeIfAbsent(permit, k -> new ArrayList<>()).add(menuScope.getScopeId());
+            }
         }
 
         AccessUserDetails userDetails = Access.userDetails();
         List<String> roles = userDetails.getRoles();
         if (CollectionUtils.isNotEmpty(roles)) {
+            // 剔除掉管理员角色
             roles.remove(Permission.ROLE_ADMIN);
         }
-
         JwtBuilder jwtBuilder = Jwts.builder()
                 .claim(CLAIM_ACCESS_ID, String.valueOf(tokenCreate.getTokenId()))
                 .claim(CLAIM_TYPE, API.getVal())
@@ -149,6 +157,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
                 .claim(CLAIM_CLUSTER_NAME, applicationProperties.getClusterName())
                 .claim(CLAIM_USER_ROLE, roles)
                 .claim(CLAIM_USER_PERM, permits)
+                .claim(CLAIM_USER_SCOPE, scopePermits)
                 .claim(CLAIM_ACCESS_UNIQUE, 0)
                 .setIssuedAt(new Date());
 
@@ -166,7 +175,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 
         if (CollectionUtils.isNotEmpty(menuScopes)) {
             List<HubTokenMenu> tokenMenus = Collections.copyToList(menuScopes,
-                    v -> new HubTokenMenu(tokenCreate.getTokenId(), v.getMenuId(), v.getScopeId()));
+                    v -> new HubTokenMenu(tokenCreate.getTokenId(), v.getPermit(), v.getScopeId()));
             tokenBiz.saveTokenMenus(tokenMenus);
         }
 

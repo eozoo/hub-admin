@@ -10,32 +10,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.hub.admin.domain.auth.entity.command;
+package com.cowave.hub.admin.domain.rbac.entity.pto;
 
-import com.cowave.hub.admin.domain.auth.entity.HubToken;
-import com.cowave.hub.admin.domain.rbac.entity.pto.PermitScopePto;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author shanhuiming
  */
 @Getter
 @Setter
-public class ApiTokenCreate extends HubToken {
+public class PermitScopePto {
 
     /**
-     * 令牌名称
+     * 权限符
      */
-    @NotBlank(message = "{admin.token.name.null}")
-    private String tokenName;
+    private String permit;
 
     /**
-	 * 权限列表（权限符 + 数据权限）
-	 */
-	private List<PermitScopePto> menuScopes = new ArrayList<>();
+     * 数据权限id
+     */
+    private Integer scopeId;
 }

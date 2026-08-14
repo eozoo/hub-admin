@@ -228,7 +228,7 @@ create table hub_token(
 drop table if exists hub_token_menu;
 create table hub_token_menu(
     token_id int comment '令牌id',
-    menu_id  int comment '菜单id',
+    permit   varchar(64) comment '权限符',
     scope_id int comment '数据范围id',
-    primary key (token_id, menu_id)
+    primary key (token_id, permit)
 ) comment='用户ApiToken权限';

@@ -22,14 +22,12 @@ import com.cowave.hub.admin.domain.rbac.repository.SysMenuRepository;
 import com.cowave.hub.admin.infra.rbac.mapper.SysMenuMapper;
 import com.cowave.hub.admin.infra.rbac.mapper.SysRoleMenuMapper;
 import com.cowave.zoo.framework.access.Access;
-import com.cowave.zoo.tools.Collections;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import static com.cowave.hub.admin.domain.rbac.entity.pto.DiagramNode.DIAGRAM_CONFIG;
 
@@ -97,15 +95,6 @@ public class SysMenuDao extends ServiceImpl<SysMenuMapper, SysMenu> implements S
     @Override
     public SysMenu queryById(Integer menuId) {
         return getById(menuId);
-    }
-
-    @Override
-    public List<String> queryPermitsByIds(List<Integer> menuIds) {
-        List<SysMenu> menuList = lambdaQuery()
-                .in(SysMenu::getMenuId, menuIds)
-                .select(SysMenu::getMenuPermit)
-                .list();
-        return Collections.filterCopyToList(menuList, SysMenu::getMenuPermit, Objects::nonNull);
     }
 
     @Override

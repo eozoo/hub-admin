@@ -61,11 +61,6 @@ public interface SysMenuRepositoryFacade {
     SysMenu queryById(Integer menuId);
 
     /**
-     * 获取菜单权限符
-     */
-    List<String> queryPermitsByIds(List<Integer> menuIds);
-
-    /**
      * API令牌权限树数据（管理员）
      */
     List<MenuTreePto> queryApiPermitsByAdmin(String tenantId);

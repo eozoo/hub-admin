@@ -32,9 +32,9 @@ public class HubTokenMenu {
     private Integer tokenId;
 
     /**
-     * 菜单id
+     * 权限符
      */
-    private Integer menuId;
+    private String permit;
 
     /**
      * 数据权限

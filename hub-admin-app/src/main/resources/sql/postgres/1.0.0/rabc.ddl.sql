@@ -366,10 +366,10 @@ comment on column hub_token.create_time is '创建时间';
 drop table if exists hub_token_menu;
 create table hub_token_menu(
     token_id int4,
-    menu_id int4,
+    permit   character varying(64),
     scope_id int4,
-    constraint hub_token_menu_pkey primary key (token_id, menu_id)
+    constraint hub_token_menu_pkey primary key (token_id, permit)
 );
 comment on table hub_token_menu is '用户ApiToken权限';
 comment on column hub_token_menu.token_id is '令牌id';
-comment on column hub_token_menu.menu_id is '菜单id';
+comment on column hub_token_menu.permit is '权限符';

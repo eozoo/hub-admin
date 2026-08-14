@@ -15,6 +15,7 @@ package com.cowave.hub.admin.infra.rbac.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cowave.hub.admin.domain.rbac.entity.SysMenu;
 import com.cowave.hub.admin.domain.rbac.entity.pto.MenuTreePto;
+import com.cowave.hub.admin.domain.rbac.entity.pto.PermitScopePto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,9 +33,9 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     List<SysMenu> listMenusByRoles(@Param("tenantId") String tenantId, @Param("list") List<String> roleList);
 
     /**
-     * 操作权限（用户id）
+     * 权限数据（操作权限 + 数据权限）
      */
-    List<String> listPermitsByUserId(@Param("tenantId") String tenantId, @Param("userId") Integer userId);
+    List<PermitScopePto> listPermitScopesByUserId(@Param("tenantId") String tenantId, @Param("userId") Integer userId);
 
     /**
      * 菜单树（包含数据权限）

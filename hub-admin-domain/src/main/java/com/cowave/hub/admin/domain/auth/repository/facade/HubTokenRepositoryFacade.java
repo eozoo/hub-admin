@@ -34,7 +34,7 @@ public interface HubTokenRepositoryFacade {
     List<HubToken> queryListByUserCode(String userCode);
 
     /**
-     * 查询令牌关联的菜单id列表
+     * 查询令牌关联的权限符列表
      */
-    List<Integer> queryMenuIdsByTokenId(Integer tokenId);
+    List<String> queryPermitsByTokenId(Integer tokenId);
 }

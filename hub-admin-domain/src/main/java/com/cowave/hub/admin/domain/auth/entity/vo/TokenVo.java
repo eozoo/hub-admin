@@ -32,5 +32,5 @@ public class TokenVo extends HubToken {
 
     private Date accessTime;
 
-    private List<Integer> menuIds;
+    private List<String> permits;
 }

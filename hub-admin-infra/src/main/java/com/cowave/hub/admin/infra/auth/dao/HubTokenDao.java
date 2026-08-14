@@ -12,6 +12,7 @@
  */
 package com.cowave.hub.admin.infra.auth.dao;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cowave.hub.admin.domain.auth.entity.HubToken;
@@ -45,11 +46,10 @@ public class HubTokenDao extends ServiceImpl<HubTokenMapper, HubToken> implement
     }
 
     @Override
-    public List<Integer> queryMenuIdsByTokenId(Integer tokenId) {
-        List<HubTokenMenu> list = tokenMenuMapper.selectList(
-                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<HubTokenMenu>()
-                        .eq(HubTokenMenu::getTokenId, tokenId));
-        return Collections.copyToList(list, HubTokenMenu::getMenuId);
+    public List<String> queryPermitsByTokenId(Integer tokenId) {
+        List<HubTokenMenu> list = tokenMenuMapper.selectList(new LambdaQueryWrapper<HubTokenMenu>()
+                .eq(HubTokenMenu::getTokenId, tokenId));
+        return Collections.copyToList(list, HubTokenMenu::getPermit);
     }
 
     @Override

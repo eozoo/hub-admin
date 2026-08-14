@@ -34,8 +34,6 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.PostConstruct;
 import java.util.List;
 
-import static com.cowave.zoo.framework.access.security.Permission.ROLE_ADMIN;
-
 /**
  * @author shanhuiming
  */
@@ -143,11 +141,15 @@ public class SysOperationDao implements SysOperationRepository {
     }
 
     private String resolveCurrentScope() {
-        List<String> roleCodes = Access.userRoles();
-        if (CollectionUtils.isEmpty(roleCodes) || roleCodes.contains(ROLE_ADMIN)) {
+        List<Integer> scopeIds = Access.scopeIds();
+        if (CollectionUtils.isEmpty(scopeIds)) {
             return null;
         }
-        List<SysScope> list = scopeMapper.listScopeByPermit("monitor:operlog:scope", roleCodes);
-        return list.isEmpty() ? null : list.get(0).getScopeModule();
+        SysScope scope = scopeMapper.selectById(scopeIds.get(0));
+        if (scope == null || scope.getScopeContent() == null) {
+            return null;
+        }
+        Object scopeType = scope.getScopeContent().get("scope");
+        return scopeType == null ? null : scopeType.toString();
     }
 }

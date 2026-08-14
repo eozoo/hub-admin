@@ -83,6 +83,7 @@ public class SysMenuServiceImpl implements SysMenuService {
             node.setParentId(menu.getParentId());
             node.setName(menu.getMenuName());
             node.put("menuType", menu.getMenuType());
+            node.put("menuPermit", menu.getMenuPermit());
             node.put("scopeId", menu.getScopeId());
             node.put("scopes", menu.getScopes());
         });
