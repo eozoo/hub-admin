@@ -22,11 +22,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
-        <!-- ldap -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-ldap</artifactId>
-		</dependency>
         <!-- security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -32,6 +32,11 @@ public class OAuth2CodeBo {
     private String userCode;
 
     /**
+     * 令牌类型
+     */
+    private String authType;
+
+    /**
      * 应用ID（授权码绑定，换token时校验一致性）
      */
     private String clientId;

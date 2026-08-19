@@ -18,10 +18,13 @@ import com.cowave.hub.admin.domain.auth.entity.command.MfaBind;
 import com.cowave.hub.admin.domain.auth.entity.command.PasswdReset;
 import com.cowave.hub.admin.domain.auth.entity.command.ProfileUpdate;
 import com.cowave.hub.admin.domain.auth.entity.vo.MfaVo;
+import com.cowave.hub.admin.domain.auth.enums.AuthType;
 import com.cowave.hub.admin.domain.rbac.biz.SysUserBiz;
+import com.cowave.hub.admin.domain.member.entity.HubMember;
 import com.cowave.hub.admin.domain.rbac.entity.SysTenant;
 import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import com.cowave.hub.admin.domain.rbac.enums.UserType;
+import com.cowave.hub.admin.domain.member.repository.facade.HubMemberRepositoryFacade;
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.domain.sys.entity.SysAttach;
 import com.cowave.hub.admin.domain.auth.repository.facade.SysOAuthRepositoryFacade;
@@ -53,6 +56,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final SysUserRepositoryFacade userRepositoryFacade;
     private final SysOAuthRepositoryFacade oauthRepositoryFacade;
     private final SysTenantRepositoryFacade tenantRepositoryFacade;
+    private final HubMemberRepositoryFacade memberRepositoryFacade;
 
     @Override
     public UserProfile info() throws Exception {
@@ -60,6 +64,25 @@ public class ProfileServiceImpl implements ProfileService {
         String tenantId = userDetails.getTenantId();
         Integer userId = userDetails.getUserId();
         String userCode = userDetails.getUserCode();
+        // member令牌
+        if (AuthType.MEMBER.getVal().equals(userDetails.getAuthType())) {
+            // member信息
+            HubMember hubMember = memberRepositoryFacade.queryByCode(userCode);
+            UserProfile memberProfile = new UserProfile();
+            memberProfile.setUserId(hubMember.getMemberId());
+            memberProfile.setUserCode(hubMember.getMemberCode());
+            memberProfile.setUserType(hubMember.getMemberType().getVal());
+            memberProfile.setUserName(hubMember.getMemberName());
+            memberProfile.setUserAccount(hubMember.getMemberAccount());
+            memberProfile.setUserEmail(hubMember.getMemberEmail());
+            memberProfile.setAvatar(hubMember.getMemberAvatar());
+            // 租户信息
+            SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
+            memberProfile.setTenantId(sysTenant.getTenantId());
+            memberProfile.setTenantName(sysTenant.getTenantName());
+            return memberProfile;
+        }
+
         UserProfile userProfile = userRepositoryFacade.queryUserProfile(userId);
         // Avatar
         if (UserType.GITLAB.equalsType(userCode)) {

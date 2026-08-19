@@ -21,6 +21,8 @@ import com.cowave.hub.admin.domain.rbac.entity.HubRoleApp;
 import com.cowave.hub.admin.domain.auth.entity.vo.OAuthAppCard;
 import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
 import com.cowave.hub.admin.domain.auth.repository.facade.HubAppRepositoryFacade;
+import com.cowave.hub.admin.domain.auth.enums.AuthType;
+import com.cowave.hub.admin.domain.member.repository.facade.HubMemberRepositoryFacade;
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.service.auth.OAuthAppService;
 import com.cowave.zoo.framework.access.Access;
@@ -41,6 +43,7 @@ public class OAuthAppServiceImpl implements OAuthAppService {
     private final HubAppBiz oauthAppBiz;
     private final HubAppRepositoryFacade oauthAppRepositoryFacade;
     private final SysUserRepositoryFacade userRepositoryFacade;
+    private final HubMemberRepositoryFacade memberRepositoryFacade;
 
     @Override
     public Page<HubApp> listOauthApp(String tenantId, String clientName) {
@@ -65,7 +68,12 @@ public class OAuthAppServiceImpl implements OAuthAppService {
 
     @Override
     public List<OAuthAppCard> queryOauthAppCards() {
-        List<Integer> roleIdList = userRepositoryFacade.queryUserRoleIdsByUserId(Access.userId());
+        List<Integer> roleIdList;
+        if (AuthType.MEMBER.getVal().equals(Access.userDetails().getAuthType())) {
+            roleIdList = memberRepositoryFacade.queryMemberRoleIdsByMemberId(Access.userId());
+        } else {
+            roleIdList = userRepositoryFacade.queryUserRoleIdsByUserId(Access.userId());
+        }
         if (roleIdList.isEmpty()) {
             return new ArrayList<>();
         }

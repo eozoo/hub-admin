@@ -78,6 +78,9 @@ public class FlowDeployControllerTest extends SpringTest {
                 <?xml version="1.0" encoding="UTF-8"?>
                 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
                              xmlns:flowable="http://flowable.org/bpmn"
+                             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+                             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
                              targetNamespace="http://flowable.org/bpmn">
                   <process id="test-deploy-process" name="测试部署流程" isExecutable="true">
                     <startEvent id="start" />
@@ -86,6 +89,27 @@ public class FlowDeployControllerTest extends SpringTest {
                     <sequenceFlow id="flow1" sourceRef="start" targetRef="task1" />
                     <sequenceFlow id="flow2" sourceRef="task1" targetRef="end" />
                   </process>
+                  <bpmndi:BPMNDiagram id="BPMNDiagram_test-deploy-process">
+                    <bpmndi:BPMNPlane id="BPMNPlane_test-deploy-process" bpmnElement="test-deploy-process">
+                      <bpmndi:BPMNShape id="BPMNShape_start" bpmnElement="start">
+                        <omgdc:Bounds x="100" y="100" width="36" height="36" />
+                      </bpmndi:BPMNShape>
+                      <bpmndi:BPMNShape id="BPMNShape_task1" bpmnElement="task1">
+                        <omgdc:Bounds x="200" y="100" width="100" height="80" />
+                      </bpmndi:BPMNShape>
+                      <bpmndi:BPMNShape id="BPMNShape_end" bpmnElement="end">
+                        <omgdc:Bounds x="360" y="100" width="36" height="36" />
+                      </bpmndi:BPMNShape>
+                      <bpmndi:BPMNEdge id="BPMNEdge_flow1" bpmnElement="flow1">
+                        <omgdi:waypoint x="136" y="118" />
+                        <omgdi:waypoint x="200" y="140" />
+                      </bpmndi:BPMNEdge>
+                      <bpmndi:BPMNEdge id="BPMNEdge_flow2" bpmnElement="flow2">
+                        <omgdi:waypoint x="300" y="140" />
+                        <omgdi:waypoint x="360" y="118" />
+                      </bpmndi:BPMNEdge>
+                    </bpmndi:BPMNPlane>
+                  </bpmndi:BPMNDiagram>
                 </definitions>
                 """;
         MockMultipartFile file = new MockMultipartFile(

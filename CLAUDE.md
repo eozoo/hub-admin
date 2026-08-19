@@ -64,6 +64,7 @@ Controller (app) → Service (service) → Biz (domain) + RepositoryFacade (doma
 | `rbac` | 租户、用户、角色、菜单、部门、岗位、数据权限范围 |
 | `sys` | 系统配置、字典、附件、告警、通知、反馈 |
 | `flow` | Flowable 工作流（模型设计、部署、实例运行） |
+| `member` | 会员用户、会员三方授权入口（hub_oauth） |
 
 ### 实体命名约定
 
@@ -122,16 +123,16 @@ infra/*/dao/xxxDao.java               # @Repository，继承 ServiceImpl<Mapper,
 
 ```
 com.cowave.hub.admin
-├── controller.{auth|rbac|sys|flow}    # app 模块
+├── controller.{auth|rbac|sys|flow|member}    # app 模块
 ├── kafka.consumer                      # Kafka 消费者
 ├── socketio.event                      # Socket.IO 事件
-├── service.{auth|rbac|sys|flow}       # service 模块（接口 + impl）
-├── domain.{auth|rbac|sys|flow}        # domain 模块
+├── service.{auth|rbac|sys|flow|member}       # service 模块（接口 + impl）
+├── domain.{auth|rbac|sys|flow|member}        # domain 模块
 │   ├── biz / impl                      # 业务逻辑
 │   ├── entity / {command|query|vo|pto|bo}  # 领域对象
 │   ├── enums                           # 枚举
 │   └── repository / facade             # 仓储接口与门面
-└── infra.{auth|rbac|sys|flow}         # infra 模块
+└── infra.{auth|rbac|sys|flow|member}         # infra 模块
     ├── dao / mapper                    # 仓储实现
     └── sender / store                  # 外部组件适配（sys）
 ```

@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.hub.admin.service.auth.remote;
+package com.cowave.hub.admin.infra.auth.remote;
 
 import com.cowave.zoo.http.client.annotation.*;
 import com.cowave.zoo.http.client.response.HttpResponse;
@@ -23,7 +23,7 @@ import static com.cowave.zoo.http.client.constants.HttpHeader.Authorization;
  * @author shanhuiming
  */
 @HttpClient
-public interface GitlabRemoteService {
+public interface GitlabRemoteClient {
 
     /**
      * 获取Gitlab令牌

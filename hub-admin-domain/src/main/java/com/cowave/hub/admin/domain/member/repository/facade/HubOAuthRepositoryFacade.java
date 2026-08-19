@@ -10,34 +10,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.hub.admin.service.auth.remote;
+package com.cowave.hub.admin.domain.member.repository.facade;
 
-import com.cowave.hub.admin.domain.auth.entity.SysLdap;
-import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
+import com.cowave.hub.admin.domain.member.entity.HubOAuth;
 
 import java.util.List;
 
 /**
  * @author shanhuiming
  */
-public interface LdapRemoteService {
+public interface HubOAuthRepositoryFacade {
 
     /**
-     * LDAP 认证
-     *
-     * @param config   LDAP 配置
-     * @param filter   查询过滤器
-     * @param password 用户密码
-     * @return 认证是否通过
+     * 三方授权方式列表
      */
-    boolean authenticate(SysLdap config, String filter, String password);
+    List<HubOAuth> queryListByTenantId(String tenantId);
 
     /**
-     * 搜索 LDAP 用户
-     *
-     * @param config LDAP 配置
-     * @param filter 查询过滤器
-     * @return 用户属性列表
+     * 查询三方授权服务配置
      */
-    List<SysLdapUser> searchUser(SysLdap config, String filter);
+    HubOAuth queryByServerType(String tenantId, String serverType);
 }

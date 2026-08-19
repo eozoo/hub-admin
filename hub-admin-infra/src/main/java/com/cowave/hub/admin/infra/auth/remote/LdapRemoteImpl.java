@@ -10,11 +10,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.hub.admin.service.auth.remote.impl;
+package com.cowave.hub.admin.infra.auth.remote;
 
 import com.cowave.hub.admin.domain.auth.entity.SysLdap;
 import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
-import com.cowave.hub.admin.service.auth.remote.LdapRemoteService;
+import com.cowave.hub.admin.domain.auth.remote.LdapRemote;
 import com.cowave.zoo.http.client.asserts.HttpException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.naming.directory.SearchControls;
 import java.util.Collections;
@@ -34,8 +34,8 @@ import static com.cowave.zoo.http.client.constants.HttpCode.BAD_REQUEST;
  * @author shanhuiming
  */
 @RequiredArgsConstructor
-@Service
-public class LdapRemoteServiceImpl implements LdapRemoteService {
+@Component
+public class LdapRemoteImpl implements LdapRemote {
 
     private final ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy;
 

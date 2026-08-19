@@ -14,7 +14,7 @@ package com.cowave.hub.admin.controller.auth.remote;
 
 import com.cowave.hub.admin.domain.auth.entity.bo.GitlabToken;
 import com.cowave.hub.admin.domain.auth.entity.bo.GitlabUser;
-import com.cowave.hub.admin.service.auth.remote.GitlabRemoteService;
+import com.cowave.hub.admin.infra.auth.remote.GitlabRemoteClient;
 import com.cowave.zoo.http.client.response.HttpResponse;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ import java.util.Date;
  */
 @Primary
 @Component
-public class GitlabRemoteServiceTestImpl implements GitlabRemoteService {
+public class GitlabRemoteClientTestImpl implements GitlabRemoteClient {
 
     @Override
     public HttpResponse<GitlabToken> getGitlabToken(String gitlabUrl, String clientId, String clientSecret,

@@ -18,6 +18,7 @@ import com.cowave.zoo.http.client.response.Response;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
 import com.cowave.hub.admin.client.request.OAuth2TokenRequest;
 import com.cowave.hub.admin.client.dto.OAuthAppCardDto;
+import com.cowave.hub.admin.client.dto.OAuthEntryDto;
 import com.cowave.hub.admin.client.dto.UserProfileDto;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public interface AdminOAuthClient {
      * 刷新授权令牌
      */
     @HttpLine("GET /admin/api/v1/oauth/client/authorize/refresh?refreshToken={refreshToken}")
-    HttpResponse<Response<AccessUserDetails>> refreshAuthorizeToken(@HttpHost String httpUrl, @HttpParam("refreshToken") String refreshToken);
+    Response<AccessUserDetails> refreshAuthorizeToken(@HttpHost String httpUrl, @HttpParam("refreshToken") String refreshToken);
 
     /**
      * 获取用户信息
@@ -55,4 +56,17 @@ public interface AdminOAuthClient {
     @HttpHeaders({Authorization + ": {accessToken}"})
     @HttpLine("GET /admin/api/v1/oauth/app/card")
     HttpResponse<Response<List<OAuthAppCardDto>>> getOauthAppCards(@HttpHost String httpUrl, @HttpParam("accessToken") String accessToken);
+
+    /**
+     * 三方授权方式列表
+     */
+    @HttpLine("GET /admin/api/v1/member/oauth/list?tenantId={tenantId}")
+    Response<List<OAuthEntryDto>> getMemberOauthApps(@HttpHost String httpUrl, @HttpParam("tenantId") String tenantId);
+
+    /**
+     * Gitlab回调认证
+     */
+    @HttpLine("GET /admin/api/v1/member/oauth/gitlab?tenantId={tenantId}&code={code}")
+    Response<AccessUserDetails> getMemberGitlabToken(@HttpHost String httpUrl, @HttpParam("tenantId") String tenantId, @HttpParam("code") String code);
+
 }

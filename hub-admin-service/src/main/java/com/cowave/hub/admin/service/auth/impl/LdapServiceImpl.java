@@ -25,7 +25,7 @@ import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacad
 import com.cowave.hub.admin.domain.sys.biz.SysOperationBiz;
 import com.cowave.hub.admin.domain.auth.repository.facade.UserDetailsRepositoryFacade;
 import com.cowave.hub.admin.service.auth.LdapService;
-import com.cowave.hub.admin.service.auth.remote.LdapRemoteService;
+import com.cowave.hub.admin.domain.auth.remote.LdapRemote;
 import com.cowave.zoo.framework.access.operation.OperationInfo;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
 import com.cowave.zoo.framework.access.security.BearerTokenService;
@@ -50,7 +50,7 @@ import static com.cowave.zoo.http.client.constants.HttpCode.*;
 @RequiredArgsConstructor
 @Service
 public class LdapServiceImpl implements LdapService {
-    private final LdapRemoteService ldapRemoteService;
+    private final LdapRemote ldapRemote;
     private final BearerTokenService bearerTokenService;
     private final SysOperationBiz operationBiz;
     private final SysUserBiz userBiz;
@@ -70,10 +70,10 @@ public class LdapServiceImpl implements LdapService {
         }
 
         String filter = "(&(objectClass=" + sysLdap.getUserClass() + ")(" + sysLdap.getAccountProperty() + "=" + userAccount + "))";
-        boolean isAuthenticated = ldapRemoteService.authenticate(sysLdap, filter, passWord);
+        boolean isAuthenticated = ldapRemote.authenticate(sysLdap, filter, passWord);
         HttpAsserts.isTrue(isAuthenticated, UNAUTHORIZED, "{frame.auth.pass.invalid}");
 
-        List<SysLdapUser> list = ldapRemoteService.searchUser(sysLdap, filter);
+        List<SysLdapUser> list = ldapRemote.searchUser(sysLdap, filter);
         HttpAsserts.isTrue(list.size() == 1, FORBIDDEN, "{admin.ldap.failed.user}");
         SysLdapUser newUser = list.get(0);
 
@@ -137,7 +137,7 @@ public class LdapServiceImpl implements LdapService {
 
     @Override
     public void validConfig(SysLdap sysLdap) {
-        ldapRemoteService.authenticate(sysLdap, "(objectClass=*)", sysLdap.getLdapPasswd());
+        ldapRemote.authenticate(sysLdap, "(objectClass=*)", sysLdap.getLdapPasswd());
     }
 
     @Override

@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.infra.flow.dao;
 
 import com.cowave.hub.admin.domain.flow.entity.FlowExecution;
-import com.cowave.hub.admin.domain.flow.repository.facade.FlowExecutionRepositoryFacade;
+import com.cowave.hub.admin.domain.flow.repository.FlowExecutionRepository;
 import com.cowave.hub.admin.infra.flow.mapper.FlowExecutionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -25,7 +25,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Repository
-public class FlowExecutionDao implements FlowExecutionRepositoryFacade {
+public class FlowExecutionDao implements FlowExecutionRepository {
 
     private final FlowExecutionMapper executionMapper;
 

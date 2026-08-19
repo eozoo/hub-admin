@@ -14,7 +14,7 @@ package com.cowave.hub.admin.controller.auth.remote;
 
 import com.cowave.hub.admin.domain.auth.entity.SysLdap;
 import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
-import com.cowave.hub.admin.service.auth.remote.LdapRemoteService;
+import com.cowave.hub.admin.domain.auth.remote.LdapRemote;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Primary
 @Component
-public class LdapRemoteServiceTestImpl implements LdapRemoteService {
+public class LdapRemoteTestImpl implements LdapRemote {
 
     @Override
     public boolean authenticate(SysLdap config, String filter, String password) {

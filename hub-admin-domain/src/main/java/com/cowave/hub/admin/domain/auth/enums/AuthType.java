@@ -36,7 +36,12 @@ public enum AuthType implements EnumVal<String> {
     /**
      * OAuth令牌
      */
-    OAUTH("oauth");
+    OAUTH("oauth"),
+
+    /**
+     * 会员令牌
+     */
+    MEMBER("member");
 
     private final String val;
 
