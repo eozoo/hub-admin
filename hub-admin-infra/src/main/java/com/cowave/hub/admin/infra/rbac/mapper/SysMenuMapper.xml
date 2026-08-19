@@ -66,6 +66,18 @@
 		  and m.menu_permit is not null
 	</select>
 
+    <select id="listPermitScopesByMemberId" resultType="com.cowave.hub.admin.domain.rbac.entity.pto.PermitScopePto">
+		select distinct m.menu_permit as permit, rm.scope_id as scopeId
+		from hub_member_role ur,
+			 sys_role r,
+			 sys_role_menu rm,
+			 sys_menu m
+		where m.menu_status = 1 and m.menu_type in('B', 'C') and m.tenant_id in('#', #{tenantId})
+		  and ur.role_id = r.role_id and r.role_id = rm.role_id and rm.menu_id = m.menu_id
+		  and (ur.member_id = #{memberId} or m.is_protected = 0)
+		  and m.menu_permit is not null
+	</select>
+
     <resultMap id="menuTreeMap" type="com.cowave.hub.admin.domain.rbac.entity.pto.MenuTreePto">
         <result column="menuId"       property="menuId"/>
 		<result column="menu_scope"   property="scopeId"/>

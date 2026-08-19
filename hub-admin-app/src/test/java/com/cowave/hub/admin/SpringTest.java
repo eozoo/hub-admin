@@ -125,15 +125,15 @@ public class SpringTest {
                 "/api/v1/auth/public/mfa",
                 "/api/v1/auth/public/ldap",
                 "/api/v1/auth/public/register",
-                "/api/v1/oauth/client/authorize/token"));
+                "/api/v1/home/app/authorize/token"));
         anonymousUrls.put("GET", Set.of(
                 "/api/v1/auth/public/captcha",
                 "/api/v1/auth/public/captcha/email",
                 "/api/v1/auth/public/refresh",
                 "/api/v1/auth/public/gitlab",
                 "/api/v1/oauth/callback/**",
-                "/api/v1/oauth/client/redirect/**",
-                "/api/v1/oauth/client/authorize/refresh",
+                "/api/v1/home/app/authorize/redirect/**",
+                "/api/v1/home/app/authorize/refresh",
                 "/api/v1/flow/designer/**"));
         AccessIdGenerator accessIdGenerator = new AccessIdGenerator("");
         AccessFilter accessFilter = new AccessFilter(null, accessIdGenerator, accessProperties, objectMapper);

@@ -38,6 +38,11 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     List<PermitScopePto> listPermitScopesByUserId(@Param("tenantId") String tenantId, @Param("userId") Integer userId);
 
     /**
+     * 权限数据（会员：操作权限 + 数据权限）
+     */
+    List<PermitScopePto> listPermitScopesByMemberId(@Param("tenantId") String tenantId, @Param("memberId") Integer memberId);
+
+    /**
      * 菜单树（包含数据权限）
      */
     List<MenuTreePto> listTree(String tenantId);

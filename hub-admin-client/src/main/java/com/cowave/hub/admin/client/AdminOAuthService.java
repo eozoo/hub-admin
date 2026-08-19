@@ -18,6 +18,7 @@ import com.cowave.zoo.framework.access.AccessProperties;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
 import com.cowave.hub.admin.client.request.OAuth2TokenRequest;
 import com.cowave.hub.admin.client.dto.OAuthAppCardDto;
+import com.cowave.hub.admin.client.dto.OAuthEntryDto;
 import com.cowave.hub.admin.client.dto.UserProfileDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -61,9 +62,8 @@ public class AdminOAuthService {
      * 刷新授权令牌
      */
     public AccessUserDetails refreshAuthorizeToken(String refreshToken) {
-        HttpResponse<Response<AccessUserDetails>> httpResponse =
+        Response<AccessUserDetails> response =
                 adminOAuthClient.refreshAuthorizeToken(accessProperties.oauthTokenUri(), refreshToken);
-        Response<AccessUserDetails> response = httpResponse.getBody();
         return response.getData();
     }
 
@@ -80,6 +80,24 @@ public class AdminOAuthService {
     public UserProfileDto getUserProfile(String accessToken) {
         Response<UserProfileDto> response =
                 adminOAuthClient.getUserProfile(accessProperties.oauthTokenUri(), accessToken);
+        return response.getData();
+    }
+
+    /**
+     * 三方授权方式列表
+     */
+    public List<OAuthEntryDto> getMemberOauthList(String tenantId) {
+        Response<List<OAuthEntryDto>> response =
+                adminOAuthClient.getMemberOauthApps(accessProperties.oauthTokenUri(), tenantId);
+        return response.getData();
+    }
+
+    /**
+     * Gitlab回调认证
+     */
+    public AccessUserDetails getMemberGitlabToken(String tenantId, String code) {
+        Response<AccessUserDetails> response =
+                adminOAuthClient.getMemberGitlabToken(accessProperties.oauthTokenUri(), tenantId, code);
         return response.getData();
     }
 }
