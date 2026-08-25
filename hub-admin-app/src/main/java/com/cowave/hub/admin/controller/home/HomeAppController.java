@@ -14,6 +14,7 @@ package com.cowave.hub.admin.controller.home;
 
 import com.cowave.zoo.http.client.response.Response;
 import com.cowave.zoo.framework.access.Access;
+import com.cowave.zoo.framework.access.annotation.AnonymousGetMapping;
 import com.cowave.hub.admin.domain.home.entity.HubApp;
 import com.cowave.hub.admin.domain.home.entity.command.RoleAppGrant;
 import com.cowave.hub.admin.domain.home.entity.HubAppMenu;
@@ -41,11 +42,19 @@ public class HomeAppController {
     private final HomeAppService homeAppService;
 
     /**
-     * 获取授权应用卡片
+     * 应用导航列表（匿名）
      */
-    @GetMapping("/card")
-    public Response<List<OAuthAppCard>> getAppCards() {
-        return Response.success(homeAppService.queryAppCards());
+    @AnonymousGetMapping("/nav")
+    public Response<List<OAuthAppCard>> getAppNav(@RequestParam("tenantId") String tenantId) {
+        return Response.success(homeAppService.queryAppNav(tenantId));
+    }
+
+    /**
+     * 应用导航列表（登录）
+     */
+    @GetMapping("/nav/authorized")
+    public Response<List<OAuthAppCard>> getAuthorizedAppNav() {
+        return Response.success(homeAppService.queryAppNav(null));
     }
 
     /**

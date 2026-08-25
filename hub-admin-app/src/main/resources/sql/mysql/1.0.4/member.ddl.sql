@@ -10,6 +10,7 @@ create table hub_member
     member_name    varchar(64) not null comment '会员名称',
     member_avatar  varchar(256) comment '会员头像',
     member_email   varchar(128) comment '会员邮箱',
+    member_sign    varchar(256) comment '个性签名',
     member_status  smallint default 1 comment '会员状态',
     create_by    varchar(64) comment '创建人',
     create_time  datetime comment '创建时间',

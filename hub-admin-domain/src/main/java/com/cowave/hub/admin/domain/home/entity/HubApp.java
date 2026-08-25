@@ -56,6 +56,31 @@ public class HubApp implements AccessInfoSetter {
     private String cardIcon;
 
     /**
+     * 应用类型 oauth/link
+     */
+    private String appType;
+
+    /**
+     * 可见性 public/all/sys
+     */
+    private String appVisible;
+
+    /**
+     * 跳转地址
+     */
+    private String linkUrl;
+
+    /**
+     * 排序
+     */
+    private Integer appSort;
+
+    /**
+     * 状态 0关闭 1开启
+     */
+    private Integer status;
+
+    /**
      * 应用名称
      */
     @NotBlank(message = "{admin.oauth.name.null}")

@@ -13,6 +13,7 @@
 package com.cowave.hub.admin.domain.home.biz;
 
 import com.cowave.hub.admin.domain.home.entity.HubMember;
+import com.cowave.hub.admin.domain.home.entity.command.HubMemberProfileUpdate;
 
 /**
  * HubMember聚合根Command操作
@@ -37,4 +38,9 @@ public interface HubMemberBiz {
      * 更新会员信息
      */
     void updateMember(HubMember hubMember);
+
+    /**
+     * 更新会员profile
+     */
+    void updateMemberProfile(Integer memberId, HubMemberProfileUpdate cmd);
 }

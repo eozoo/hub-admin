@@ -22,7 +22,9 @@ import lombok.Data;
 @Data
 public class OAuthEntryDto {
 
-    private String serverType;
+    private String oauthProvider;
+
+    private String oauthType;
 
     private String oauthName;
 
@@ -30,5 +32,9 @@ public class OAuthEntryDto {
 
     private String oauthTip;
 
+    private String linkUrl;
+
     private String authorizeUrl;
+
+    private String clientId;
 }

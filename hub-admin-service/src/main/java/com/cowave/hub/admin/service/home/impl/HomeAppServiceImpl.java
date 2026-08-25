@@ -26,6 +26,7 @@ import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.service.home.HomeAppService;
 import com.cowave.zoo.framework.access.Access;
+import com.cowave.zoo.framework.access.security.AccessUserDetails;
 import com.cowave.zoo.tools.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,27 +47,37 @@ public class HomeAppServiceImpl implements HomeAppService {
     private final HubMemberRepositoryFacade memberRepositoryFacade;
 
     @Override
-    public List<OAuthAppCard> queryAppCards() {
-        List<Integer> roleIdList;
-        if (AuthType.MEMBER.getVal().equals(Access.userDetails().getAuthType())) {
-            roleIdList = memberRepositoryFacade.queryMemberRoleIdsByMemberId(Access.userId());
-        } else {
-            roleIdList = userRepositoryFacade.queryUserRoleIdsByUserId(Access.userId());
-        }
-        if (roleIdList.isEmpty()) {
-            return new ArrayList<>();
+    public List<OAuthAppCard> queryAppNav(String tenantId) {
+        AccessUserDetails userDetails = Access.userDetails();
+        if (tenantId == null && userDetails != null) {
+            tenantId = userDetails.getTenantId();
         }
 
         List<HubApp> appList;
-        if (roleIdList.contains(1)) {
-            appList = hubAppRepositoryFacade.queryListByTenantId(Access.tenantId());
-        } else {
-            List<HubRoleApp> roleAppList = hubAppRepositoryFacade.queryRoleAppsByRoleIdList(roleIdList);
-            Set<Integer> appIdSet = Collections.copyToSet(roleAppList, HubRoleApp::getAppId);
-            if (appIdSet.isEmpty()) {
-                return new ArrayList<>();
+        if (userDetails != null) {
+            // 登录
+            List<Integer> roleIdList;
+            if (AuthType.MEMBER.getVal().equals(userDetails.getAuthType())) {
+                roleIdList = memberRepositoryFacade.queryMemberRoleIdsByMemberId(Access.userId());
+            } else {
+                roleIdList = userRepositoryFacade.queryUserRoleIdsByUserId(Access.userId());
             }
-            appList = hubAppRepositoryFacade.queryListByIds(appIdSet);
+
+            if (roleIdList.isEmpty()) {
+                appList = hubAppRepositoryFacade.queryPublicNavByTenantId(tenantId);
+            } else if (roleIdList.contains(1)) {
+                appList = hubAppRepositoryFacade.queryNavByTenantId(tenantId);
+            } else {
+                List<HubRoleApp> roleAppList = hubAppRepositoryFacade.queryRoleAppsByRoleIdList(roleIdList);
+                Set<Integer> appIdSet = Collections.copyToSet(roleAppList, HubRoleApp::getAppId);
+                if (appIdSet.isEmpty()) {
+                    return new ArrayList<>();
+                }
+                appList = hubAppRepositoryFacade.queryListByIds(appIdSet);
+            }
+        } else {
+            // 匿名
+            appList = hubAppRepositoryFacade.queryPublicNavByTenantId(tenantId);
         }
         return Collections.convertToList(appList, OAuthAppCard.class);
     }
@@ -104,6 +115,6 @@ public class HomeAppServiceImpl implements HomeAppService {
 
     @Override
     public List<HubAppMenu> listAppMenus(Integer appId, String menuName, EnableStatus menuStatus) {
-        return hubAppRepositoryFacade.queryListMenus(appId, menuName, menuStatus);
+        return hubAppRepositoryFacade.queryMenuList(appId, menuName, menuStatus);
     }
 }

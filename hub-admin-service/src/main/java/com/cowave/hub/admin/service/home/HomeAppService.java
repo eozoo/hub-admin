@@ -27,9 +27,9 @@ import java.util.List;
 public interface HomeAppService {
 
     /**
-     * 获取授权应用卡片
+     * 应用导航列表
      */
-    List<OAuthAppCard> queryAppCards();
+    List<OAuthAppCard> queryAppNav(String tenantId);
 
     /**
      * 应用列表

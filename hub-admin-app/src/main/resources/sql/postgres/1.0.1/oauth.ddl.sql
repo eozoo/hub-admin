@@ -70,6 +70,11 @@ create table hub_app
     tenant_id     character varying(64),
     card_name     character varying(64),
     card_icon     character varying(64),
+    app_type      character varying(64),
+    app_visible   character varying(64),
+    link_url      character varying(256),
+    app_sort      int4 default 0,
+    status        int2 default 1,
     client_name   character varying(64),
     client_id     character varying(64),
     client_secret character varying(64),
@@ -83,6 +88,13 @@ create table hub_app
 );
 comment on table hub_app is 'OAuth应用';
 comment on column hub_app.id is 'id';
+comment on column hub_app.card_name is '卡片名称';
+comment on column hub_app.card_icon is '卡片图标';
+comment on column hub_app.app_type is '应用类型 oauth/link';
+comment on column hub_app.app_visible is '可见性 public/all/sys';
+comment on column hub_app.link_url is '跳转地址';
+comment on column hub_app.app_sort is '排序';
+comment on column hub_app.status is '状态 0关闭 1开启';
 comment on column hub_app.client_name is '应用名称';
 comment on column hub_app.client_id is '应用id';
 comment on column hub_app.client_secret is '应用密钥';

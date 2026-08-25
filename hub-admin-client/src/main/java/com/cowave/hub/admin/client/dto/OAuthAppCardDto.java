@@ -26,6 +26,10 @@ public class OAuthAppCardDto {
 
     private String cardIcon;
 
+    private String appType;
+
+    private String linkUrl;
+
     private String clientName;
 
     private String clientId;

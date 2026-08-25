@@ -71,6 +71,11 @@ public class HubMember {
     private String memberEmail;
 
     /**
+     * 个性签名
+     */
+    private String memberSign;
+
+    /**
      * 会员状态
      */
     private EnableStatus memberStatus;

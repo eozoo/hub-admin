@@ -42,10 +42,10 @@ public class HubOAuthDao extends ServiceImpl<HubOAuthMapper, HubOAuth> implement
      * 查询三方授权服务配置
      */
     @Override
-    public HubOAuth queryByServerType(String tenantId, String serverType) {
+    public HubOAuth queryByProvider(String tenantId, String oauthProvider) {
         return lambdaQuery()
                 .eq(HubOAuth::getTenantId, tenantId)
-                .eq(HubOAuth::getServerType, serverType)
+                .eq(HubOAuth::getOauthProvider, oauthProvider)
                 .one();
     }
 }

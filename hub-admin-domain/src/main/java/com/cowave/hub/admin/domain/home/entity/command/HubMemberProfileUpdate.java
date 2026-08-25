@@ -10,34 +10,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.hub.admin.domain.auth.enums;
+package com.cowave.hub.admin.domain.home.entity.command;
 
-import com.cowave.zoo.tools.EnumVal;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author shanhuiming
  */
 @Getter
-@RequiredArgsConstructor
-public enum AuthType implements EnumVal<String> {
+@Setter
+public class HubMemberProfileUpdate {
 
     /**
-     * 系统令牌
+     * 会员名称
      */
-    SYS("sys"),
+    @NotBlank(message = "{admin.member.name.null}")
+    private String memberName;
 
     /**
-     * Api令牌
+     * 个性签名
      */
-    API("api"),
-
-    /**
-     * 会员令牌
-     */
-    MEMBER("member");
-
-    private final String val;
-
+    private String memberSign;
 }

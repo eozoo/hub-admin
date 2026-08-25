@@ -12,11 +12,17 @@
  */
 package com.cowave.hub.admin.controller.home;
 
+import com.cowave.hub.admin.domain.home.entity.command.HubMemberProfileUpdate;
+import com.cowave.hub.admin.domain.home.entity.vo.HubMemberProfileVo;
+import com.cowave.hub.admin.service.home.HomeOAuthMemberService;
+import com.cowave.zoo.http.client.response.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 /**
  * Home门户 三方授权用户
@@ -29,4 +35,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/home/oauth/member")
 public class HomeOAuthMemberController {
 
+    private final HomeOAuthMemberService homeOauthMemberService;
+
+    /**
+     * 会员profile
+     */
+    @GetMapping("/profile")
+    public Response<HubMemberProfileVo> profile() {
+        return Response.success(homeOauthMemberService.profile());
+    }
+
+    /**
+     * 更新会员profile
+     */
+    @PatchMapping("/profile")
+    public Response<Void> updateProfile(@Validated @RequestBody HubMemberProfileUpdate cmd) {
+        homeOauthMemberService.updateProfile(cmd);
+        return Response.success();
+    }
 }

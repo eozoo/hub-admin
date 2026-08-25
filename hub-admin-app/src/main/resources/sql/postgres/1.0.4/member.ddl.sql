@@ -10,6 +10,7 @@ create table hub_member
     member_name    character varying(64) not null,
     member_avatar  character varying(256),
     member_email   character varying(128),
+    member_sign    character varying(256),
     member_status  int2 default 1,
     create_by    character varying(64),
     create_time  timestamp,
@@ -27,6 +28,7 @@ comment on column hub_member.member_account is '会员账号';
 comment on column hub_member.member_name is '会员名称';
 comment on column hub_member.member_avatar is '会员头像';
 comment on column hub_member.member_email is '会员邮箱';
+comment on column hub_member.member_sign is '个性签名';
 comment on column hub_member.member_status is '会员状态';
 comment on column hub_member.create_by is '创建人';
 comment on column hub_member.create_time is '创建时间';

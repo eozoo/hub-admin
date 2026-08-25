@@ -48,6 +48,16 @@ public interface HubAppRepositoryFacade {
     List<HubApp> queryListByTenantId(String tenantId);
 
     /**
+     * 应用导航列表（匿名）
+     */
+    List<HubApp> queryPublicNavByTenantId(String tenantId);
+
+    /**
+     * 应用导航列表（超级管理员）
+     */
+    List<HubApp> queryNavByTenantId(String tenantId);
+
+    /**
      * 按id列表查询
      */
     List<HubApp> queryListByIds(Set<Integer> appIds);
@@ -55,7 +65,7 @@ public interface HubAppRepositoryFacade {
     /**
      * 应用菜单列表
      */
-    List<HubAppMenu> queryListMenus(Integer appId, String menuName, EnableStatus menuStatus);
+    List<HubAppMenu> queryMenuList(Integer appId, String menuName, EnableStatus menuStatus);
 
     /**
      * 角色应用id列表

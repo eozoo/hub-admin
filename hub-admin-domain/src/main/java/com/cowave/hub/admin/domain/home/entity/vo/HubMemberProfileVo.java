@@ -20,45 +20,55 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class HubOAuthVo {
+public class HubMemberProfileVo {
 
     /**
-     * 授权提供方
+     * 会员id
      */
-    private String oauthProvider;
+    private Integer memberId;
 
     /**
-     * 入口类型 oauth/link
+     * 会员编码
      */
-    private String oauthType;
+    private String memberCode;
 
     /**
-     * 入口名称
+     * 会员类型
      */
-    private String oauthName;
+    private String memberType;
 
     /**
-     * 入口图标
+     * 会员名称
      */
-    private String oauthIcon;
+    private String memberName;
 
     /**
-     * 悬停提示
+     * 会员账号
      */
-    private String oauthTip;
+    private String memberAccount;
 
     /**
-     * 跳转地址
+     * 会员邮箱
      */
-    private String linkUrl;
+    private String memberEmail;
 
     /**
-     * 授权地址
+     * 会员头像
      */
-    private String authorizeUrl;
+    private String memberAvatar;
 
     /**
-     * 应用id
+     * 个性签名
      */
-    private String clientId;
+    private String memberSign;
+
+    /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
+     * 租户名称
+     */
+    private String tenantName;
 }

@@ -56,7 +56,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.cowave.hub.admin.domain.AdminRedisKeys.OAUTH_CODE;
 import static com.cowave.hub.admin.domain.auth.enums.AuthType.MEMBER;
-import static com.cowave.hub.admin.domain.auth.enums.AuthType.OAUTH;
 import static com.cowave.hub.admin.domain.sys.enums.OpAction.LOGIN_OAUTH;
 import static com.cowave.hub.admin.domain.sys.enums.OpModule.SYSTEM;
 import static com.cowave.hub.admin.domain.sys.enums.OpModule.SYSTEM_AUTH;
@@ -201,7 +200,6 @@ public class HomeAppOAuthServiceImpl implements HomeAppOAuthService {
         }
         userDetails.setOauthId(oauthApp.getClientId());
         userDetails.setOauthName(oauthApp.getClientName());
-        userDetails.setAuthType(OAUTH.getVal());
         // 授权访问的应用列表
         List<String> apps = new ArrayList<>();
         // 申请方（oauthId）

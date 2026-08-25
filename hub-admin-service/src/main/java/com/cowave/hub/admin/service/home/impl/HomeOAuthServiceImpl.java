@@ -65,11 +65,16 @@ public class HomeOAuthServiceImpl implements HomeOAuthService {
         List<HubOAuthVo> voList = new ArrayList<>();
         for (HubOAuth oauth : oauthList) {
             HubOAuthVo vo = new HubOAuthVo();
-            vo.setServerType(oauth.getServerType());
+            vo.setOauthProvider(oauth.getOauthProvider());
+            vo.setOauthType(oauth.getOauthType());
             vo.setOauthName(oauth.getOauthName());
             vo.setOauthIcon(oauth.getOauthIcon());
             vo.setOauthTip(oauth.getOauthTip());
-            vo.setAuthorizeUrl(oauth.gitlabAuthorizeUrl());
+            vo.setLinkUrl(oauth.getLinkUrl());
+            vo.setClientId(oauth.getAppId());
+            if ("oauth".equals(oauth.getOauthType()) && !"cowave".equals(oauth.getOauthProvider())) {
+                vo.setAuthorizeUrl(oauth.gitlabAuthorizeUrl());
+            }
             voList.add(vo);
         }
         return voList;
@@ -77,7 +82,7 @@ public class HomeOAuthServiceImpl implements HomeOAuthService {
 
     @Override
     public AccessUserDetails gitlabCallback(String tenantId, String code) {
-        HubOAuth oauth = hubOAuthRepositoryFacade.queryByServerType(tenantId, GITLAB.getVal());
+        HubOAuth oauth = hubOAuthRepositoryFacade.queryByProvider(tenantId, GITLAB.getVal());
         GitlabUser gitlabUser = gitlabRemote.getGitlabUser(
                 oauth.getAuthUrl(), oauth.getAppId(), oauth.getAppSecret(),
                 oauth.getRedirectUrl(), oauth.getGrantType(), oauth.getAuthScope(), code);

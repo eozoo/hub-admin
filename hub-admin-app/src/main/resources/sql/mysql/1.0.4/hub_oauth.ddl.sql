@@ -4,10 +4,12 @@ create table hub_oauth
 (
     oauth_id      int auto_increment primary key comment 'id',
     tenant_id     varchar(64) comment '租户id',
-    server_type   varchar(64) comment '服务类型 gitlab/qq/wechat',
+    oauth_provider varchar(64) comment '授权提供方 cowave/gitlab/qq/wechat',
+    oauth_type    varchar(64) comment '入口类型 oauth/link',
     oauth_name    varchar(64) comment '入口名称',
     oauth_icon    varchar(256) comment '入口图标',
     oauth_tip     varchar(256) comment '悬停提示',
+    link_url      varchar(256) comment '跳转地址',
     oauth_sort    int default 0 comment '排序',
     app_id        varchar(64) comment '应用id',
     app_secret    varchar(64) comment '应用密钥',
@@ -22,5 +24,5 @@ create table hub_oauth
     create_time   datetime comment '创建时间',
     update_by     varchar(64) comment '更新人',
     update_time   datetime comment '更新时间',
-    unique key hub_oauth_unique (tenant_id, server_type)
+    unique key hub_oauth_unique (tenant_id, oauth_provider)
 ) comment='会员三方授权入口';

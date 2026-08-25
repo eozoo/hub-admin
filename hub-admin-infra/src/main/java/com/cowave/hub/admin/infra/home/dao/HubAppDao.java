@@ -61,12 +61,31 @@ public class HubAppDao extends ServiceImpl<HubAppMapper, HubApp> implements HubA
     }
 
     @Override
+    public List<HubApp> queryPublicNavByTenantId(String tenantId) {
+        return lambdaQuery()
+                .eq(HubApp::getTenantId, tenantId)
+                .eq(HubApp::getStatus, 1)
+                .eq(HubApp::getAppVisible, "public")
+                .orderByAsc(HubApp::getAppSort)
+                .list();
+    }
+
+    @Override
+    public List<HubApp> queryNavByTenantId(String tenantId) {
+        return lambdaQuery()
+                .eq(HubApp::getTenantId, tenantId)
+                .eq(HubApp::getStatus, 1)
+                .orderByAsc(HubApp::getAppSort)
+                .list();
+    }
+
+    @Override
     public List<HubApp> queryListByIds(Set<Integer> appIds) {
         return listByIds(appIds);
     }
 
     @Override
-    public List<HubAppMenu> queryListMenus(Integer appId, String menuName, EnableStatus menuStatus) {
+    public List<HubAppMenu> queryMenuList(Integer appId, String menuName, EnableStatus menuStatus) {
         return oauthAppMenuMapper.selectList(new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<HubAppMenu>()
                 .eq(HubAppMenu::getAppId, appId)
                 .eq(menuStatus != null, HubAppMenu::getMenuStatus, menuStatus)

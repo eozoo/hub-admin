@@ -36,10 +36,7 @@ import com.cowave.hub.admin.domain.rbac.entity.vo.Route;
 import com.cowave.hub.admin.domain.rbac.entity.vo.RouteMeta;
 import com.cowave.hub.admin.domain.auth.repository.facade.UserDetailsRepositoryFacade;
 import com.cowave.hub.admin.domain.sys.biz.SysOperationBiz;
-import com.cowave.hub.admin.domain.auth.enums.AuthType;
 import com.cowave.hub.admin.domain.auth.repository.facade.SysOAuthRepositoryFacade;
-import com.cowave.hub.admin.domain.home.entity.HubMember;
-import com.cowave.hub.admin.domain.home.repository.facade.HubMemberRepositoryFacade;
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysRoleRepositoryFacade;
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysTenantRepositoryFacade;
 import com.cowave.hub.admin.domain.rbac.biz.SysUserBiz;
@@ -96,7 +93,6 @@ public class AuthServiceImpl implements AuthService {
     private final SysOAuthRepositoryFacade oauthRepositoryFacade;
     private final SysTenantRepositoryFacade tenantRepositoryFacade;
     private final UserDetailsRepositoryFacade userDetailsRepositoryFacade;
-    private final HubMemberRepositoryFacade memberRepositoryFacade;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -269,13 +265,7 @@ public class AuthServiceImpl implements AuthService {
         authVo.setTenantLogo(sysTenant.getLogo());
 
         // Avatar
-        if (AuthType.MEMBER.getVal().equals(userDetails.getAuthType())) {
-            String memberCode = userDetails.getUserCode();
-            HubMember hubMember = memberRepositoryFacade.queryByCode(memberCode);
-            if (hubMember != null) {
-                authVo.setAvatar(hubMember.getMemberAvatar());
-            }
-        } else if (GITLAB.equalsVal(userDetails.getUserType())) {
+        if (GITLAB.equalsVal(userDetails.getUserType())) {
             SysOAuthUser oauthUser =
                     oauthRepositoryFacade.queryUserByAccount(tenantId, GITLAB.getVal(), userDetails.getUsername());
             authVo.setAvatar(oauthUser.getUserAvatar());

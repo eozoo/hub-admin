@@ -32,7 +32,7 @@ public class HomeAppControllerTest extends SpringTest {
      * post /api/v1/home/app
      * get /api/v1/home/app
      * get /api/v1/home/app/options
-     * get /api/v1/home/app/card
+     * get /api/v1/home/app/nav
      * post /api/v1/home/app/role
      * get /api/v1/home/app/role/{roleId}
      * get /api/v1/home/app/menu/{appId}
@@ -80,7 +80,7 @@ public class HomeAppControllerTest extends SpringTest {
         // 获取授权应用选项
         mockGet("/api/v1/home/app/options", accessToken);
         // 获取人员授权应用
-        mockGet("/api/v1/home/app/card", accessToken);
+        mockGet("/api/v1/home/app/nav?tenantId=cowave", accessToken);
         // 给普通角色授权应用
         body = String.format("""
                 {

@@ -10,34 +10,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.hub.admin.domain.auth.enums;
+package com.cowave.hub.admin.client.dto;
 
-import com.cowave.zoo.tools.EnumVal;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 
 /**
  * @author shanhuiming
  */
-@Getter
-@RequiredArgsConstructor
-public enum AuthType implements EnumVal<String> {
+@Data
+public class MemberProfileDto {
 
-    /**
-     * 系统令牌
-     */
-    SYS("sys"),
+    private Integer memberId;
 
-    /**
-     * Api令牌
-     */
-    API("api"),
+    private String memberName;
 
-    /**
-     * 会员令牌
-     */
-    MEMBER("member");
+    private String memberAccount;
 
-    private final String val;
+    private String memberEmail;
 
+    private String memberAvatar;
+
+    private String memberSign;
 }

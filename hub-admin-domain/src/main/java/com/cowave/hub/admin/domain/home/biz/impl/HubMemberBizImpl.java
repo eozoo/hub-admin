@@ -14,6 +14,7 @@ package com.cowave.hub.admin.domain.home.biz.impl;
 
 import com.cowave.hub.admin.domain.home.biz.HubMemberBiz;
 import com.cowave.hub.admin.domain.home.entity.HubMember;
+import com.cowave.hub.admin.domain.home.entity.command.HubMemberProfileUpdate;
 import com.cowave.hub.admin.domain.home.repository.HubMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -42,5 +43,14 @@ public class HubMemberBizImpl implements HubMemberBiz {
     @Override
     public void updateMember(HubMember hubMember) {
         memberRepository.updateById(hubMember);
+    }
+
+    @Override
+    public void updateMemberProfile(Integer memberId, HubMemberProfileUpdate cmd) {
+        memberRepository.lambdaUpdate()
+                .eq(HubMember::getMemberId, memberId)
+                .set(HubMember::getMemberName, cmd.getMemberName())
+                .set(HubMember::getMemberSign, cmd.getMemberSign())
+                .update();
     }
 }

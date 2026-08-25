@@ -66,7 +66,7 @@ public class SysBearerTokenServiceImpl extends BearerTokenServiceImpl {
             return true;
         }
         // OAuth令牌：授权应用列表校验
-        if (AuthType.OAUTH.getVal().equals(userDetails.getAuthType())) {
+        if (StringUtils.isNotBlank(userDetails.getOauthId())) {
             List<String> oauthApps = userDetails.getApps();
             String selfAppId = accessProperties.oauthAppId();
             if (StringUtils.isNotBlank(selfAppId) && !oauthApps.contains(selfAppId)) {

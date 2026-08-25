@@ -38,6 +38,16 @@ public class OAuthAppCard {
     private String cardIcon;
 
     /**
+     * 应用类型 oauth/link
+     */
+    private String appType;
+
+    /**
+     * 跳转地址
+     */
+    private String linkUrl;
+
+    /**
      * 应用名称
      */
     private String clientName;

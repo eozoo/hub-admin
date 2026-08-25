@@ -14,6 +14,7 @@ package com.cowave.hub.admin.domain.home.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,7 @@ import java.util.Date;
  */
 @Getter
 @Setter
+@TableName("hub_oauth")
 public class HubOAuth {
 
     /**
@@ -39,9 +41,14 @@ public class HubOAuth {
     private String tenantId;
 
     /**
-     * 服务类型 gitlab/qq/wechat...
+     * 授权提供方 cowave/gitlab/qq/wechat...
      */
-    private String serverType;
+    private String oauthProvider;
+
+    /**
+     * 入口类型 oauth/link
+     */
+    private String oauthType;
 
     /**
      * 入口名称
@@ -57,6 +64,11 @@ public class HubOAuth {
      * 悬停提示
      */
     private String oauthTip;
+
+    /**
+     * 跳转地址
+     */
+    private String linkUrl;
 
     /**
      * 排序

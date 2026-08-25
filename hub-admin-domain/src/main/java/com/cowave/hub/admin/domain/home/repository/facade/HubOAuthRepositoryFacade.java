@@ -29,5 +29,5 @@ public interface HubOAuthRepositoryFacade {
     /**
      * 查询三方授权服务配置
      */
-    HubOAuth queryByServerType(String tenantId, String serverType);
+    HubOAuth queryByProvider(String tenantId, String oauthProvider);
 }

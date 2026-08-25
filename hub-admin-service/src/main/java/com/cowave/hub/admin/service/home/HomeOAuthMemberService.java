@@ -10,34 +10,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.hub.admin.domain.auth.enums;
+package com.cowave.hub.admin.service.home;
 
-import com.cowave.zoo.tools.EnumVal;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.cowave.hub.admin.domain.home.entity.command.HubMemberProfileUpdate;
+import com.cowave.hub.admin.domain.home.entity.vo.HubMemberProfileVo;
 
 /**
  * @author shanhuiming
  */
-@Getter
-@RequiredArgsConstructor
-public enum AuthType implements EnumVal<String> {
+public interface HomeOAuthMemberService {
 
     /**
-     * 系统令牌
+     * 会员profile
      */
-    SYS("sys"),
+    HubMemberProfileVo profile();
 
     /**
-     * Api令牌
+     * 更新会员profile
      */
-    API("api"),
-
-    /**
-     * 会员令牌
-     */
-    MEMBER("member");
-
-    private final String val;
-
+    void updateProfile(HubMemberProfileUpdate cmd);
 }

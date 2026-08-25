@@ -13,12 +13,12 @@
 package com.cowave.hub.admin.client;
 
 import com.cowave.zoo.http.client.annotation.*;
-import com.cowave.zoo.http.client.response.HttpResponse;
-import com.cowave.zoo.http.client.response.Response;
+import com.cowave.zoo.http.client.invoke.codec.decoder.ResponseDecoder;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
 import com.cowave.hub.admin.client.request.OAuth2TokenRequest;
 import com.cowave.hub.admin.client.dto.OAuthAppCardDto;
 import com.cowave.hub.admin.client.dto.OAuthEntryDto;
+import com.cowave.hub.admin.client.dto.MemberProfileDto;
 import com.cowave.hub.admin.client.dto.UserProfileDto;
 
 import java.util.List;
@@ -28,45 +28,57 @@ import static com.cowave.zoo.http.client.constants.HttpHeader.Authorization;
 /**
  * @author shanhuiming
  */
-@HttpClient
+@HttpClient(url = "${spring.access.oauth.oauthTokenUri}", decoder = ResponseDecoder.class)
 public interface AdminOAuthClient {
 
     /**
-     * 获取授权令牌
+     * 授权服务列表
+     */
+    @HttpLine("GET /admin/api/v1/home/oauth/list?tenantId={tenantId}")
+    List<OAuthEntryDto> getOauthList(@HttpParam("tenantId") String tenantId);
+
+    /**
+     * 系统授权令牌
      */
     @HttpLine("POST /admin/api/v1/home/app/authorize/token")
-    Response<AccessUserDetails> getAuthorizeToken(@HttpHost String httpUrl, OAuth2TokenRequest request);
+    AccessUserDetails getAuthorizeToken(OAuth2TokenRequest request);
+
+    /**
+     * gitlab授权令牌
+     */
+    @HttpLine("GET /admin/api/v1/home/oauth/gitlab?tenantId={tenantId}&code={code}")
+    AccessUserDetails gitlabAuthorizeToken(@HttpParam("tenantId") String tenantId, @HttpParam("code") String code);
 
     /**
      * 刷新授权令牌
      */
     @HttpLine("GET /admin/api/v1/home/app/authorize/refresh?refreshToken={refreshToken}")
-    Response<AccessUserDetails> refreshAuthorizeToken(@HttpHost String httpUrl, @HttpParam("refreshToken") String refreshToken);
+    AccessUserDetails refreshAuthorizeToken(@HttpParam("refreshToken") String refreshToken);
 
     /**
-     * 获取用户信息
+     * 系统用户profile
      */
     @HttpHeaders({Authorization + ": {accessToken}"})
     @HttpLine("GET /admin/api/v1/profile")
-    Response<UserProfileDto> getUserProfile(@HttpHost String httpUrl, @HttpParam("accessToken") String accessToken);
+    UserProfileDto getUserProfile(@HttpParam("accessToken") String accessToken);
 
     /**
-     * 获取应用卡片
+     * 三方用户profile
      */
     @HttpHeaders({Authorization + ": {accessToken}"})
-    @HttpLine("GET /admin/api/v1/home/app/card")
-    HttpResponse<Response<List<OAuthAppCardDto>>> getOauthAppCards(@HttpHost String httpUrl, @HttpParam("accessToken") String accessToken);
+    @HttpLine("GET /admin/api/v1/home/oauth/member/profile")
+    MemberProfileDto getMemberProfile(@HttpParam("accessToken") String accessToken);
 
     /**
-     * 三方授权方式列表
+     * 应用导航列表（匿名）
      */
-    @HttpLine("GET /admin/api/v1/home/oauth/list?tenantId={tenantId}")
-    Response<List<OAuthEntryDto>> getMemberOauthApps(@HttpHost String httpUrl, @HttpParam("tenantId") String tenantId);
+    @HttpLine("GET /admin/api/v1/home/app/nav?tenantId={tenantId}")
+    List<OAuthAppCardDto> getAppNav(@HttpParam("tenantId") String tenantId);
 
     /**
-     * Gitlab回调认证
+     * 应用导航列表（登录）
      */
-    @HttpLine("GET /admin/api/v1/home/oauth/gitlab?tenantId={tenantId}&code={code}")
-    Response<AccessUserDetails> getMemberGitlabToken(@HttpHost String httpUrl, @HttpParam("tenantId") String tenantId, @HttpParam("code") String code);
-
+    @HttpHeaders({Authorization + ": {accessToken}"})
+    @HttpLine("GET /admin/api/v1/home/app/nav/authorized")
+    List<OAuthAppCardDto> getAuthorizedAppNav(@HttpParam("accessToken") String accessToken);
 }
