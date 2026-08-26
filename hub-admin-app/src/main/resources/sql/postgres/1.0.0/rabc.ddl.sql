@@ -10,7 +10,6 @@ create table sys_tenant
     status       int2 default 1,
     expire_time  timestamp,
     title        character varying(64),
-    logo         text,
     view_index   character varying(64) default 'index_tenant',
     tenant_user  character varying(128),
     tenant_addr  character varying(256),
@@ -33,7 +32,6 @@ comment on column sys_tenant.user_index is '用户序号';
 comment on column sys_tenant.user_count is '用户统计';
 comment on column sys_tenant.user_limit is '用户上限';
 comment on column sys_tenant.title is '租户标题';
-comment on column sys_tenant.logo is '租户图标';
 comment on column sys_tenant.status is '租户状态';
 comment on column sys_tenant.expire_time is '到期时间';
 comment on column sys_tenant.remark is '备注';

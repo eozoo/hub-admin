@@ -27,6 +27,7 @@ import com.cowave.hub.admin.domain.auth.entity.vo.AuthVo;
 import com.cowave.hub.admin.domain.auth.entity.vo.CaptchaVo;
 import com.cowave.hub.admin.domain.auth.entity.command.UserLogin;
 import com.cowave.hub.admin.domain.auth.entity.command.UserRegister;
+import com.cowave.hub.admin.domain.auth.entity.query.OnlineQuery;
 import com.cowave.hub.admin.domain.auth.entity.vo.OnlineVo;
 import com.cowave.hub.admin.domain.rbac.entity.vo.Route;
 import lombok.RequiredArgsConstructor;
@@ -159,8 +160,8 @@ public class AuthController {
      * 在线用户
      */
     @PostMapping("/online")
-    public Response<Response.Page<OnlineVo>> onlineList() {
-        return Response.page(authService.onlineList());
+    public Response<Response.Page<OnlineVo>> onlineList(@RequestBody OnlineQuery query) {
+        return Response.success(authService.onlineList(query));
     }
 
     /**

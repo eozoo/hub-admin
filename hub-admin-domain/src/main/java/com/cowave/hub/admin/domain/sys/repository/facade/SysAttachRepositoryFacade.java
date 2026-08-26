@@ -43,4 +43,19 @@ public interface SysAttachRepositoryFacade {
      * 宿主附件列表
      */
     List<SysAttach> listByOwner(String ownerId, String ownerModule, AttachType attachType);
+
+    /**
+     * 匿名md5查询（任意一个）
+     */
+    SysAttach queryAnyByMd5(String md5);
+
+    /**
+     * 租户md5查询（任意一个）
+     */
+    SysAttach queryByMd5(String tenantId, String md5);
+
+    /**
+     * 租户md5统计
+     */
+    long countByMd5(String tenantId, String md5);
 }

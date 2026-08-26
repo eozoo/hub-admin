@@ -55,7 +55,7 @@ public class SysFeedbackController {
      * 留言列表
      */
     @GetMapping
-    public Response<Response.Page<FeedbackVo>> list(FeedbackQuery query) {
+    public Response<Response.Page<FeedbackVo>> list(FeedbackQuery query) throws Exception {
         return Response.page(feedbackService.list(Access.tenantId(), query));
     }
 

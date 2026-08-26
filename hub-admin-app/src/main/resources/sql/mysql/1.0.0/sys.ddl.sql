@@ -82,22 +82,24 @@ create unique index sys_notice_user_uk on sys_notice_user(user_code, notice_id);
 drop table if exists sys_attach;
 create table sys_attach
 (
-    attach_id     bigint auto_increment primary key comment '附件id',
-    tenant_id     varchar(64) comment '租户id',
-    owner_id      varchar(64) comment '宿主id',
-    owner_module  varchar(64) comment '宿主类型',
-    attach_type   varchar(64) comment '附件类型',
-    attach_name   varchar(1024) comment '附件名称',
-    attach_size   bigint comment '附件大小',
-    attach_path   varchar(1024) comment '附件路径',
-    is_private    smallint default 0 comment '是否私有的 0否 1是',
-    expire_time   datetime comment '过期时间',
-    create_by     varchar(64) comment '创建人',
-    create_time   datetime comment '创建时间',
-    update_by     varchar(64) comment '更新人',
-    update_time   datetime comment '更新时间'
+    attach_id    bigint auto_increment primary key comment '附件id',
+    tenant_id    varchar(64) comment '租户id',
+    owner_id     varchar(64) comment '宿主id',
+    owner_module varchar(64) comment '宿主类型',
+    md5          varchar(32) comment '文件内容md5',
+    attach_type  varchar(64) comment '附件类型',
+    attach_name  varchar(1024) comment '附件名称',
+    attach_size  bigint comment '附件大小',
+    attach_path  varchar(1024) comment '附件路径',
+    is_private   smallint default 0 comment '是否私有的 0否 1是',
+    expire_time  datetime comment '过期时间',
+    create_by    varchar(64) comment '创建人',
+    create_time  datetime comment '创建时间',
+    update_by    varchar(64) comment '更新人',
+    update_time  datetime comment '更新时间'
 ) comment='附件信息';
 create index sys_attach_master on sys_attach(owner_id, owner_module, attach_type);
+create index sys_attach_md5_idx on sys_attach(tenant_id, md5);
 
 -- 系统告警
 drop table if exists sys_alarm;

@@ -133,27 +133,30 @@ comment on column sys_notice_user.read_time is '读时间';
 drop table if exists sys_attach;
 create table sys_attach
 (
-    attach_id     bigserial primary key,
-    tenant_id     character varying(64),
-    owner_id      varchar(64),
-    owner_module  character varying(64),
-    attach_type   character varying(64),
-    attach_name   character varying(1024),
-    attach_size   int8,
-    attach_path   character varying(1024),
-    is_private    int2 default 0,
-    expire_time   timestamp,
-    create_by     varchar(64),
-    create_time   timestamp,
-    update_by     varchar(64),
-    update_time   timestamp
+    attach_id    bigserial primary key,
+    tenant_id    character varying(64),
+    owner_id     varchar(64),
+    owner_module character varying(64),
+    md5          character varying(32),
+    attach_type  character varying(64),
+    attach_name  character varying(1024),
+    attach_size  int8,
+    attach_path  character varying(1024),
+    is_private   int2 default 0,
+    expire_time  timestamp,
+    create_by    varchar(64),
+    create_time  timestamp,
+    update_by    varchar(64),
+    update_time  timestamp
 );
 create index sys_attach_master on sys_attach(owner_id, owner_module, attach_type);
+create index sys_attach_md5_idx on sys_attach(tenant_id, md5);
 comment on table sys_attach is '附件信息';
 comment on column sys_attach.attach_id is '附件id';
 comment on column sys_attach.tenant_id is '租户id';
 comment on column sys_attach.owner_id is '宿主id';
 comment on column sys_attach.owner_module is '宿主类型';
+comment on column sys_attach.md5 is '文件内容md5';
 comment on column sys_attach.attach_type is '附件类型';
 comment on column sys_attach.attach_name is '附件名称';
 comment on column sys_attach.attach_size is '附件大小';

@@ -28,7 +28,7 @@ public class NoticeCreateAttach {
     private Long attachId;
 
     /**
-     * 预览地址
+     * 附件md5
      */
-    private String attachPath;
+    private String md5;
 }

@@ -18,6 +18,7 @@ import com.cowave.hub.admin.domain.rbac.entity.command.*;
 import com.cowave.hub.admin.domain.sys.entity.vo.SelectOptionVo;
 import com.cowave.hub.admin.domain.rbac.entity.SysTenant;
 import com.cowave.hub.admin.domain.rbac.entity.pto.TenantManagerPto;
+import com.cowave.hub.admin.domain.rbac.entity.vo.TenantInfoVo;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ public interface SysTenantService {
     /**
      * 详情
      */
-    SysTenant info(String tenantId);
+    TenantInfoVo info(String tenantId) throws Exception;
 
     /**
      * 新增

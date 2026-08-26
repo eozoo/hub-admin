@@ -18,6 +18,7 @@ import com.cowave.zoo.http.client.response.Response;
 import com.cowave.hub.admin.domain.sys.entity.vo.SelectOptionVo;
 import com.cowave.hub.admin.domain.rbac.entity.SysTenant;
 import com.cowave.hub.admin.domain.rbac.entity.pto.TenantManagerPto;
+import com.cowave.hub.admin.domain.rbac.entity.vo.TenantInfoVo;
 import com.cowave.hub.admin.service.rbac.SysTenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -53,7 +54,7 @@ public class SysTenantController {
      */
     @PreAuthorize("@permits.hasPermit('sys:tenant:query')")
     @GetMapping("/{tenantId}")
-    public Response<SysTenant> info(@PathVariable String tenantId) {
+    public Response<TenantInfoVo> info(@PathVariable String tenantId) throws Exception {
         return Response.success(tenantService.info(tenantId));
     }
 

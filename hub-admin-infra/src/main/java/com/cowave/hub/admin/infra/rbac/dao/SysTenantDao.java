@@ -69,7 +69,6 @@ public class SysTenantDao extends ServiceImpl<SysTenantMapper, SysTenant> implem
                 .set(SysTenant::getTenantAddr, sysTenant.getTenantAddr())
                 .set(SysTenant::getUserLimit, sysTenant.getUserLimit())
                 .set(SysTenant::getTitle, sysTenant.getTitle())
-                .set(SysTenant::getLogo, sysTenant.getLogo())
                 .set(SysTenant::getUpdateBy, sysTenant.getUpdateBy())
                 .set(SysTenant::getUpdateTime, sysTenant.getUpdateTime())
                 .update();

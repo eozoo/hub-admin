@@ -22,12 +22,14 @@ import com.cowave.hub.admin.service.auth.support.MfaAuthVerifier;
 import com.cowave.hub.admin.service.auth.support.MfaConfiguration;
 import com.cowave.zoo.http.client.asserts.HttpAsserts;
 import com.cowave.zoo.http.client.asserts.HttpHintException;
+import com.cowave.zoo.http.client.response.Response;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.access.operation.OperationInfo;
 import com.cowave.zoo.framework.access.security.*;
 import com.cowave.zoo.framework.helper.redis.RedisHelper;
 import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
 import com.cowave.hub.admin.domain.auth.entity.command.UserRegister;
+import com.cowave.hub.admin.domain.auth.entity.query.OnlineQuery;
 import com.cowave.hub.admin.domain.auth.entity.vo.AuthVo;
 import com.cowave.hub.admin.domain.auth.entity.vo.OnlineAccess;
 import com.cowave.hub.admin.domain.auth.entity.vo.OnlineVo;
@@ -188,26 +190,38 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public List<OnlineVo> onlineList() {
-        List<AccessTokenInfo> accesslist = bearerTokenService.listAccessToken(Access.tenantId());
-        List<OnlineAccess> accessGrantList = com.cowave.zoo.tools.Collections.copyToList(accesslist, OnlineAccess::new);
-        Map<String, List<OnlineAccess>> accessMap = com.cowave.zoo.tools.Collections.groupToMap(accessGrantList,
-                grant -> grant.getGrantType() + grant.getUserAccount());
+    public Response.Page<OnlineVo> onlineList(OnlineQuery query) {
+        String tenantId = Access.tenantId();
 
-        List<RefreshTokenInfo> oauthList = bearerTokenService.listOauthToken(Access.tenantId());
-        List<OnlineAccess> oauthGrantList = com.cowave.zoo.tools.Collections.copyToList(oauthList, OnlineAccess::new);
-        Map<String, List<OnlineAccess>> oauthMap = com.cowave.zoo.tools.Collections.groupToMap(oauthGrantList,
-                grant -> grant.getGrantType() + grant.getUserAccount());
+        // 在线索引数据，按登录时间倒序
+        List<OnlineIndex> indexList = bearerTokenService.listOnlineIndex(tenantId, query.getBeginTime(), query.getEndTime());
+        // 账号过滤
+        String userAccount = query.getUserAccount();
+        if (StringUtils.isNotBlank(userAccount)) {
+            indexList = indexList.stream().filter(
+                    member -> StringUtils.contains(member.getUserAccount(), userAccount)).toList();
+        }
 
+        // 手动分页
+        int total = indexList.size();
+        int pageIndex = Access.pageIndex();
+        int pageSize = Access.pageSize();
+        int fromIndex = Math.min((pageIndex - 1) * pageSize, total);
+        int toIndex = Math.min(fromIndex + pageSize, total);
+        List<OnlineIndex> pageList = indexList.subList(fromIndex, toIndex);
         List<OnlineVo> onlineList = new ArrayList<>();
-        List<RefreshTokenInfo> refreshList = bearerTokenService.listRefreshToken(Access.tenantId());
-        refreshList.sort(Comparator.comparing(RefreshTokenInfo::getLoginTime).reversed());
-        for (RefreshTokenInfo refresh : refreshList) {
-            List<OnlineAccess> accessGrants = accessMap.get(refresh.getAuthType() + refresh.getUserAccount());
-            List<OnlineAccess> oauthGrants = oauthMap.get(refresh.getAuthType() + refresh.getUserAccount());
+        for (OnlineToken onlineToken : bearerTokenService.listOnlineToken(tenantId, pageList)) {
             List<OnlineAccess> grantList = new ArrayList<>();
-            grantList.addAll(Optional.ofNullable(accessGrants).orElse(Collections.emptyList()));
-            grantList.addAll(Optional.ofNullable(oauthGrants).orElse(Collections.emptyList()));
+            // access令牌
+            for (AccessTokenInfo accessToken : onlineToken.getAccessTokens()) {
+                grantList.add(new OnlineAccess(accessToken));
+            }
+            // oauth令牌
+            for (RefreshTokenInfo oauthToken : onlineToken.getOauthTokens()) {
+                grantList.add(new OnlineAccess(oauthToken));
+            }
+            // 登录信息
+            RefreshTokenInfo refresh = onlineToken.getRefreshToken();
             onlineList.add(OnlineVo.builder()
                     .refreshId(refresh.getRefreshId())
                     .authType(refresh.getAuthType())
@@ -220,7 +234,7 @@ public class AuthServiceImpl implements AuthService {
                     .accessList(grantList)
                     .build());
         }
-        return onlineList;
+        return new Response.Page<>(onlineList, total);
     }
 
     @Override
@@ -262,7 +276,6 @@ public class AuthServiceImpl implements AuthService {
         SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
         authVo.setTenantId(tenantId);
         authVo.setTenantTitle(sysTenant.getTitle());
-        authVo.setTenantLogo(sysTenant.getLogo());
 
         // Avatar
         if (GITLAB.equalsVal(userDetails.getUserType())) {

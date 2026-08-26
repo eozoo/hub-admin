@@ -33,13 +33,18 @@ public interface SysAttachStore {
     void download(HttpServletResponse response, SysAttach attach) throws Exception;
 
     /**
-     * 预览
+     * 删除
+     */
+    void remove(SysAttach attach) throws Exception;
+
+    /**
+     * 预览地址
      */
     String preview(SysAttach sysAttach) throws Exception;
 
     /**
-     * 删除
+     * 预览文件流
      */
-    void remove(SysAttach attach) throws Exception;
+    void previewStream(HttpServletResponse response, SysAttach attach) throws Exception;
 
 }

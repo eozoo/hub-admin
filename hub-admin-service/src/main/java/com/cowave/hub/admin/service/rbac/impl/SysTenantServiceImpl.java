@@ -18,6 +18,7 @@ import com.cowave.hub.admin.domain.rbac.biz.SysUserBiz;
 import com.cowave.hub.admin.domain.rbac.entity.SysTenant;
 import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import com.cowave.hub.admin.domain.rbac.entity.command.*;
+import com.cowave.hub.admin.domain.rbac.entity.vo.TenantInfoVo;
 import com.cowave.hub.admin.domain.rbac.entity.pto.TenantManagerPto;
 import com.cowave.hub.admin.domain.rbac.entity.query.TenantQuery;
 import com.cowave.hub.admin.domain.rbac.enums.UserType;
@@ -25,10 +26,12 @@ import com.cowave.hub.admin.domain.rbac.repository.facade.SysTenantRepositoryFac
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.domain.sys.biz.SysAttachBiz;
 import com.cowave.hub.admin.domain.sys.biz.SysConfigBiz;
+import com.cowave.hub.admin.domain.sys.entity.SysAttach;
 import com.cowave.hub.admin.domain.sys.entity.vo.SelectOptionVo;
 import com.cowave.hub.admin.service.rbac.SysTenantService;
 import com.cowave.zoo.http.client.asserts.HttpAsserts;
 import com.cowave.zoo.tools.Collections;
+import com.cowave.zoo.tools.Converts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -61,8 +64,14 @@ public class SysTenantServiceImpl implements SysTenantService {
     }
 
     @Override
-    public SysTenant info(String tenantId) {
-        return tenantRepositoryFacade.queryById(tenantId);
+    public TenantInfoVo info(String tenantId) throws Exception {
+        TenantInfoVo vo = Converts.copyProperties(tenantRepositoryFacade.queryById(tenantId), TenantInfoVo.class);
+        SysAttach attach = attachBiz.previewLatestByOwner(tenantId, SYSTEM_TENANT, LOGO);
+        if (attach != null) {
+            vo.setLogo(attach.getViewUrl());
+            vo.setAttachId(attach.getAttachId());
+        }
+        return vo;
     }
 
     @Override
@@ -77,8 +86,6 @@ public class SysTenantServiceImpl implements SysTenantService {
         attachBiz.clearOwner(tenantCreate.getTenantId(), SYSTEM_TENANT, LOGO, tenantCreate.getAttachId());
         if (tenantCreate.getAttachId() != null) {
             attachBiz.updateOwner(tenantCreate.getTenantId(), tenantCreate.getAttachId());
-        } else {
-            tenantCreate.setLogo(null);
         }
         tenantBiz.editTenant(tenantCreate);
     }

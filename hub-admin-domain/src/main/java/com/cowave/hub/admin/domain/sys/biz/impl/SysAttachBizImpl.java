@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -38,8 +39,20 @@ public class SysAttachBizImpl implements SysAttachBiz {
 
     @Override
     public void uploadAttach(MultipartFile file, SysAttach attach) throws Exception {
+        // 计算文件md5
+        String md5 = DigestUtils.md5DigestAsHex(file.getInputStream());
+        attach.setMd5(md5);
+        // 同租户同md5文件，则复用存储路径，不重复上传
+        SysAttach exist = attachRepository.queryByMd5(attach.getTenantId(), md5);
+        if (exist != null) {
+            attach.setAttachPath(exist.getAttachPath());
+        }
         attachRepository.save(attach);
-        attachStore.upload(file, attach);
+        // 不存在则重新上传
+        if (exist == null) {
+            attachStore.upload(file, attach);
+        }
+        // 预览地址
         attach.setViewUrl(attachStore.preview(attach));
     }
 
@@ -54,9 +67,18 @@ public class SysAttachBizImpl implements SysAttachBiz {
     }
 
     @Override
+    public void previewStream(HttpServletResponse response, SysAttach attach) throws Exception {
+        attachStore.previewStream(response, attach);
+    }
+
+    @Override
     public void removeAttach(SysAttach attach) throws Exception {
+        // 删除DB
         attachRepository.removeById(attach.getAttachId());
-        attachStore.remove(attach);
+        // md5无其它文件记录，则物理删除文件
+        if (attachRepository.countByMd5(attach.getTenantId(), attach.getMd5()) == 0) {
+            attachStore.remove(attach);
+        }
     }
 
     @Override

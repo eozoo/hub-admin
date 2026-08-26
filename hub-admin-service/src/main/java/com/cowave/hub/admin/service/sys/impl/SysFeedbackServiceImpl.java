@@ -13,7 +13,9 @@
 package com.cowave.hub.admin.service.sys.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cowave.hub.admin.domain.sys.biz.SysAttachBiz;
 import com.cowave.hub.admin.domain.sys.biz.SysFeedbackBiz;
+import com.cowave.hub.admin.domain.sys.entity.SysAttach;
 import com.cowave.hub.admin.domain.sys.entity.SysFeedback;
 import com.cowave.hub.admin.domain.sys.entity.SysFeedbackComment;
 import com.cowave.hub.admin.domain.sys.entity.SysFeedbackLike;
@@ -23,17 +25,17 @@ import com.cowave.hub.admin.domain.sys.entity.pto.FeedbackStatPto;
 import com.cowave.hub.admin.domain.sys.entity.query.FeedbackQuery;
 import com.cowave.hub.admin.domain.sys.entity.vo.FeedbackCommentVo;
 import com.cowave.hub.admin.domain.sys.entity.vo.FeedbackVo;
+import com.cowave.hub.admin.domain.sys.repository.facade.SysAttachRepositoryFacade;
 import com.cowave.hub.admin.domain.sys.repository.facade.SysFeedbackRepositoryFacade;
 import com.cowave.hub.admin.service.sys.SysFeedbackService;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.tools.Converts;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.cowave.hub.admin.domain.sys.repository.facade.SysFeedbackRepositoryFacade.LIKE_COMMENT;
 import static com.cowave.hub.admin.domain.sys.repository.facade.SysFeedbackRepositoryFacade.LIKE_FEEDBACK;
@@ -49,22 +51,52 @@ public class SysFeedbackServiceImpl implements SysFeedbackService {
 
     private final SysFeedbackRepositoryFacade feedbackRepositoryFacade;
 
+    private final SysAttachBiz attachBiz;
+
+    private final SysAttachRepositoryFacade attachRepositoryFacade;
+
     @Override
     public FeedbackStatPto stat(String tenantId) {
         return feedbackRepositoryFacade.queryStat(tenantId);
     }
 
     @Override
-    public Page<FeedbackVo> list(String tenantId, FeedbackQuery query) {
+    public Page<FeedbackVo> list(String tenantId, FeedbackQuery query) throws Exception {
         Set<Long> likedSet = likedIds(LIKE_FEEDBACK);
         Page<SysFeedback> page = feedbackRepositoryFacade.queryPage(tenantId, query);
-        Page<FeedbackVo> result = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
-        result.setRecords(page.getRecords().stream().map(feedback -> {
+        // 处理点赞，和图片
+        List<FeedbackVo> voList = new ArrayList<>();
+        for(SysFeedback feedback : page.getRecords()){
             FeedbackVo vo = Converts.copyProperties(feedback, FeedbackVo.class);
             vo.setLiked(likedSet.contains(feedback.getId()));
-            return vo;
-        }).toList());
+            vo.setImages(fillImages(feedback.getImages()));
+            voList.add(vo);
+        }
+        Page<FeedbackVo> result = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
+        result.setRecords(voList);
         return result;
+    }
+
+    private String fillImages(String images) throws Exception {
+        if (StringUtils.isBlank(images)) {
+            return images;
+        }
+        List<Long> attachIds = Arrays.stream(images.split(","))
+                .filter(StringUtils::isNotBlank)
+                .map(Long::valueOf)
+                .toList();
+        if (attachIds.isEmpty()) {
+            return images;
+        }
+
+        Map<Long, String> viewUrlMap = new HashMap<>();
+        for (SysAttach attach : attachRepositoryFacade.queryByIds(attachIds)) {
+            viewUrlMap.put(attach.getAttachId(), attachBiz.previewAttach(attach));
+        }
+        return attachIds.stream()
+                .map(id -> viewUrlMap.getOrDefault(id, ""))
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.joining(","));
     }
 
     @Override

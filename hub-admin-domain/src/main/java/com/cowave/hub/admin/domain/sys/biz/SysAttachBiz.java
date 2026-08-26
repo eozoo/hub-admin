@@ -35,9 +35,14 @@ public interface SysAttachBiz {
     void downloadAttach(HttpServletResponse response, SysAttach attach) throws Exception;
 
     /**
-     * 预览附件
+     * 预览附件地址
      */
     String previewAttach(SysAttach sysAttach) throws Exception;
+
+    /**
+     * 预览附件流
+     */
+    void previewStream(HttpServletResponse response, SysAttach attach) throws Exception;
 
     /**
      * 删除附件

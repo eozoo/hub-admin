@@ -53,6 +53,13 @@ public class SysAttachServiceImpl implements SysAttachService {
     private final SysNoticeRepositoryFacade noticeRepositoryFacade;
 
     @Override
+    public void image(HttpServletResponse response, String md5) throws Exception {
+        SysAttach attach = attachRepositoryFacade.queryAnyByMd5(md5);
+        HttpAsserts.notNull(attach, NOT_FOUND, "{admin.attach.not.exist}");
+        attachBiz.previewStream(response, attach);
+    }
+
+    @Override
     public Page<SysAttach> page(String tenantId, AttachQuery query) {
         Page<SysAttach> page = attachRepositoryFacade.queryPage(query);
         for (SysAttach attach : page.getRecords()) {

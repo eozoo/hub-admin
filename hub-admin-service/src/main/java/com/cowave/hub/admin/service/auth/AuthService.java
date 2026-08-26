@@ -13,10 +13,12 @@
 package com.cowave.hub.admin.service.auth;
 
 import com.cowave.hub.admin.domain.auth.entity.command.UserRegister;
+import com.cowave.hub.admin.domain.auth.entity.query.OnlineQuery;
 import com.cowave.hub.admin.domain.auth.entity.vo.AuthVo;
 import com.cowave.hub.admin.domain.auth.entity.vo.OnlineVo;
 import com.cowave.hub.admin.domain.rbac.entity.vo.Route;
 import com.cowave.zoo.framework.access.security.AccessUserDetails;
+import com.cowave.zoo.http.client.response.Response;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,7 +53,7 @@ public interface AuthService {
     /**
      * 在线用户列表
      */
-    List<OnlineVo> onlineList();
+    Response.Page<OnlineVo> onlineList(OnlineQuery query);
 
     /**
      * 撤销Access令牌

@@ -79,6 +79,11 @@ public class SysAttach implements AccessInfoSetter {
     private String attachPath;
 
     /**
+     * 文件内容md5
+     */
+    private String md5;
+
+    /**
      * 是否私有的
      */
     private YesNo isPrivate = NO;

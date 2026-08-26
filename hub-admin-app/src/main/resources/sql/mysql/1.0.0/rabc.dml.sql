@@ -1,8 +1,8 @@
 -- 租户信息
-INSERT INTO sys_tenant (tenant_id, tenant_name, title, view_index, tenant_user, tenant_addr, tenant_phone, tenant_email, user_index, user_count, status, expire_time, remark, create_by, create_time, update_by, update_time, logo) VALUES
-('system', 'system', 'tenant.title.system', 'index_system', NULL, '华清园6栋', NULL, NULL, 1, 1, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00', NULL),
-('cowave', '控维通信', 'tenant.title.cowave', 'index_cowave', NULL, '华清园6栋', NULL, NULL, 9, 9, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00', NULL),
-('open', '在线Hub', 'tenant.title.open', 'index_open', NULL, '华清园6栋', NULL, NULL, 1, 1, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00', NULL);
+INSERT INTO sys_tenant (tenant_id, tenant_name, title, view_index, tenant_user, tenant_addr, tenant_phone, tenant_email, user_index, user_count, status, expire_time, remark, create_by, create_time, update_by, update_time) VALUES
+('system', 'system', 'tenant.title.system', 'index_system', NULL, '华清园6栋', NULL, NULL, 1, 1, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+('cowave', '控维通信', 'tenant.title.cowave', 'index_cowave', NULL, '华清园6栋', NULL, NULL, 9, 9, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+('open', '在线Hub', 'tenant.title.open', 'index_open', NULL, '华清园6栋', NULL, NULL, 1, 1, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
 
 -- 部门数据
 INSERT INTO sys_dept (dept_id, tenant_id, dept_type, dept_code, dept_name, dept_short, dept_addr, dept_phone, remark, create_by, create_time, update_by, update_time) VALUES

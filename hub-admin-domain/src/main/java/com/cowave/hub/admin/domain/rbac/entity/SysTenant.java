@@ -90,11 +90,6 @@ public class SysTenant implements AccessInfoSetter {
     private String title;
 
     /**
-     * 租户图标
-     */
-    private String logo;
-
-    /**
      * 租户状态
      */
     private EnableStatus status;

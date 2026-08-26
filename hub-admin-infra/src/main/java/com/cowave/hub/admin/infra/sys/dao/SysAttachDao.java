@@ -90,4 +90,29 @@ public class SysAttachDao extends ServiceImpl<SysAttachMapper, SysAttach> implem
                 .set(SysAttach::getOwnerId, null)
                 .update();
     }
+
+    @Override
+    public SysAttach queryAnyByMd5(String md5) {
+        return lambdaQuery()
+                .eq(SysAttach::getMd5, md5)
+                .orderByAsc(SysAttach::getAttachId)
+                .last("LIMIT 1").one();
+    }
+
+    @Override
+    public SysAttach queryByMd5(String tenantId, String md5) {
+        return lambdaQuery()
+                .eq(SysAttach::getTenantId, tenantId)
+                .eq(SysAttach::getMd5, md5)
+                .orderByAsc(SysAttach::getAttachId)
+                .last("LIMIT 1").one();
+    }
+
+    @Override
+    public long countByMd5(String tenantId, String md5) {
+        return lambdaQuery()
+                .eq(SysAttach::getTenantId, tenantId)
+                .eq(SysAttach::getMd5, md5)
+                .count();
+    }
 }

@@ -28,6 +28,11 @@ import java.util.List;
 public interface SysAttachService {
 
     /**
+     * 匿名获取图片流
+     */
+    void image(HttpServletResponse response, String md5) throws Exception;
+
+    /**
      * 分页
      */
     Page<SysAttach> page(String tenantId, AttachQuery query);

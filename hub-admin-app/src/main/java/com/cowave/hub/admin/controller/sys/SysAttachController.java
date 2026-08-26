@@ -14,6 +14,7 @@ package com.cowave.hub.admin.controller.sys;
 
 import com.cowave.zoo.http.client.response.Response;
 import com.cowave.zoo.framework.access.Access;
+import com.cowave.zoo.framework.access.annotation.AnonymousGetMapping;
 import com.cowave.hub.admin.domain.sys.entity.SysAttach;
 import com.cowave.hub.admin.domain.sys.entity.query.AttachQuery;
 import com.cowave.hub.admin.domain.sys.entity.command.AttachUpload;
@@ -39,6 +40,16 @@ import java.util.List;
 public class SysAttachController {
 
     private final SysAttachService attachService;
+
+    /**
+     * 匿名获取图片流
+     *
+     * @param md5 文件内容md5
+     */
+    @AnonymousGetMapping("/image/{md5}")
+    public void image(HttpServletResponse response, @PathVariable String md5) throws Exception {
+        attachService.image(response, md5);
+    }
 
     /**
      * 上传

@@ -10,58 +10,35 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.hub.admin.domain.auth.entity.vo;
+package com.cowave.hub.admin.domain.auth.entity.query;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 /**
  * @author shanhuiming
  */
 @Getter
 @Setter
-public class AuthVo {
+public class OnlineQuery {
 
     /**
-     * 租户id
+     * 登录账号
      */
-    private String tenantId;
+    private String userAccount;
 
     /**
-     * 租户标题
+     * 登录时间起
      */
-    private String tenantTitle;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date beginTime;
 
     /**
-     * 用户id
+     * 登录时间止
      */
-    private Integer userId;
-
-    /**
-     * 用户名称
-     */
-    private String userName;
-
-    /**
-     * 用户头像
-     */
-    private String avatar;
-
-    /**
-     * 用户邮箱
-     */
-    private String userEmail;
-
-    /**
-     * 用户角色
-     */
-    private List<String> roles = new ArrayList<>();
-
-    /**
-     * 用户权限
-     */
-    private List<String> permissions = new ArrayList<>();
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date endTime;
 }

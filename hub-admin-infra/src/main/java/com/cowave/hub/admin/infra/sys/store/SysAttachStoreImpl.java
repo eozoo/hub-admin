@@ -15,15 +15,14 @@ package com.cowave.hub.admin.infra.sys.store;
 import com.cowave.hub.admin.domain.sys.entity.SysAttach;
 import com.cowave.hub.admin.domain.sys.store.SysAttachStore;
 import com.cowave.zoo.framework.helper.minio.MinioHelper;
-import com.cowave.zoo.framework.helper.minio.MinioProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-
-import static com.cowave.hub.admin.domain.rbac.enums.YesNo.YES;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author shanhuiming
@@ -32,11 +31,10 @@ import static com.cowave.hub.admin.domain.rbac.enums.YesNo.YES;
 @Component
 public class SysAttachStoreImpl implements SysAttachStore {
     private final MinioHelper minioHelper;
-    private final MinioProperties minioProperties;
 
     @Override
     public void upload(MultipartFile multipartFile, SysAttach attach) throws Exception {
-        minioHelper.upload(multipartFile, attach.getTenantId(), attach.getAttachPath(), YES == attach.getIsPrivate());
+        minioHelper.upload(multipartFile, attach.getTenantId(), attach.getAttachPath(), true);
     }
 
     @Override
@@ -45,17 +43,43 @@ public class SysAttachStoreImpl implements SysAttachStore {
     }
 
     @Override
-    public String preview(SysAttach attach) throws Exception {
-        if (YES == attach.getIsPrivate()) {
-            return minioHelper.preview(attach.getTenantId(), attach.getAttachPath());
-        } else {
-            return minioProperties.getEndpoint() + File.separator + attach.getTenantId()
-                    + File.separator + attach.getAttachPath();
-        }
+    public void remove(SysAttach attach) throws Exception {
+        minioHelper.delete(attach.getTenantId(), attach.getAttachPath());
     }
 
     @Override
-    public void remove(SysAttach attach) throws Exception {
-        minioHelper.delete(attach.getTenantId(), attach.getAttachPath());
+    public String preview(SysAttach attach) throws Exception {
+        return minioHelper.preview(attach.getTenantId(), attach.getAttachPath());
+    }
+
+    @Override
+    public void previewStream(HttpServletResponse response, SysAttach attach) throws Exception {
+        response.setContentType(contentType(attach.getAttachName()));
+        response.setHeader("Content-Disposition", "inline");
+        try (InputStream in = minioHelper.getInputStream(attach.getTenantId(), attach.getAttachPath());
+                OutputStream out = response.getOutputStream()) {
+            StreamUtils.copy(in, out);
+        }
+    }
+
+    private String contentType(String name) {
+        if (name == null) {
+            return "application/octet-stream";
+        }
+        String lower = name.toLowerCase();
+        if (lower.endsWith(".png")) {
+            return "image/png";
+        } else if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (lower.endsWith(".gif")) {
+            return "image/gif";
+        } else if (lower.endsWith(".webp")) {
+            return "image/webp";
+        } else if (lower.endsWith(".svg")) {
+            return "image/svg+xml";
+        } else if (lower.endsWith(".bmp")) {
+            return "image/bmp";
+        }
+        return "application/octet-stream";
     }
 }

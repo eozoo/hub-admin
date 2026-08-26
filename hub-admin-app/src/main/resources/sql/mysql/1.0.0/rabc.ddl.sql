@@ -10,7 +10,6 @@ create table sys_tenant
     status       smallint default 1 comment '租户状态',
     expire_time  datetime comment '到期时间',
     title        varchar(64) comment '租户标题',
-    logo         text comment '租户图标',
     view_index   varchar(64) default 'index_tenant' comment '视图索引',
     tenant_user  varchar(128) comment '租户联系人',
     tenant_addr  varchar(256) comment '租户地址',

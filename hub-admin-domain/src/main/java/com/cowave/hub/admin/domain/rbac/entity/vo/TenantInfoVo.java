@@ -10,58 +10,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.hub.admin.domain.auth.entity.vo;
+package com.cowave.hub.admin.domain.rbac.entity.vo;
 
+import com.cowave.hub.admin.domain.rbac.entity.SysTenant;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author shanhuiming
  */
 @Getter
 @Setter
-public class AuthVo {
+public class TenantInfoVo extends SysTenant {
 
     /**
-     * 租户id
+     * 租户图标
      */
-    private String tenantId;
+    private String logo;
 
     /**
-     * 租户标题
+     * 图标附件id
      */
-    private String tenantTitle;
-
-    /**
-     * 用户id
-     */
-    private Integer userId;
-
-    /**
-     * 用户名称
-     */
-    private String userName;
-
-    /**
-     * 用户头像
-     */
-    private String avatar;
-
-    /**
-     * 用户邮箱
-     */
-    private String userEmail;
-
-    /**
-     * 用户角色
-     */
-    private List<String> roles = new ArrayList<>();
-
-    /**
-     * 用户权限
-     */
-    private List<String> permissions = new ArrayList<>();
+    private Long attachId;
 }

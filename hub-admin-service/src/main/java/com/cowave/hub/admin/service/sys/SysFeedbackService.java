@@ -36,7 +36,7 @@ public interface SysFeedbackService {
     /**
      * 留言列表
      */
-    Page<FeedbackVo> list(String tenantId, FeedbackQuery query);
+    Page<FeedbackVo> list(String tenantId, FeedbackQuery query) throws Exception;
 
     /**
      * 新增留言

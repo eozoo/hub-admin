@@ -192,10 +192,12 @@ public class SysNoticeBizImpl implements SysNoticeBiz {
         if (attaches == null) {
             return Collections.emptyList();
         }
+
         String content = notice.getContent();
         List<Long> removeIds = new ArrayList<>();
         for (NoticeCreateAttach attach : attaches) {
-            if (content != null && content.contains(attach.getAttachPath())) {
+            String md5 = attach.getMd5();
+            if (content != null && content.contains(md5)) {
                 attachRepository.updateOwner(String.valueOf(notice.getNoticeId()), attach.getAttachId());
             } else {
                 removeIds.add(attach.getAttachId());
