@@ -25,26 +25,20 @@ import lombok.Setter;
 public class DictPto extends SysDict {
 
     /**
-     * 分组编码
+     * 类型名称
      */
-	@ExcelProperty("分组码")
-    private String groupCode;
-
-	/**
-	 * 分组名称
-	 */
-    @ExcelProperty("分组名称")
-	private String groupName;
+    @ExcelProperty("类型名称")
+    private String typeName;
 
     /**
-     * 类型编码
+     * 模块编码
      */
-	@ExcelProperty("类型码")
-    private String typeCode;
+    @ExcelProperty("模块编码")
+    private String moduleCode;
 
-	/**
-	 * 类型名称
-	 */
-    @ExcelProperty("类型名称")
-	private String typeName;
+    /**
+     * 模块名称
+     */
+    @ExcelProperty("模块名称")
+    private String moduleName;
 }

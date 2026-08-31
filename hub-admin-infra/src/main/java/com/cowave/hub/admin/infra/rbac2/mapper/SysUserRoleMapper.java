@@ -10,25 +10,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.hub.admin.domain.sys.entity.query;
+package com.cowave.hub.admin.infra.rbac2.mapper;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cowave.hub.admin.domain.rbac2.entity.SysUserRole;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * @author shanhuiming
  */
-@Getter
-@Setter
-public class DictQuery {
+//@Mapper
+public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
-    /**
-     * 字典码
-     */
-    private String dictCode;
-
-    /**
-	 * 字典名称
-	 */
-	private String dictName;
 }

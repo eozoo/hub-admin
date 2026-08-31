@@ -13,6 +13,7 @@
 package com.cowave.hub.admin.domain.sys.biz;
 
 import com.cowave.hub.admin.domain.sys.entity.command.DictCreate;
+import com.cowave.hub.admin.domain.sys.entity.command.DictTypeCreate;
 
 import java.util.List;
 
@@ -22,17 +23,42 @@ import java.util.List;
 public interface SysDictBiz {
 
     /**
+     * 新增类型
+     */
+    void saveType(String tenantId, DictTypeCreate typeCreate);
+
+    /**
+     * 修改类型
+     */
+    void editType(String tenantId, DictTypeCreate typeCreate);
+
+    /**
+     * 删除类型（级联删除类型下字典）
+     */
+    void deleteTypes(String tenantId, List<Integer> typeIds);
+
+    /**
+     * 修改类型状态
+     */
+    void updateTypeStatus(String tenantId, Integer typeId, Integer status);
+
+    /**
      * 新增字典
      */
-    void saveDict(DictCreate dictCreate);
+    void saveDict(String tenantId, DictCreate dictCreate);
 
     /**
      * 修改字典
      */
-    void editDict(DictCreate dictCreate);
+    void editDict(String tenantId, DictCreate dictCreate);
 
     /**
      * 删除字典
      */
-    void deleteDicts(List<Integer> dictIds);
+    void deleteDicts(String tenantId, List<Long> dictIds);
+
+    /**
+     * 修改字典状态
+     */
+    void updateDictStatus(String tenantId, Long dictId, Integer status);
 }

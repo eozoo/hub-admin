@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * 通知公告
- * @order 18
+ * @order 17
  * @author shanhuiming
  */
 @Validated

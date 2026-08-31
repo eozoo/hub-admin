@@ -58,8 +58,8 @@ public class AuthController {
      * 验证码
      */
     @AnonymousGetMapping("/public/captcha")
-    public Response<CaptchaVo> captcha(@NotNull(message = "{admin.tenant.id.null}") String tenantId) throws IOException {
-        return Response.success(captchaService.captcha(tenantId));
+    public Response<CaptchaVo> captcha() throws IOException {
+        return Response.success(captchaService.captcha());
     }
 
     /**

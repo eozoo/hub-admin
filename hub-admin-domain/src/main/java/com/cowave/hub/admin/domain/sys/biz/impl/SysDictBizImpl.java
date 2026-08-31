@@ -13,23 +13,21 @@
 package com.cowave.hub.admin.domain.sys.biz.impl;
 
 import com.cowave.hub.admin.domain.sys.biz.SysDictBiz;
+import com.cowave.hub.admin.domain.sys.entity.SysDict;
+import com.cowave.hub.admin.domain.sys.entity.SysDictType;
 import com.cowave.hub.admin.domain.sys.entity.command.DictCreate;
-import com.cowave.hub.admin.domain.sys.entity.pto.DictPto;
+import com.cowave.hub.admin.domain.sys.entity.command.DictTypeCreate;
 import com.cowave.hub.admin.domain.sys.repository.SysDictRepository;
 import com.cowave.zoo.framework.helper.redis.StringRedisHelper;
-import com.cowave.zoo.framework.helper.redis.dict.CustomValueParser;
-import com.cowave.zoo.http.client.asserts.HttpAsserts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.cowave.hub.admin.domain.AdminRedisKeys.DICT_CODE;
-import static com.cowave.hub.admin.domain.AdminRedisKeys.DICT_GROUP;
 import static com.cowave.hub.admin.domain.AdminRedisKeys.DICT_TYPE;
-import static com.cowave.zoo.http.client.constants.HttpCode.BAD_REQUEST;
-import static com.cowave.zoo.http.client.constants.HttpCode.NOT_FOUND;
 
 /**
  * @author shanhuiming
@@ -44,49 +42,72 @@ public class SysDictBizImpl implements SysDictBiz {
     private final StringRedisHelper redisHelper;
 
     @Override
-    public void saveDict(DictCreate dictCreate) {
-        CustomValueParser.getValue(dictCreate.getDictValue(), dictCreate.getValueType(), dictCreate.getValueParser());
-        dictCreate.setParentCode(dictCreate.getTypeCode());
-        dictRepository.save(dictCreate);
-
-        DictPto dictPto = dictRepository.queryById(dictCreate.getId());
-        redisHelper.delete(DICT_TYPE + ":" + dictPto.getTypeCode());
-        redisHelper.delete(DICT_GROUP + ":" + dictPto.getGroupCode());
+    public void saveType(String tenantId, DictTypeCreate typeCreate) {
+        typeCreate.setTenantId(tenantId);
+        dictRepository.saveType(typeCreate);
     }
 
     @Override
-    public void editDict(DictCreate dictCreate) {
-        HttpAsserts.notNull(dictCreate.getId(), BAD_REQUEST, "{admin.dict.id.null}");
-
-        CustomValueParser.getValue(dictCreate.getDictValue(), dictCreate.getValueType(), dictCreate.getValueParser());
-
-        DictPto preDict = dictRepository.queryById(dictCreate.getId());
-        HttpAsserts.notNull(preDict, NOT_FOUND, "{admin.dict.not.exist}", dictCreate.getId());
-
-        dictRepository.updateDict(dictCreate);
-        DictPto newDict = dictRepository.queryById(dictCreate.getId());
-
-        // 更新下级字典码
-        if ("root".equals(preDict.getGroupCode()) || "group".equals(preDict.getGroupCode())) {
-            dictRepository.updateParentCode(newDict.getDictCode(), preDict.getDictCode());
-        }
-        // 清除缓存
-        redisHelper.delete(DICT_CODE + ":" + preDict.getDictCode());
-        redisHelper.delete(DICT_TYPE + ":" + preDict.getTypeCode());
-        redisHelper.delete(DICT_GROUP + ":" + preDict.getGroupCode());
+    public void editType(String tenantId, DictTypeCreate typeCreate) {
+        typeCreate.setTenantId(tenantId);
+        dictRepository.updateType(typeCreate);
     }
 
     @Override
-    public void deleteDicts(List<Integer> dictIds) {
-        List<DictPto> list = dictRepository.queryByIds(dictIds);
-        dictRepository.removeByIds(dictIds);
-        for (DictPto dictPto : list) {
-            if ("root".equals(dictPto.getGroupCode())) {
-                dictRepository.removeByGroup(dictPto.getDictCode());
-            } else if ("group".equals(dictPto.getGroupCode())) {
-                dictRepository.removeByType(dictPto.getDictCode());
+    public void deleteTypes(String tenantId, List<Integer> typeIds) {
+        List<SysDictType> types = dictRepository.listTypesByIds(typeIds);
+        for (SysDictType type : types) {
+            List<SysDict> dicts = dictRepository.listByType(tenantId, type.getTypeCode());
+            dictRepository.removeDictsByType(tenantId, type.getTypeCode());
+            redisHelper.delete(DICT_TYPE + ":" + tenantId + ":" + type.getTypeCode());
+            for (SysDict dict : dicts) {
+                redisHelper.delete(DICT_CODE + ":" + tenantId + ":" + dict.getDictCode());
             }
         }
-        redisHelper.luaClean("hub-admin:dict:*");
+        dictRepository.deleteTypes(typeIds);
+    }
+
+    @Override
+    public void updateTypeStatus(String tenantId, Integer typeId, Integer status) {
+        List<SysDictType> types = dictRepository.listTypesByIds(Collections.singletonList(typeId));
+        dictRepository.updateTypeStatus(typeId, status);
+        if (!types.isEmpty()) {
+            redisHelper.delete(DICT_TYPE + ":" + tenantId + ":" + types.get(0).getTypeCode());
+        }
+    }
+
+    @Override
+    public void saveDict(String tenantId, DictCreate dictCreate) {
+        dictCreate.setTenantId(tenantId);
+        dictRepository.save(dictCreate);
+        redisHelper.delete(DICT_TYPE + ":" + tenantId + ":" + dictCreate.getTypeCode());
+    }
+
+    @Override
+    public void editDict(String tenantId, DictCreate dictCreate) {
+        dictCreate.setTenantId(tenantId);
+        dictRepository.updateById(dictCreate);
+        redisHelper.delete(DICT_TYPE + ":" + tenantId + ":" + dictCreate.getTypeCode());
+        redisHelper.delete(DICT_CODE + ":" + tenantId + ":" + dictCreate.getDictCode());
+    }
+
+    @Override
+    public void deleteDicts(String tenantId, List<Long> dictIds) {
+        List<SysDict> dicts = dictRepository.listByIds(dictIds);
+        dictRepository.removeByIds(dictIds);
+        for (SysDict dict : dicts) {
+            redisHelper.delete(DICT_TYPE + ":" + tenantId + ":" + dict.getTypeCode());
+            redisHelper.delete(DICT_CODE + ":" + tenantId + ":" + dict.getDictCode());
+        }
+    }
+
+    @Override
+    public void updateDictStatus(String tenantId, Long dictId, Integer status) {
+        SysDict dict = dictRepository.getById(dictId);
+        dictRepository.updateDictStatus(dictId, status);
+        if (dict != null) {
+            redisHelper.delete(DICT_TYPE + ":" + tenantId + ":" + dict.getTypeCode());
+            redisHelper.delete(DICT_CODE + ":" + tenantId + ":" + dict.getDictCode());
+        }
     }
 }

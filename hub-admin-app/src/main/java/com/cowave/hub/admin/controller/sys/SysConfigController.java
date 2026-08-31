@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * 系统配置
- * @order 15
+ * @order 14
  * @author shanhuiming
  */
 @Validated

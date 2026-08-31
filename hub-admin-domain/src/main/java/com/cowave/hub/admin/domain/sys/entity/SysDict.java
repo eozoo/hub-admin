@@ -53,9 +53,14 @@ public class SysDict {
 	private Long id;
 
 	/**
-	 * 上级字典码
+	 * 租户id
 	 */
-	private String parentCode;
+	private String tenantId;
+
+	/**
+	 * 所属类型编码
+	 */
+	private String typeCode;
 
     /**
      * 字典码

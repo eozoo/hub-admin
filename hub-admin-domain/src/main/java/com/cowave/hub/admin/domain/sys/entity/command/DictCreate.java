@@ -12,7 +12,6 @@
  */
 package com.cowave.hub.admin.domain.sys.entity.command;
 
-import com.alibaba.excel.annotation.ExcelProperty;
 import com.cowave.hub.admin.domain.sys.entity.SysDict;
 import com.cowave.zoo.framework.access.security.AccessInfoSetter;
 import lombok.Getter;
@@ -24,10 +23,4 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DictCreate extends SysDict implements AccessInfoSetter {
-
-    /**
-     * 类型编码
-     */
-	@ExcelProperty("类型码")
-    private String typeCode;
 }

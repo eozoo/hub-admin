@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * 系统告警
- * @order 17
+ * @order 16
  * @author shanhuiming
  */
 @Validated

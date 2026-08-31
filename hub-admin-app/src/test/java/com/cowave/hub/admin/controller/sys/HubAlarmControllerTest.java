@@ -13,8 +13,8 @@
 package com.cowave.hub.admin.controller.sys;
 
 import com.cowave.hub.admin.SpringTest;
+import com.cowave.hub.admin.domain.sys.entity.SysConfig;
 import com.cowave.hub.admin.domain.sys.entity.pto.AlarmTypePto;
-import com.cowave.hub.admin.domain.sys.entity.pto.DictPto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -152,25 +152,20 @@ public class HubAlarmControllerTest extends SpringTest {
                 """;
         MvcResult mvcResult = mockPost("/api/v1/auth/public/logon", body);
         String accessToken = "Bearer " + readString(mvcResult, "/data/accessToken");
-        // 借助字典接口触发5xx: 先创建一条字典，再用相同dictCode创建第二条触发DuplicateKeyException(500)
+        // 借助配置接口触发5xx: 先创建一条配置，再用相同configKey创建第二条触发DuplicateKeyException(500)
         // AccessAdvice返回500 → AdminExceptionHandler自动记录告警
-        String dictCode = "test_alarm_trigger";
+        String configKey = "test_alarm_trigger";
         body = """
                 {
-                    "typeCode": "op_action",
-                    "dictCode": "%s",
-                    "dictName": "alarm trigger dict",
-                    "dictValue": "0",
-                    "valueType": "int",
-                    "valueParser": "com.cowave.zoo.framework.helper.redis.dict.DefaultValueParser",
-                    "dictOrder": 99,
-                    "status": 1
+                    "configName": "alarmTriggerConfig",
+                    "configKey": "%s",
+                    "configValue": "0"
                 }
-                """.formatted(dictCode);
+                """.formatted(configKey);
         // 第一次创建成功
-        mockPost("/api/v1/dict", body, accessToken);
-        // 第二次创建，重复dictCode → DuplicateKeyException → 500
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/dict")
+        mockPost("/api/v1/config", body, accessToken);
+        // 第二次创建，重复configKey → DuplicateKeyException → 500
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/config")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Authorization", accessToken)
@@ -192,7 +187,7 @@ public class HubAlarmControllerTest extends SpringTest {
         // 通过alarmDesc找到由dict接口触发的告警
         Long alarmId = null;
         for (Map<String, Object> alarm : alarmList) {
-            if ("/api/v1/dict".equals(alarm.get("alarmDesc"))) {
+            if ("/api/v1/config".equals(alarm.get("alarmDesc"))) {
                 alarmId = ((Number) alarm.get("id")).longValue();
                 break;
             }
@@ -238,11 +233,11 @@ public class HubAlarmControllerTest extends SpringTest {
         final Long deletedAlarmId = alarmId;
         boolean found = alarmList.stream().anyMatch(a -> deletedAlarmId.equals(((Number) a.get("id")).longValue()));
         Assertions.assertFalse(found, "告警删除后列表中不应再出现该告警");
-        // 清理触发告警用的测试字典
-        mvcResult = mockGet("/api/v1/dict?dictCode=" + dictCode, accessToken);
-        List<DictPto> cleanupList = readData(mvcResult, "/data", new TypeReference<>() {});
+        // 清理触发告警用的测试配置
+        mvcResult = mockGet("/api/v1/config?configName=alarmTriggerConfig", accessToken);
+        List<SysConfig> cleanupList = readData(mvcResult, "/data/list", new TypeReference<>() {});
         if (!cleanupList.isEmpty()) {
-            mockDelete("/api/v1/dict/" + cleanupList.get(0).getId(), accessToken);
+            mockDelete("/api/v1/config/" + cleanupList.get(0).getConfigId(), accessToken);
         }
         // 退出登录
         mockDelete("/api/v1/auth/logout", accessToken);

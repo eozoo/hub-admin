@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * 系统评分留言
  *
- * @order 19
+ * @order 18
  * @author shanhuiming
  */
 @Validated

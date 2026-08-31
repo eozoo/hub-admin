@@ -86,9 +86,4 @@ public class AdminRedisKeys {
      * 类型字典
      */
     public static final String DICT_TYPE = "hub-admin:dict:type";
-
-    /**
-     * 分组字典
-     */
-    public static final String DICT_GROUP = "hub-admin:dict:group";
 }

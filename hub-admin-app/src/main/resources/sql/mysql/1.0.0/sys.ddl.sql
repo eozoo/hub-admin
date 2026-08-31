@@ -18,27 +18,66 @@ CREATE TABLE sys_config
 ) comment='系统配置';
 create unique index sys_config_config_key on sys_config(tenant_id, config_key);
 
--- 字典数据
-drop table if exists sys_dict;
-create table sys_dict(
-    id bigint auto_increment primary key comment '主键',
-    parent_code varchar(100) comment '父字典编码',
-    dict_code varchar(100) comment '字典编码',
-    dict_name varchar(100) comment '字典名称',
-    dict_value varchar(100) comment '字典值',
-    value_type varchar(64) comment '值类型',
-    value_parser varchar(100) comment '值转换器',
-    dict_order smallint default 0 comment '字典排序',
-    is_default smallint default 0 comment '是否默认',
-    css varchar(100) comment '字典展示样式',
-    status smallint default 1 comment '字典状态',
-    remark varchar(200) comment '备注',
-    create_by varchar(64) comment '创建人',
+-- 领域模块
+drop table if exists sys_module;
+create table sys_module
+(
+    module_id    int auto_increment primary key comment '模块id',
+    tenant_id    varchar(64) comment '租户id',
+    parent_code  varchar(100) comment '上级模块编码',
+    module_code  varchar(100) not null comment '模块编码',
+    module_name  varchar(100) comment '模块名称',
+    module_order int default 0 comment '模块排序',
+    status       smallint default 1 comment '状态',
+    remark       varchar(200) comment '备注',
+    create_by    varchar(64) comment '创建人',
+    create_time  datetime comment '创建时间',
+    update_by    varchar(64) comment '更新人',
+    update_time  datetime comment '更新时间'
+) comment='领域模块';
+create unique index sys_module_code on sys_module(tenant_id, module_code);
+
+-- 字典类型
+drop table if exists sys_dict_type;
+create table sys_dict_type
+(
+    type_id     int auto_increment primary key comment '类型id',
+    tenant_id   varchar(64) comment '租户id',
+    module_code varchar(100) comment '所属模块编码',
+    type_code   varchar(100) not null comment '类型编码',
+    type_name   varchar(100) comment '类型名称',
+    status      smallint default 1 comment '状态',
+    remark      varchar(200) comment '备注',
+    create_by   varchar(64) comment '创建人',
     create_time datetime comment '创建时间',
-    update_by varchar(64) comment '更新人',
+    update_by   varchar(64) comment '更新人',
     update_time datetime comment '更新时间'
-) comment='字典数据';
-create unique index sys_dict_uk on sys_dict(dict_code);
+) comment='字典类型';
+create unique index sys_dict_type_code on sys_dict_type(tenant_id, type_code);
+
+-- 字典项
+drop table if exists sys_dict;
+create table sys_dict
+(
+    id           bigint auto_increment primary key comment '字典项id',
+    tenant_id    varchar(64) comment '租户id',
+    type_code    varchar(100) comment '所属类型编码',
+    dict_code    varchar(100) not null comment '字典项编码',
+    dict_name    varchar(100) comment '字典项名称',
+    dict_value   varchar(100) comment '字典项值',
+    value_type   varchar(64) comment '值类型',
+    value_parser varchar(100) comment '值转换器',
+    dict_order   int default 0 comment '字典项排序',
+    is_default   smallint default 0 comment '是否默认 1是 0否',
+    css          varchar(100) comment '展示样式',
+    status       smallint default 1 comment '状态',
+    remark       varchar(200) comment '备注',
+    create_by    varchar(64) comment '创建人',
+    create_time  datetime comment '创建时间',
+    update_by    varchar(64) comment '更新人',
+    update_time  datetime comment '更新时间'
+) comment='字典项';
+create unique index sys_dict_code on sys_dict(tenant_id, dict_code);
 
 -- 系统公告
 drop table if exists sys_notice;

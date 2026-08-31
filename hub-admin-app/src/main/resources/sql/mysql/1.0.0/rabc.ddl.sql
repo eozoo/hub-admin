@@ -1,27 +1,3 @@
--- 租户信息
-drop table if exists sys_tenant;
-create table sys_tenant
-(
-    tenant_id    varchar(64) primary key comment '租户id',
-    tenant_name  varchar(128) comment '租户名称',
-    user_limit   int default 1000 comment '用户上限',
-    user_count   int default 0 comment '用户统计',
-    user_index   int default 0 comment '用户序号',
-    status       smallint default 1 comment '租户状态',
-    expire_time  datetime comment '到期时间',
-    title        varchar(64) comment '租户标题',
-    view_index   varchar(64) default 'index_tenant' comment '视图索引',
-    tenant_user  varchar(128) comment '租户联系人',
-    tenant_addr  varchar(256) comment '租户地址',
-    tenant_phone varchar(64) comment '租户电话',
-    tenant_email varchar(128) comment '租户邮箱',
-    remark       varchar(200) comment '备注',
-    create_by    varchar(64) comment '创建人',
-    create_time  datetime comment '创建时间',
-    update_by    varchar(64) comment '更新人',
-    update_time  datetime comment '更新时间'
-) comment='租户信息';
-
 -- 部门信息
 drop table if exists sys_dept;
 create table sys_dept(

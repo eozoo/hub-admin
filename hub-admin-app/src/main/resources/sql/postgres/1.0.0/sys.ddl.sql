@@ -31,39 +31,104 @@ comment on column sys_config.create_time is '创建时间';
 comment on column sys_config.update_by is '更新人';
 comment on column sys_config.update_time is '更新时间';
 
--- 字典数据
-drop table if exists sys_dict;
-create table sys_dict(
-    id bigserial primary key,
-    parent_code character varying(100),
-	dict_code character varying(100),
-	dict_name character varying(100),
-    dict_value character varying(100),
-    value_type varchar(64),
-    value_parser varchar(100),
-    dict_order int2 default 0,
-	is_default int2 default 0,
-	css character varying(100),
-    status int2 default 1,
-    remark      character varying(200),
-    create_by    varchar(64),
+-- 领域模块
+drop table if exists sys_module;
+create table sys_module
+(
+    module_id    serial primary key,
+    tenant_id    character varying(64),
+    parent_code  character varying(100),
+    module_code  character varying(100) not null,
+    module_name  character varying(100),
+    module_order int4 default 0,
+    status       int2 default 1,
+    remark       character varying(200),
+    create_by    character varying(64),
     create_time  timestamp,
-    update_by    varchar(64),
+    update_by    character varying(64),
     update_time  timestamp
 );
-create unique index sys_dict_uk on sys_dict(dict_code);
-comment on table sys_dict is '字典数据';
-comment on column sys_dict.id is '主键';
-comment on column sys_dict.parent_code is '父字典编码';
-comment on column sys_dict.dict_code is '字典编码';
-comment on column sys_dict.dict_name is '字典名称';
-comment on column sys_dict.dict_value is '字典值';
-comment on column sys_dict.value_parser is '值转换器';
+create unique index sys_module_code on sys_module(tenant_id, module_code);
+comment on table sys_module is '领域模块';
+comment on column sys_module.module_id is '模块id';
+comment on column sys_module.tenant_id is '租户id';
+comment on column sys_module.parent_code is '上级模块编码';
+comment on column sys_module.module_code is '模块编码';
+comment on column sys_module.module_name is '模块名称';
+comment on column sys_module.module_order is '模块排序';
+comment on column sys_module.status is '状态';
+comment on column sys_module.remark is '备注';
+comment on column sys_module.create_by is '创建人';
+comment on column sys_module.create_time is '创建时间';
+comment on column sys_module.update_by is '更新人';
+comment on column sys_module.update_time is '更新时间';
+
+-- 字典类型
+drop table if exists sys_dict_type;
+create table sys_dict_type
+(
+    type_id     serial primary key,
+    tenant_id   character varying(64),
+    module_code character varying(100),
+    type_code   character varying(100) not null,
+    type_name   character varying(100),
+    status      int2 default 1,
+    remark      character varying(200),
+    create_by   character varying(64),
+    create_time timestamp,
+    update_by   character varying(64),
+    update_time timestamp
+);
+create unique index sys_dict_type_code on sys_dict_type(tenant_id, type_code);
+comment on table sys_dict_type is '字典类型';
+comment on column sys_dict_type.type_id is '类型id';
+comment on column sys_dict_type.tenant_id is '租户id';
+comment on column sys_dict_type.module_code is '所属模块编码';
+comment on column sys_dict_type.type_code is '类型编码';
+comment on column sys_dict_type.type_name is '类型名称';
+comment on column sys_dict_type.status is '状态';
+comment on column sys_dict_type.remark is '备注';
+comment on column sys_dict_type.create_by is '创建人';
+comment on column sys_dict_type.create_time is '创建时间';
+comment on column sys_dict_type.update_by is '更新人';
+comment on column sys_dict_type.update_time is '更新时间';
+
+-- 字典项
+drop table if exists sys_dict;
+create table sys_dict
+(
+    id           bigserial primary key,
+    tenant_id    character varying(64),
+    type_code    character varying(100),
+    dict_code    character varying(100) not null,
+    dict_name    character varying(100),
+    dict_value   character varying(100),
+    value_type   character varying(64),
+    value_parser character varying(100),
+    dict_order   int4 default 0,
+    is_default   int2 default 0,
+    css          character varying(100),
+    status       int2 default 1,
+    remark       character varying(200),
+    create_by    character varying(64),
+    create_time  timestamp,
+    update_by    character varying(64),
+    update_time  timestamp
+);
+create unique index sys_dict_code on sys_dict(tenant_id, dict_code);
+comment on table sys_dict is '字典项';
+comment on column sys_dict.id is '字典项id';
+comment on column sys_dict.tenant_id is '租户id';
+comment on column sys_dict.type_code is '所属类型编码';
+comment on column sys_dict.dict_code is '字典项编码';
+comment on column sys_dict.dict_name is '字典项名称';
+comment on column sys_dict.dict_value is '字典项值';
 comment on column sys_dict.value_type is '值类型';
-comment on column sys_dict.dict_order is '字典排序';
-comment on column sys_dict.status is '字典状态';
-comment on column sys_dict.is_default is '是否默认';
-comment on column sys_dict.css is '字典展示样式';
+comment on column sys_dict.value_parser is '值转换器';
+comment on column sys_dict.dict_order is '字典项排序';
+comment on column sys_dict.is_default is '是否默认 1是 0否';
+comment on column sys_dict.css is '展示样式';
+comment on column sys_dict.status is '状态';
 comment on column sys_dict.remark is '备注';
 comment on column sys_dict.create_by is '创建人';
 comment on column sys_dict.create_time is '创建时间';

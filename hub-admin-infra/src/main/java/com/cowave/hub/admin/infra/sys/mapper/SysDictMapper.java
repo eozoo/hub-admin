@@ -27,32 +27,14 @@ import java.util.List;
 public interface SysDictMapper extends BaseMapper<SysDict> {
 
     /**
-	 * 列表
-	 */
-	List<DictPto> queryList(@Param("dictCode") String dictCode, @Param("dictName") String dictName);
+     * 字典项列表（含类型/模块）
+     */
+    List<DictPto> queryDictList(@Param("tenantId") String tenantId,
+                                @Param("typeCode") String typeCode,
+                                @Param("moduleCode") String moduleCode);
 
-	/**
-	 * 列表
-	 */
-	List<DictPto> queryByIds(List<Integer> list);
-
-	/**
-	 * 详情
-	 */
-	DictPto queryById(long id);
-
-	/**
-	 * 删除分组字典
-	 */
-	void removeByGroup(String groupCode);
-
-	/**
-	 * 获取分组字典
-	 */
-	List<SysDict> listByGroup(String groupCode);
-
-	/**
-	 * 获取分组类型
-	 */
-	List<DictPto> listTypeByGroup(String groupCode);
+    /**
+     * 字典项详情（含类型/模块）
+     */
+    DictPto queryDictById(@Param("tenantId") String tenantId, @Param("id") Long id);
 }

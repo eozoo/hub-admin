@@ -12,7 +12,9 @@
  */
 package com.cowave.hub.admin.domain.sys.repository.facade;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.hub.admin.domain.sys.entity.SysDict;
+import com.cowave.hub.admin.domain.sys.entity.SysDictType;
 import com.cowave.hub.admin.domain.sys.entity.pto.DictPto;
 
 import java.util.List;
@@ -23,37 +25,27 @@ import java.util.List;
 public interface SysDictRepositoryFacade {
 
     /**
-     * 字典列表
-     */
-    List<DictPto> queryList(String dictCode, String dictName);
-
-    /**
-     * 批量查询
-     */
-    List<DictPto> queryByIds(List<Integer> list);
-
-    /**
-     * 详情
-     */
-    DictPto queryById(long id);
-
-    /**
      * 按编码查询
      */
-    SysDict queryByCode(String dictCode);
+    SysDict queryByCode(String tenantId, String dictCode);
 
     /**
      * 按类型查询
      */
-    List<SysDict> listByType(String typeCode);
+    List<SysDict> listByType(String tenantId, String typeCode);
 
     /**
-     * 按分组查询
+     * 按模块分页查询类型
      */
-    List<SysDict> listByGroup(String groupCode);
+    Page<SysDictType> queryTypePageByModule(String tenantId, String moduleCode, int pageNum, int pageSize);
 
     /**
-     * 查询分组类型
+     * 字典项列表（含类型/模块）
      */
-    List<DictPto> listTypeByGroup(String groupCode);
+    List<DictPto> queryDictList(String tenantId, String typeCode, String moduleCode);
+
+    /**
+     * 字典项详情（含类型/模块）
+     */
+    DictPto queryDictById(String tenantId, Long id);
 }

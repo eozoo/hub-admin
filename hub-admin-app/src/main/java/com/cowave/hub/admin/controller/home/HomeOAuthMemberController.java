@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Home门户 三方授权用户
- * @order 21
+ * Home三方授权用户
+ * @order 28
  * @author shanhuiming
  */
 @RequiredArgsConstructor

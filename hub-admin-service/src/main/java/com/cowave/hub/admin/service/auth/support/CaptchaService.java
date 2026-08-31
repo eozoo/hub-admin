@@ -79,11 +79,11 @@ public class CaptchaService {
     private final SysOAuthRepositoryFacade oauthRepositoryFacade;
     private final SysConfigRepositoryFacade configRepositoryFacade;
 
-    public CaptchaVo captcha(String tenantId) throws IOException {
-        SysOAuth gitlabServer = oauthRepositoryFacade.queryByServerType(tenantId, "gitlab");
+    public CaptchaVo captcha() throws IOException {
+        SysOAuth gitlabServer = oauthRepositoryFacade.queryByServerType("cowave", "gitlab");
         String oauthUrl = gitlabServer.gitlabAuthorizeUrl();
-        boolean registerOnOff = configRepositoryFacade.queryConfigValue(tenantId, "hub.registerOnOff");
-        boolean captchaOnOff = configRepositoryFacade.queryConfigValue(tenantId, "hub.captchaOnOff");
+        boolean registerOnOff = configRepositoryFacade.queryConfigValue("cowave", "hub.registerOnOff");
+        boolean captchaOnOff = configRepositoryFacade.queryConfigValue("cowave", "hub.captchaOnOff");
         if (!captchaOnOff) {
             return new CaptchaVo(registerOnOff, oauthUrl);
         }
@@ -92,7 +92,7 @@ public class CaptchaService {
         String capStr, code = null;
         BufferedImage image = null;
         // 生成验证码
-        String captchaType = configRepositoryFacade.queryConfigValue(tenantId, "hub.captchaType");
+        String captchaType = configRepositoryFacade.queryConfigValue("cowave", "hub.captchaType");
         if ("math".equals(captchaType)) {
             String capText = captchaProducerMath.createText();
             capStr = capText.substring(0, capText.lastIndexOf("@"));

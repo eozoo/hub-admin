@@ -13,14 +13,14 @@
 package com.cowave.hub.admin.controller.sys;
 
 import com.alibaba.excel.EasyExcel;
-import com.cowave.hub.admin.domain.sys.entity.command.DictCreate;
-import com.cowave.zoo.http.client.response.Response;
-import com.cowave.zoo.framework.support.excel.write.ExcelIgnoreStyle;
 import com.cowave.hub.admin.domain.sys.entity.SysDict;
+import com.cowave.hub.admin.domain.sys.entity.SysDictType;
+import com.cowave.hub.admin.domain.sys.entity.command.DictCreate;
+import com.cowave.hub.admin.domain.sys.entity.command.DictTypeCreate;
 import com.cowave.hub.admin.domain.sys.entity.pto.DictPto;
-import com.cowave.hub.admin.domain.sys.entity.query.DictQuery;
-import com.cowave.hub.admin.domain.sys.entity.vo.SelectOptionVo;
 import com.cowave.hub.admin.service.sys.SysDictService;
+import com.cowave.zoo.framework.access.Access;
+import com.cowave.zoo.http.client.response.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -47,50 +46,61 @@ public class SysDictController {
 	private final SysDictService dictService;
 
 	/**
-	 * 列表
+	 * 获取类型字典
 	 */
-	@PreAuthorize("@permits.hasPermit('sys:dict:query')")
-	@GetMapping
-	public Response<List<DictPto>> list(DictQuery query) {
-		return Response.success(dictService.queryList(query));
+	@GetMapping("/type/{typeCode}")
+	public Response<List<SysDict>> listByType(@PathVariable String typeCode) {
+		return Response.success(dictService.queryListByType(Access.tenantId(), typeCode));
 	}
 
 	/**
-	 * 详情
+	 * 类型列表
 	 */
 	@PreAuthorize("@permits.hasPermit('sys:dict:query')")
-	@GetMapping("/{dictId}")
-	public Response<DictPto> info(@PathVariable Long dictId) {
-		return Response.success(dictService.info(dictId));
+	@GetMapping("/type")
+	public Response<Response.Page<SysDictType>> listType(String moduleCode,
+														 @RequestParam(defaultValue = "1") Integer pageNum,
+														 @RequestParam(defaultValue = "10") Integer pageSize) {
+		return Response.page(dictService.queryTypePageByModule(Access.tenantId(), moduleCode, pageNum, pageSize));
 	}
 
 	/**
-	 * 新增
+	 * 新增类型
 	 */
 	@PreAuthorize("@permits.hasPermit('sys:dict:create')")
-	@PostMapping
-	public Response<Void> create(@RequestBody DictCreate dictCreate) {
-		dictService.add(dictCreate);
+	@PostMapping("/type")
+	public Response<Void> createType(@RequestBody DictTypeCreate typeCreate) {
+		dictService.addType(Access.tenantId(), typeCreate);
 		return Response.success();
 	}
 
 	/**
-	 * 删除
-	 */
-	@PreAuthorize("@permits.hasPermit('sys:dict:delete')")
-	@DeleteMapping("/{dictIds}")
-	public Response<Void> delete(@PathVariable List<Integer> dictIds) {
-		dictService.delete(dictIds);
-		return Response.success();
-	}
-
-	/**
-	 * 修改
+	 * 修改类型
 	 */
 	@PreAuthorize("@permits.hasPermit('sys:dict:edit')")
-	@PatchMapping
-	public Response<Void> edit(@RequestBody DictCreate dictCreate) {
-		dictService.edit(dictCreate);
+	@PatchMapping("/type")
+	public Response<Void> editType(@RequestBody DictTypeCreate typeCreate) {
+		dictService.editType(Access.tenantId(), typeCreate);
+		return Response.success();
+	}
+
+	/**
+	 * 删除类型
+	 */
+	@PreAuthorize("@permits.hasPermit('sys:dict:delete')")
+	@DeleteMapping("/type/{typeIds}")
+	public Response<Void> deleteType(@PathVariable List<Integer> typeIds) {
+		dictService.deleteType(Access.tenantId(), typeIds);
+		return Response.success();
+	}
+
+	/**
+	 * 修改类型状态
+	 */
+	@PreAuthorize("@permits.hasPermit('sys:dict:edit')")
+	@PatchMapping("/type/status")
+	public Response<Void> updateTypeStatus(@RequestParam Integer typeId, @RequestParam Integer status) {
+		dictService.updateTypeStatus(Access.tenantId(), typeId, status);
 		return Response.success();
 	}
 
@@ -98,14 +108,14 @@ public class SysDictController {
 	 * 导出字典
 	 */
 	@PreAuthorize("@permits.hasPermit('sys:dict:export')")
-	@PostMapping ("/export")
-	public void export(HttpServletResponse response) throws IOException {
+	@PostMapping("/export")
+	public void export(HttpServletResponse response, String typeCode, String moduleCode) throws IOException {
 		String fileName = URLEncoder.encode("字典数据", StandardCharsets.UTF_8).replace("\\+", "%20");
 		response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		EasyExcel.write(response.getOutputStream(), DictPto.class)
-		.sheet("字典数据").registerWriteHandler(new ExcelIgnoreStyle()).doWrite(dictService.queryList(new DictQuery()));
+				.sheet("字典数据").doWrite(dictService.queryList(Access.tenantId(), typeCode, moduleCode));
 	}
 
 	/**
@@ -113,30 +123,64 @@ public class SysDictController {
 	 */
 	@GetMapping("/code/{dictCode}")
 	public Response<SysDict> getByCode(@PathVariable String dictCode) {
-		return Response.success(dictService.queryByCode(dictCode));
+		return Response.success(dictService.queryByCode(Access.tenantId(), dictCode));
 	}
 
 	/**
-	 * 获取类型字典
+	 * 字典列表
 	 */
-	@GetMapping("/type/{typeCode}")
-	public Response<List<SysDict>> listByType(@PathVariable String typeCode) {
-		return Response.success(dictService.queryListByType(typeCode));
+	@PreAuthorize("@permits.hasPermit('sys:dict:query')")
+	@GetMapping("/list")
+	public Response<List<DictPto>> list(String typeCode, String moduleCode) {
+		return Response.success(dictService.queryList(Access.tenantId(), typeCode, moduleCode));
 	}
 
 	/**
-	 * 获取分组字典
+	 * 字典详情
 	 */
-	@GetMapping("/group/{groupCode}")
-	public Response<List<SysDict>> listByGroup(@PathVariable String groupCode) {
-		return Response.success(dictService.queryListByGroup(groupCode));
+	@PreAuthorize("@permits.hasPermit('sys:dict:query')")
+	@GetMapping("/{dictId}")
+	public Response<DictPto> info(@PathVariable Long dictId) {
+		return Response.success(dictService.info(Access.tenantId(), dictId));
 	}
 
 	/**
-	 * 获取分组类型
+	 * 新增字典
 	 */
-	@GetMapping("/group/types/{groupCode}")
-	public Response<Collection<SelectOptionVo>> listTypeByGroup(@PathVariable String groupCode) {
-		return Response.success(dictService.queryListTypeByGroup(groupCode));
+	@PreAuthorize("@permits.hasPermit('sys:dict:create')")
+	@PostMapping
+	public Response<Void> create(@RequestBody DictCreate dictCreate) {
+		dictService.add(Access.tenantId(), dictCreate);
+		return Response.success();
+	}
+
+	/**
+	 * 修改字典
+	 */
+	@PreAuthorize("@permits.hasPermit('sys:dict:edit')")
+	@PatchMapping
+	public Response<Void> edit(@RequestBody DictCreate dictCreate) {
+		dictService.edit(Access.tenantId(), dictCreate);
+		return Response.success();
+	}
+
+	/**
+	 * 删除字典
+	 */
+	@PreAuthorize("@permits.hasPermit('sys:dict:delete')")
+	@DeleteMapping("/{dictIds}")
+	public Response<Void> delete(@PathVariable List<Long> dictIds) {
+		dictService.delete(Access.tenantId(), dictIds);
+		return Response.success();
+	}
+
+	/**
+	 * 修改字典状态
+	 */
+	@PreAuthorize("@permits.hasPermit('sys:dict:edit')")
+	@PatchMapping("/status")
+	public Response<Void> updateStatus(@RequestParam Long dictId, @RequestParam Integer status) {
+		dictService.updateDictStatus(Access.tenantId(), dictId, status);
+		return Response.success();
 	}
 }

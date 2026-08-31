@@ -14,8 +14,10 @@ package com.cowave.hub.admin.domain.sys.repository;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cowave.hub.admin.domain.sys.entity.SysDict;
-import com.cowave.hub.admin.domain.sys.entity.command.DictCreate;
+import com.cowave.hub.admin.domain.sys.entity.SysDictType;
 import com.cowave.hub.admin.domain.sys.repository.facade.SysDictRepositoryFacade;
+
+import java.util.List;
 
 /**
  * @author shanhuiming
@@ -23,22 +25,37 @@ import com.cowave.hub.admin.domain.sys.repository.facade.SysDictRepositoryFacade
 public interface SysDictRepository extends SysDictRepositoryFacade, IService<SysDict> {
 
     /**
-     * 删除分组字典
+     * 新增类型
      */
-    void removeByGroup(String groupCode);
+    void saveType(SysDictType type);
 
     /**
-     * 删除类型字典
+     * 修改类型
      */
-    void removeByType(String parentCode);
+    void updateType(SysDictType type);
 
     /**
-     * 更新字典
+     * 修改类型状态
      */
-    void updateDict(DictCreate dictCreate);
+    void updateTypeStatus(Integer typeId, Integer status);
 
     /**
-     * 更新上级字典码
+     * 删除类型
      */
-    void updateParentCode(String newParent, String oldParent);
+    void deleteTypes(List<Integer> typeIds);
+
+    /**
+     * 按类型批量查询
+     */
+    List<SysDictType> listTypesByIds(List<Integer> typeIds);
+
+    /**
+     * 按类型删除字典项
+     */
+    void removeDictsByType(String tenantId, String typeCode);
+
+    /**
+     * 修改字典状态
+     */
+    void updateDictStatus(Long dictId, Integer status);
 }

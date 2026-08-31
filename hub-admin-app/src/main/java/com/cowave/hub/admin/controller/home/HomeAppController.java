@@ -29,8 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * Home门户 OAuth应用管理
- * @order 22
+ * Home导航应用管理
+ * @order 29
  * @author shanhuiming
  */
 @RequiredArgsConstructor

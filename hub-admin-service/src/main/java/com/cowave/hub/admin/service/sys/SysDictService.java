@@ -12,13 +12,13 @@
  */
 package com.cowave.hub.admin.service.sys;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.hub.admin.domain.sys.entity.SysDict;
+import com.cowave.hub.admin.domain.sys.entity.SysDictType;
 import com.cowave.hub.admin.domain.sys.entity.command.DictCreate;
+import com.cowave.hub.admin.domain.sys.entity.command.DictTypeCreate;
 import com.cowave.hub.admin.domain.sys.entity.pto.DictPto;
-import com.cowave.hub.admin.domain.sys.entity.query.DictQuery;
-import com.cowave.hub.admin.domain.sys.entity.vo.SelectOptionVo;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -27,47 +27,67 @@ import java.util.List;
 public interface SysDictService {
 
 	/**
-	 * 列表
+	 * 获取类型字典
 	 */
-	List<DictPto> queryList(DictQuery query);
+	List<SysDict> queryListByType(String tenantId, String typeCode);
 
 	/**
-	 * 详情
+	 * 类型列表（分页）
 	 */
-	DictPto info(Long dictId);
+	Page<SysDictType> queryTypePageByModule(String tenantId, String moduleCode, int pageNum, int pageSize);
 
 	/**
-	 * 新增
+	 * 新增类型
 	 */
-	void add(DictCreate dictCreate);
+	void addType(String tenantId, DictTypeCreate typeCreate);
 
 	/**
-	 * 删除
+	 * 修改类型
 	 */
-	void delete(List<Integer> dictIds);
+	void editType(String tenantId, DictTypeCreate typeCreate);
 
 	/**
-	 * 修改
+	 * 删除类型
 	 */
-	void edit(DictCreate dictCreate);
+	void deleteType(String tenantId, List<Integer> typeIds);
+
+	/**
+	 * 修改类型状态
+	 */
+	void updateTypeStatus(String tenantId, Integer typeId, Integer status);
 
 	/**
 	 * 获取字典
 	 */
-	SysDict queryByCode(String dictCode);
+	SysDict queryByCode(String tenantId, String dictCode);
 
 	/**
-	 * 获取类型字典
+	 * 字典列表
 	 */
-	List<SysDict> queryListByType(String typeCode);
+	List<DictPto> queryList(String tenantId, String typeCode, String moduleCode);
 
 	/**
-	 * 获取分组字典
+	 * 字典详情
 	 */
-	List<SysDict> queryListByGroup(String groupCode);
+	DictPto info(String tenantId, Long id);
 
 	/**
-	 * 获取分组选项
+	 * 新增字典
 	 */
-	Collection<SelectOptionVo> queryListTypeByGroup(String groupCode);
+	void add(String tenantId, DictCreate dictCreate);
+
+	/**
+	 * 修改字典
+	 */
+	void edit(String tenantId, DictCreate dictCreate);
+
+	/**
+	 * 删除字典
+	 */
+	void delete(String tenantId, List<Long> dictIds);
+
+	/**
+	 * 修改字典状态
+	 */
+	void updateDictStatus(String tenantId, Long dictId, Integer status);
 }

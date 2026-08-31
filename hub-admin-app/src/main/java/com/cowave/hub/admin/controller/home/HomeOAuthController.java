@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Home门户 三方授权服务
- * @order 20
+ * Home三方授权服务
+ * @order 27
  * @author shanhuiming
  */
 @RequiredArgsConstructor

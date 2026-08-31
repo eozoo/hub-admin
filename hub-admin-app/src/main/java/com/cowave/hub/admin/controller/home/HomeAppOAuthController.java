@@ -31,8 +31,8 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
 /**
- * Home门户 OAuth应用授权
- * @order 23
+ * Home导航应用授权
+ * @order 30
  * @author shanhuiming
  */
 @RequiredArgsConstructor

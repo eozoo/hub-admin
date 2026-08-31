@@ -66,7 +66,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
     private final HubTokenBiz tokenBiz;
     private final HubTokenRepositoryFacade tokenRepositoryFacade;
 
-    @PostConstruct
+// TODO    @PostConstruct
     public void indexApiToken() {
         List<HubToken> list = tokenRepositoryFacade.queryList();
         for (HubToken hubToken : list) {

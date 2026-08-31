@@ -37,7 +37,7 @@ import static com.cowave.zoo.http.client.constants.HttpCode.UNAUTHORIZED;
 
 /**
  * 个人信息
- * @order 13
+ * @order 12
  * @author shanhuiming
  */
 @RequiredArgsConstructor

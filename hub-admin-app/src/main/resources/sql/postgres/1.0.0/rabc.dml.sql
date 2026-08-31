@@ -1,9 +1,3 @@
--- 租户信息
-INSERT INTO "sys_tenant" ("tenant_id", "tenant_name", "title", "view_index","tenant_user", "tenant_addr", "tenant_phone", "tenant_email", "user_index", "user_count","status", "expire_time", "remark", "create_by", "create_time", "update_by", "update_time") VALUES
-('system', 'system', 'tenant.title.system', 'index_system', NULL, '华清园6栋', NULL, NULL, 1, 1, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-('cowave', '控维通信', 'tenant.title.cowave', 'index_cowave',NULL, '华清园6栋', NULL, NULL, 9, 9, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-('open', '在线Hub', 'tenant.title.open', 'index_open',NULL, '华清园6栋', NULL, NULL, 1, 1, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
-
 -- 部门数据
 INSERT INTO "sys_dept" ("dept_id", "tenant_id", "dept_type", "dept_code", "dept_name", "dept_short", "dept_addr", "dept_phone", "remark", "create_by", "create_time", "update_by", "update_time") VALUES
 (1, 'cowave', 'HD', NULL, '南京总公司', NULL, NULL, '15888888888', NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
@@ -175,8 +169,8 @@ INSERT INTO "sys_menu" ("menu_id", "parent_id", "tenant_id", "menu_module", "men
 (191, 173, 'system', 'module_tenant', 'tenant.button.manager_add', 6, 'sys:tenant:manager:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (192, 173, 'system', 'module_tenant', 'tenant.button.manager_remove', 7, 'sys:tenant:manager:remove', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
--- 用户权限目录
-(220, 1, '#', NULL, 'commons.menu.sys.identity', 2, NULL, 'identity', NULL, 'M', 'peoples', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+-- 身份权限目录
+(220, 1, '#', NULL, 'commons.menu.sys.identity', 2, NULL, 'identity', NULL, 'M', 'auth', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 用户管理
 (5, 220, '#', NULL, 'commons.menu.sys.user', 1, NULL, 'user', NULL, 'C', 'user', 'system/user/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
@@ -296,7 +290,7 @@ INSERT INTO "sys_menu" ("menu_id", "parent_id", "tenant_id", "menu_module", "men
 (204, 200, 'system', 'module_attach', 'commons.button.download', 4, 'sys:attach:download', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 授权认证目录
-(222, 1, '#', NULL, 'commons.menu.sys.auth', 6, NULL, 'auth', NULL, 'M', 'authorization', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(222, 1, '#', NULL, 'commons.menu.sys.auth', 7, NULL, 'auth', NULL, 'M', 'authorization', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- Ldap认证
 (148, 222, '#', NULL, 'commons.menu.sys.ldap', 1, NULL, 'ldap', NULL, 'C', 'ldap', 'system/ldap/index', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
@@ -315,12 +309,6 @@ INSERT INTO "sys_menu" ("menu_id", "parent_id", "tenant_id", "menu_module", "men
 (146, 142, '#', 'module_oauth', 'commons.menu.sys.oauth2.userEdit', 4, 'oauth:gitlab:user:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (147, 142, '#', 'module_oauth', 'commons.menu.sys.oauth2.userDelete', 5, 'oauth:gitlab:user:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
--- 应用授权
-(169, 222, '#', NULL, 'commons.menu.sys.oauth2.client', 3, NULL, 'client', NULL, 'C', 'app', 'system/oauth/client', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(170, 169, '#', 'module_oauth', 'commons.button.query', 1, 'oauth:app:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(171, 169, '#', 'module_oauth', 'commons.button.create', 2, 'oauth:app:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(172, 169, '#', 'module_oauth', 'commons.button.delete', 3, 'oauth:app:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-
 -- 开发者文档
 (21, 1, 'system', NULL, 'commons.menu.sys.doc.api', 12, NULL, 'doc', NULL, 'M', 'develop', '', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (115, 21, 'system', NULL, 'commons.menu.sys.doc.admin', 1, NULL, 'admin', NULL, 'C', 'api', 'system/doc/admin', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
@@ -328,13 +316,13 @@ INSERT INTO "sys_menu" ("menu_id", "parent_id", "tenant_id", "menu_module", "men
 (126, 21, 'system', NULL, 'commons.menu.sys.doc.meter', 3, NULL, 'meter', NULL, 'C', 'api', 'system/doc/meter', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 流程配置
-(155, 1, '#', NULL, 'commons.menu.flow.manage', 7, NULL, 'manage', NULL, 'M', 'cascader', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(155, 1, '#', NULL, 'commons.menu.flow.manage', 8, NULL, 'manage', NULL, 'M', 'cascader', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (157, 155, '#', NULL, 'commons.menu.flow.model', 1, 'flow:modeler', 'modeler', NULL, 'C', 'component', 'flow/modeler', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (158, 155, '#', NULL, 'commons.menu.flow.deploy', 2, 'flow:deploy', 'deploy', NULL, 'C', 'deploy', 'flow/deploy', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (156, 155, '#', NULL, 'commons.menu.flow.instance', 3, 'flow:instance', 'instance', NULL, 'C', 'flowinstance', 'flow/instance', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 系统监控
-(2, 1, '#', NULL, 'commons.menu.monitor.root', 8, NULL, 'monitor', NULL, 'M', 'monitor', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(2, 1, '#', NULL, 'commons.menu.monitor.root', 9, NULL, 'monitor', NULL, 'M', 'monitor', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 监控页面
 (165, 2, '#', NULL, 'commons.menu.monitor.nacos', 3, NULL, 'monitor-nacos', NULL, 'C', 'nacos', 'monitor/nacos/index', 1, 1, 1, 1, 0, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
@@ -371,7 +359,22 @@ INSERT INTO "sys_menu" ("menu_id", "parent_id", "tenant_id", "menu_module", "men
 (134, 132, '#', NULL, 'commons.menu.meter.develop.application', 2, NULL, 'application', NULL, 'C', 'app', 'meter/develop/application', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (135, 132, '#', NULL, 'commons.menu.meter.develop.model', 3, NULL, 'model', NULL, 'C', 'model', 'meter/develop/model', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (136, 132, '#', NULL, 'commons.menu.meter.develop.database', 4, NULL, 'db', NULL, 'C', 'db', 'meter/develop/db', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(137, 132, '#', NULL, 'commons.menu.meter.develop.table', 5, NULL, 'table', NULL, 'C', 'table', 'meter/develop/table', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
+(137, 132, '#', NULL, 'commons.menu.meter.develop.table', 5, NULL, 'table', NULL, 'C', 'table', 'meter/develop/table', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+
+-- Home门户
+(400, 1, '#', NULL, 'commons.menu.home.root', 6, NULL, 'home', NULL, 'M', 'home', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+
+-- 授权服务
+(401, 400, '#', NULL, 'commons.menu.home.service', 1, NULL, 'client', NULL, 'C', 'oauth', 'system/oauth/client', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+
+-- 授权用户
+(411, 400, '#', NULL, 'commons.menu.home.user', 2, NULL, 'client', NULL, 'C', 'peoples', 'system/oauth/client', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+
+-- 应用导航
+(421, 400, '#', NULL, 'commons.menu.home.app', 3, NULL, 'client', NULL, 'C', 'app', 'system/oauth/client', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(422, 421, '#', 'module_oauth', 'commons.button.query', 1, 'oauth:app:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(423, 421, '#', 'module_oauth', 'commons.button.create', 2, 'oauth:app:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(424, 421, '#', 'module_oauth', 'commons.button.delete', 3, 'oauth:app:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
 
 SELECT setval('sys_menu_menu_id_seq', (SELECT max(menu_id) FROM sys_menu));
 
