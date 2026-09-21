@@ -14,7 +14,9 @@ package com.cowave.hub.admin.infra.notice.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cowave.hub.admin.domain.notice.entity.SysNoticeReceiver;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @author shanhuiming
@@ -22,4 +24,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SysNoticeReceiverMapper extends BaseMapper<SysNoticeReceiver> {
 
+    @Select("select count(1) from sys_notice_receiver "
+            + "where tenant_id = #{tenantId} and user_id = #{userId} "
+            + "and receive_status = 1 and read_status = 0 and delete_status = 0")
+    long countUnread(@Param("tenantId") Integer tenantId, @Param("userId") Integer userId);
 }

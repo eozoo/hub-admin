@@ -13,6 +13,7 @@
 package com.cowave.hub.admin.domain.auth.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.cowave.hub.admin.domain.auth.enums.LoginSource;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,9 +34,19 @@ import java.util.List;
 public class OnlineVo {
 
     /**
-     * Refresh Token id
+     * Refresh令牌id
      */
     private String refreshId;
+
+    /**
+     * 登录会话id
+     */
+    private String sessionId;
+
+    /**
+     * 当前租户编码
+     */
+    private String tenantCode;
 
     /**
      * 令牌类型
@@ -43,9 +54,9 @@ public class OnlineVo {
     private String authType;
 
     /**
-     * 用户类型
+     * 登录来源
      */
-    private String userType;
+    private LoginSource loginSource;
 
     /**
      * 用户账号

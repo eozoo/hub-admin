@@ -12,11 +12,17 @@
  */
 package com.cowave.hub.admin.service.auth;
 
-import com.cowave.hub.admin.domain.auth.entity.pto.UserProfile;
+import com.cowave.hub.admin.domain.auth.enums.ProviderCode;
+import com.cowave.hub.admin.domain.auth.entity.command.LdapLogin;
+
+import com.cowave.hub.admin.domain.auth.entity.vo.UserProfileVo;
 import com.cowave.hub.admin.domain.auth.entity.command.MfaBind;
+import com.cowave.hub.admin.domain.auth.entity.command.MfaDisable;
 import com.cowave.hub.admin.domain.auth.entity.command.PasswdReset;
 import com.cowave.hub.admin.domain.auth.entity.command.ProfileUpdate;
 import com.cowave.hub.admin.domain.auth.entity.vo.MfaVo;
+import com.cowave.hub.admin.domain.auth.entity.vo.IdentityBindingVo;
+import java.util.List;
 
 /**
  * @author shanhuiming
@@ -26,7 +32,7 @@ public interface ProfileService {
     /**
      * 详情
      */
-    UserProfile info() throws Exception;
+    UserProfileVo info() throws Exception;
 
     /**
      * 修改
@@ -51,5 +57,25 @@ public interface ProfileService {
     /**
      * MFA解除
      */
-    void disableMfa(MfaBind mfaBind);
+    void disableMfa(MfaDisable mfaDisable);
+
+    /**
+     * 获取账号绑定信息
+     */
+    List<IdentityBindingVo> identities();
+
+    /**
+     * OAuth账号绑定
+     */
+    String oauthBind(ProviderCode providerCode);
+
+    /**
+     * LDAP账号绑定
+     */
+    IdentityBindingVo ldapBind(LdapLogin login);
+
+    /**
+     * 账号绑定回调
+     */
+    IdentityBindingVo identityCallback(ProviderCode providerCode, String code, String state);
 }

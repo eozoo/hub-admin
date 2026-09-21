@@ -17,6 +17,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 /**
  * @author shanhuiming
  */
@@ -26,18 +28,33 @@ import lombok.NoArgsConstructor;
 @Setter
 public class CaptchaVo {
 
+    /**
+     * 验证码标识
+     */
     private String uuid;
 
+    /**
+     * 验证码图片
+     */
     private String img;
 
+    /**
+     * 是否开启验证码
+     */
     private boolean captchaOnOff;
 
+    /**
+     * 是否开放注册
+     */
     private boolean registerOnOff;
 
-    private String oauthGitlabUrl;
+    /**
+     * OAuth 提供方授权地址
+     */
+    private Map<String, String> oauthUrls;
 
-    public CaptchaVo(boolean registerOnOff, String oauthGitlabUrl){
+    public CaptchaVo(boolean registerOnOff, Map<String, String> oauthUrls){
         this.registerOnOff = registerOnOff;
-        this.oauthGitlabUrl = oauthGitlabUrl;
+        this.oauthUrls = oauthUrls;
     }
 }

@@ -5,19 +5,16 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an "AS IS" BASIS,
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
 package com.cowave.hub.admin.domain.auth.entity.bo;
 
-import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
-import com.cowave.hub.admin.domain.rbac.enums.UserType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
@@ -27,6 +24,11 @@ import java.util.List;
 @Getter
 @Setter
 public class GitlabUser {
+
+    /**
+     * 用户ID
+     */
+    private Long id;
 
     /**
      * 用户名称
@@ -50,31 +52,26 @@ public class GitlabUser {
     private String email;
 
     /**
-     * Ldap信息
+     * LDAP 信息
      */
     private List<LdapInfo> identities;
 
+    /**
+     * @author shanhuiming
+     */
     @Getter
     @Setter
     public static class LdapInfo {
 
+        /**
+         * 身份提供方
+         */
         private String provider;
 
+        /**
+         * 外部用户标识
+         */
         @JsonProperty("extern_uid")
         private String externUid;
-    }
-
-    public static SysOAuthUser oAuthUser(GitlabUser gitlabUser){
-        SysOAuthUser oauthUserHub = new SysOAuthUser();
-        oauthUserHub.setServerType(UserType.GITLAB.getVal());
-        oauthUserHub.setUserName(gitlabUser.name);
-        oauthUserHub.setUserAccount(gitlabUser.username);
-        oauthUserHub.setUserEmail(gitlabUser.email);
-        oauthUserHub.setUserAvatar(gitlabUser.avatarUrl);
-        if(CollectionUtils.isNotEmpty(gitlabUser.identities)){
-            LdapInfo ldap = gitlabUser.identities.get(0);
-            oauthUserHub.setUserDept(ldap.externUid);
-        }
-        return oauthUserHub;
     }
 }

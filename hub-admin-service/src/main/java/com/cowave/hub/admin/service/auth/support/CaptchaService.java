@@ -13,32 +13,40 @@
 package com.cowave.hub.admin.service.auth.support;
 
 import cn.hutool.core.util.IdUtil;
-import com.cowave.hub.admin.domain.sys.repository.facade.SysConfigRepositoryFacade;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthProvider;
+import com.cowave.hub.admin.domain.auth.repository.facade.SysAuthRepositoryFacade;
+import com.cowave.hub.admin.domain.sys2.repository.facade.SysConfigRepositoryFacade;
 import com.cowave.zoo.http.client.asserts.HttpAsserts;
 import com.cowave.zoo.http.client.asserts.I18Messages;
+import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.helper.redis.RedisHelper;
 import com.cowave.hub.admin.domain.auth.entity.vo.CaptchaVo;
-import com.cowave.hub.admin.domain.auth.entity.SysOAuth;
-import com.cowave.hub.admin.domain.auth.repository.facade.SysOAuthRepositoryFacade;
 import com.google.code.kaptcha.Producer;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FastByteArrayOutputStream;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.cowave.zoo.http.client.constants.HttpCode.BAD_REQUEST;
 import static com.cowave.hub.admin.domain.AdminRedisKeys.AUTH_CAPTCHA;
+import static com.cowave.hub.admin.domain.AdminRedisKeys.AUTH_EMAIL_CAPTCHA;
+import static com.cowave.hub.admin.domain.AdminRedisKeys.AUTH_EMAIL_COOLDOWN;
+import static com.cowave.hub.admin.domain.AdminRedisKeys.AUTH_EMAIL_SENDS;
+import static com.cowave.hub.admin.domain.AdminRedisKeys.AUTH_OAUTH_STATE;
 
 /**
- *
  * @author shanhuiming
  */
 @RequiredArgsConstructor
@@ -76,23 +84,22 @@ public class CaptchaService {
     private final RedisHelper redisHelper;
     private final JavaMailSender mailSender;
     private final SecureRandom random = new SecureRandom();
-    private final SysOAuthRepositoryFacade oauthRepositoryFacade;
+    private final SysAuthRepositoryFacade authRepositoryFacade;
     private final SysConfigRepositoryFacade configRepositoryFacade;
 
     public CaptchaVo captcha() throws IOException {
-        SysOAuth gitlabServer = oauthRepositoryFacade.queryByServerType("cowave", "gitlab");
-        String oauthUrl = gitlabServer.gitlabAuthorizeUrl();
-        boolean registerOnOff = configRepositoryFacade.queryConfigValue("cowave", "hub.registerOnOff");
-        boolean captchaOnOff = configRepositoryFacade.queryConfigValue("cowave", "hub.captchaOnOff");
+        Map<String, String> oauthUrls = queryOauthUrls();
+        boolean registerOnOff = configRepositoryFacade.queryConfigValue("hub.registerOnOff");
+        boolean captchaOnOff = configRepositoryFacade.queryConfigValue("hub.captchaOnOff");
         if (!captchaOnOff) {
-            return new CaptchaVo(registerOnOff, oauthUrl);
+            return new CaptchaVo(registerOnOff, oauthUrls);
         }
 
         String uuid = IdUtil.randomUUID();
         String capStr, code = null;
         BufferedImage image = null;
         // 生成验证码
-        String captchaType = configRepositoryFacade.queryConfigValue("cowave", "hub.captchaType");
+        String captchaType = configRepositoryFacade.queryConfigValue("hub.captchaType");
         if ("math".equals(captchaType)) {
             String capText = captchaProducerMath.createText();
             capStr = capText.substring(0, capText.lastIndexOf("@"));
@@ -107,33 +114,66 @@ public class CaptchaService {
         FastByteArrayOutputStream os = new FastByteArrayOutputStream();
         assert image != null;
         ImageIO.write(image, "jpg", os);
-        return new CaptchaVo(uuid, encode(os.toByteArray()), true, registerOnOff, oauthUrl);
+        return new CaptchaVo(uuid, encode(os.toByteArray()), true, registerOnOff, oauthUrls);
     }
 
-    public void validCaptcha(String tenantId, String captchaId, String captcha){
-        boolean captchaOnOff = configRepositoryFacade.queryConfigValue(tenantId, "hub.captchaOnOff");
+    public void validCaptcha(String captchaId, String captcha){
+        boolean captchaOnOff = configRepositoryFacade.queryConfigValue("hub.captchaOnOff");
         if(captchaOnOff){
-            String stub = redisHelper.getValue(AUTH_CAPTCHA.formatted(captchaId));
+            String stub = redisHelper.getValueAndDelete(AUTH_CAPTCHA.formatted(captchaId));
             HttpAsserts.notNull(stub, BAD_REQUEST, "{admin.captcha.expired}");
             HttpAsserts.equals(stub, captcha, BAD_REQUEST, "{admin.captcha.failed}");
         }
     }
 
+    private Map<String, String> queryOauthUrls() {
+        Map<String, String> oauthUrls = new LinkedHashMap<>();
+        for (SysAuthProvider provider : authRepositoryFacade.queryEnabledOauthProviders()) {
+            if (StringUtils.isAnyBlank(provider.getAuthUrl(), provider.getClientId(),
+                    provider.getRedirectUrl(), provider.getResponseType())) {
+                continue;
+            }
+            String state = UUID.randomUUID().toString();
+            String authUrl = provider.buildAuthorizeUrl(state);
+            redisHelper.putExpire(AUTH_OAUTH_STATE.formatted(state), provider.getProviderId(), 10, TimeUnit.MINUTES);
+            oauthUrls.put(provider.getProviderCode().getVal(), authUrl);
+        }
+        return oauthUrls;
+    }
+
     public void captchaEmail(String email) {
+        // 邮箱验证码IP限流
+        String sendsKey = AUTH_EMAIL_SENDS.formatted(Access.accessIp());
+        Long sends = redisHelper.incrementValue(sendsKey, 1);
+        if (sends == 1) {
+            redisHelper.expire(sendsKey, 10, TimeUnit.MINUTES);
+        }
+        HttpAsserts.isTrue(sends <= 10, BAD_REQUEST, "{admin.captcha.email.rate.limit}");
+        // 邮箱验证码频率限制
+        String cooldownKey = AUTH_EMAIL_COOLDOWN.formatted(email);
+        Boolean putted = redisHelper.putExpireIfAbsent(cooldownKey, "-", 60, TimeUnit.SECONDS);
+        HttpAsserts.isTrue(putted, BAD_REQUEST, "{admin.captcha.email.cooldown}");
+        // 发送验证码
         int code = (random.nextInt(9) + 1) * 100000 + random.nextInt(100000);
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("cowaveAdmin@163.com");
+        mailMessage.setFrom("hubadmin@163.com");
         mailMessage.setTo(email);
         mailMessage.setSubject(I18Messages.msg("admin.captcha.title"));
         mailMessage.setText(I18Messages.msg("admin.captcha.msg", String.valueOf(code), CAPTCHA_EXPIRATION));
-        mailSender.send(mailMessage);
-        redisHelper.putExpire(AUTH_CAPTCHA.formatted(code), email, CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+        try {
+            mailSender.send(mailMessage);
+            redisHelper.putExpire(AUTH_EMAIL_CAPTCHA.formatted(email), String.valueOf(code), CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+        } catch (RuntimeException e) {
+            // mail失败就不冷却了
+            redisHelper.delete(cooldownKey);
+            throw e;
+        }
     }
 
     public void validEmail(String email, String captcha){
-        String stub = redisHelper.getValue(AUTH_CAPTCHA.formatted(captcha));
+        String stub = redisHelper.getValueAndDelete(AUTH_EMAIL_CAPTCHA.formatted(email));
         HttpAsserts.notNull(stub, BAD_REQUEST, "{admin.captcha.expired}");
-        HttpAsserts.equals(stub, email, BAD_REQUEST, "{admin.register.failed}");
+        HttpAsserts.equals(stub, captcha, BAD_REQUEST, "{admin.captcha.failed}");
     }
 
     private static String encode(byte[] binaryData) {

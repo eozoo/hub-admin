@@ -12,7 +12,6 @@
  */
 package com.cowave.hub.admin;
 
-import com.cowave.zoo.framework.helper.datasource.DynamicDataSource;
 import com.cowave.zoo.framework.helper.redis.connection.LettuceRedisConnectionConfiguration;
 import io.lettuce.core.resource.DefaultClientResources;
 import io.minio.MinioClient;
@@ -26,18 +25,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.RestClient;
-import org.apache.http.HttpHost;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author shanhuiming
@@ -52,10 +46,7 @@ public class SpringTestConfiguration {
         dataSourceBuilder.url(SpringTest.PG.getJdbcUrl());
         dataSourceBuilder.username(SpringTest.PG.getUsername());
         dataSourceBuilder.password(SpringTest.PG.getPassword());
-        DataSource dataSource = dataSourceBuilder.build();
-        Map<Object, Object> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("primary", dataSource);
-        return new DynamicDataSource(dataSource, dataSourceMap);
+        return dataSourceBuilder.build();
     }
 
     @Bean
@@ -95,18 +86,18 @@ public class SpringTestConfiguration {
         return new KafkaTemplate<>(producerFactory);
     }
 
-    @Bean
-    public KafkaAdmin privateKafkaAdmin(){
-        KafkaProperties properties = new KafkaProperties();
-        properties.setBootstrapServers(List.of(SpringTest.KAFKA.getBootstrapServers()));
-        KafkaAdmin kafkaAdmin = new KafkaAdmin(properties.buildAdminProperties());
-        kafkaAdmin.setFatalIfBrokerNotAvailable(properties.getAdmin().isFailFast());
-        return kafkaAdmin;
-    }
+//    @Bean
+//    public KafkaAdmin privateKafkaAdmin(){
+//        KafkaProperties properties = new KafkaProperties();
+//        properties.setBootstrapServers(List.of(SpringTest.KAFKA.getBootstrapServers()));
+//        KafkaAdmin kafkaAdmin = new KafkaAdmin(properties.buildAdminProperties());
+//        kafkaAdmin.setFatalIfBrokerNotAvailable(properties.getAdmin().isFailFast());
+//        return kafkaAdmin;
+//    }
 
-    @Bean
-    public RestHighLevelClient restHighLevelClient() {
-        return new RestHighLevelClient(
-                RestClient.builder(new HttpHost(SpringTest.ES.getHost(), SpringTest.ES.getMappedPort(9200))));
-    }
+//    @Bean
+//    public RestHighLevelClient restHighLevelClient() {
+//        return new RestHighLevelClient(
+//                RestClient.builder(new HttpHost(SpringTest.ES.getHost(), SpringTest.ES.getMappedPort(9200))));
+//    }
 }

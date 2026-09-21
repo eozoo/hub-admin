@@ -23,7 +23,7 @@ import com.cowave.hub.admin.domain.rbac.entity.pto.UserNamePto;
 import com.cowave.hub.admin.domain.rbac.entity.query.UserExportQuery;
 import com.cowave.hub.admin.domain.rbac.entity.query.UserMemberQuery;
 import com.cowave.hub.admin.domain.rbac.entity.query.UserQuery;
-import com.cowave.hub.admin.domain.rbac.enums.UserType;
+import com.cowave.hub.admin.domain.rbac2.enums.UserType;
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.domain.sys.repository.facade.SysConfigRepositoryFacade;
 import com.cowave.hub.admin.service.rbac.SysUserService;
@@ -108,7 +108,7 @@ public class SysUserServiceImpl implements SysUserService {
         }
         HttpAsserts.notEquals(Access.userAccount(), preUser.getUserAccount(), FORBIDDEN, "{admin.user.forbid.self.delete}");
         userBiz.deleteUser(tenantId, userId);
-        bearerTokenService.revokeRefreshToken(tenantId, preUser.getUserType().getVal(), preUser.getUserAccount());
+//        bearerTokenService.revokeRefreshToken(tenantId, preUser.getUserType().getVal(), preUser.getUserAccount());
         return preUser;
     }
 

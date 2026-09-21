@@ -17,7 +17,7 @@ import com.cowave.hub.admin.domain.home.entity.HubApp;
 import com.cowave.hub.admin.domain.home.entity.command.RoleAppGrant;
 import com.cowave.hub.admin.domain.home.entity.HubAppMenu;
 import com.cowave.hub.admin.domain.home.entity.vo.OAuthAppCard;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 
 import java.util.List;
 

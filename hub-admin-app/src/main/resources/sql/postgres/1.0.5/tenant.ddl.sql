@@ -17,6 +17,7 @@ create table sys_tenant
     tenant_addr  character varying(256),
     tenant_phone character varying(64),
     tenant_email character varying(128),
+    is_delete    int2 not null default 0,
     remark       character varying(200),
     create_by    character varying(64),
     create_time  timestamptz,
@@ -24,16 +25,18 @@ create table sys_tenant
     update_time  timestamptz
 );
 create unique index sys_tenant_code_uq on sys_tenant(tenant_code);
-comment on table sys_tenant is '租户信息';
+create unique index sys_tenant_public_uq on sys_tenant(tenant_type) where tenant_type = 'public';
+comment on table sys_tenant is '租户信息，仅允许逻辑删除';
 comment on column sys_tenant.tenant_id is '租户id';
 comment on column sys_tenant.tenant_code is '租户稳定业务编码，系统租户固定使用system';
 comment on column sys_tenant.tenant_name is '租户名称';
-comment on column sys_tenant.tenant_type is '租户类型：system系统租户、normal普通租户、trial试用租户';
+comment on column sys_tenant.tenant_type is '租户类型：system系统租户、normal普通租户、trial试用租户、public公共访客租户';
 comment on column sys_tenant.tenant_domain is '租户独立域名或访问入口';
 comment on column sys_tenant.tenant_user is '租户联系人';
 comment on column sys_tenant.tenant_addr is '租户地址';
 comment on column sys_tenant.tenant_phone is '租户电话';
 comment on column sys_tenant.tenant_email is '租户邮箱';
+comment on column sys_tenant.is_delete is '是否删除 0否 1是';
 comment on column sys_tenant.user_count is '用户统计';
 comment on column sys_tenant.user_limit is '用户上限';
 comment on column sys_tenant.title is '租户标题';

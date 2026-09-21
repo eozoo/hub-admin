@@ -16,7 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.hub.admin.domain.home.entity.HubApp;
 import com.cowave.hub.admin.domain.home.entity.HubAppMenu;
 import com.cowave.hub.admin.domain.rbac.entity.HubRoleApp;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 
 import java.util.List;
 import java.util.Set;

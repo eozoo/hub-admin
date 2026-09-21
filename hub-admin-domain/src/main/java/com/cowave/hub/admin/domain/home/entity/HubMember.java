@@ -14,8 +14,8 @@ package com.cowave.hub.admin.domain.home.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
-import com.cowave.hub.admin.domain.rbac.enums.UserType;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.UserType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;

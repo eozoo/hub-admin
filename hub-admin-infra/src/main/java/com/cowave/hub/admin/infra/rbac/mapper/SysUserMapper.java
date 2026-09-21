@@ -14,7 +14,6 @@ package com.cowave.hub.admin.infra.rbac.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cowave.hub.admin.domain.auth.entity.pto.UserProfile;
 import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import com.cowave.hub.admin.domain.rbac.entity.command.TenantManagerRemove;
 import com.cowave.hub.admin.domain.rbac.entity.pto.TenantManagerPto;
@@ -32,11 +31,6 @@ import java.util.List;
  */
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {
-
-    /**
-     * 用户个人信息
-     */
-    UserProfile getUserProfile(Integer userId);
 
     /**
      * 列表

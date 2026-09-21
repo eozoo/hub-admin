@@ -21,7 +21,7 @@ import com.cowave.hub.admin.domain.rbac.entity.command.TenantManagerRemove;
 import com.cowave.hub.admin.domain.rbac.entity.command.UserCreate;
 import com.cowave.hub.admin.domain.rbac.entity.command.UserRoleUpdate;
 import com.cowave.hub.admin.domain.rbac.entity.pto.UserInfoPto;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import com.cowave.hub.admin.domain.rbac.repository.SysUserRepository;
 import com.cowave.zoo.http.client.asserts.HttpAsserts;
 import lombok.RequiredArgsConstructor;

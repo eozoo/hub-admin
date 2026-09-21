@@ -12,7 +12,9 @@
  */
 package com.cowave.hub.admin.domain.auth.enums;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.cowave.zoo.tools.EnumVal;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +40,8 @@ public enum AuthType implements EnumVal<String> {
      */
     MEMBER("member");
 
+    @EnumValue
+    @JsonValue
     private final String val;
 
 }

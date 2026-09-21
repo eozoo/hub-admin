@@ -13,9 +13,11 @@
 package com.cowave.hub.admin.service.auth;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cowave.zoo.framework.access.security.AccessUserDetails;
-import com.cowave.hub.admin.domain.auth.entity.SysLdap;
-import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
+import com.cowave.hub.admin.domain.auth.entity.vo.LoginVo;
+import com.cowave.hub.admin.domain.auth.entity.command.AccountBind;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthLdap;
+import com.cowave.hub.admin.domain.auth.entity.vo.LdapUserVo;
 
 /**
  * @author shanhuiming
@@ -25,25 +27,40 @@ public interface LdapService {
     /**
      * Ldap认证
      */
-    AccessUserDetails authenticate(String tenantId, String userAccount, String passWord);
+    LoginVo authenticate(String userAccount, String passWord);
+
+    /**
+     * 绑定本地账号
+     */
+    LoginVo bindAccount(AccountBind command);
 
     /**
      * 获取配置
      */
-    SysLdap getLdap(String tenantId);
+    SysAuthLdap getLdap();
 
     /**
      * 修改配置
      */
-    void editLdap(String tenantId, SysLdap sysLdap);
+    void editLdap(SysAuthLdap config);
 
     /**
      * 测试配置
      */
-    void validConfig(SysLdap sysLdap);
+    void validConfig(SysAuthLdap config);
 
     /**
      * 用户列表
      */
-    Page<SysLdapUser> listUser(String tenantId, String ldapAccount);
+    Page<LdapUserVo> listUser(String ldapAccount);
+
+    /**
+     * 修改LDAP身份状态
+     */
+    void updateIdentityStatus(Long identityId, EnableStatus status);
+
+    /**
+     * 删除LDAP身份绑定
+     */
+    void deleteIdentity(Long identityId);
 }

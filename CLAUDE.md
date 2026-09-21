@@ -79,6 +79,16 @@ Controller (app) → Service (service) → Biz (domain) + RepositoryFacade (doma
 
 > Command/Query/VO/PTO 允许继承 PO/DO（字段差别不大时），减少重复定义。
 
+### 1.0.5 重构迁移约定
+
+- 新实体及其 Command、Query、VO、PTO 暂放到对应领域的同名 `2` 目录。
+- 重构新接口时直接定义并使用 `2` 目录下的新类型，不继续引用旧领域类型。
+- 如果新旧类型字段和语义完全一致，将原定义迁移到 `2` 目录并删除重复旧定义，方便后续整体清理旧代码。
+- 租户属于 RBAC 领域，统一放在 `rbac2`，不再建立独立 `tenant` 领域。
+- 旧 `domain`、`infra` 目录下的实现保持不动，不通过修改旧 DAO、Mapper 或 XML 来兼容 1.0.5。
+- `app`、`service` 层尽量保持不动；确需切换新实现时，只做必要的依赖接线和类型替换。
+- 新业务、查询和持久化逻辑直接在对应的 `domain/*2`、`infra/*2` 中重新实现。
+
 ### 关键注入模式
 
 ```

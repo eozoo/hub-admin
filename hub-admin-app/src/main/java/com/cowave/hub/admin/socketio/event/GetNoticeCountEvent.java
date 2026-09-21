@@ -15,24 +15,28 @@ package com.cowave.hub.admin.socketio.event;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.listener.DataListener;
-import com.cowave.hub.admin.service.sys.SysNoticeService;
+import com.cowave.hub.admin.domain.notice.repository.facade.SysNoticeReceiverRepositoryFacade;
+import com.cowave.zoo.framework.helper.socketio.SocketIdentity;
+import com.cowave.zoo.framework.helper.socketio.SocketIoHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import static com.cowave.hub.admin.domain.AdminSocketIoNames.EVENT_SERVER_NOTICE_COUNT;
 
 /**
  * @author shanhuiming
  */
 @Component
 @RequiredArgsConstructor
-public class GetNoticeCountEvent implements DataListener<String> {
+public class GetNoticeCountEvent implements DataListener<Object> {
 
-    private final SysNoticeService noticeService;
+    private final SysNoticeReceiverRepositoryFacade noticeReceiverRepository;
+    private final SocketIoHelper socketIoHelper;
 
     @Override
-    public void onData(SocketIOClient client, String userCode, AckRequest ackSender) {
-        Long noticeCount = noticeService.msgUnReadCount(userCode);
-        client.sendEvent(EVENT_SERVER_NOTICE_COUNT, noticeCount);
+    public void onData(SocketIOClient client, Object ignored, AckRequest ackSender) {
+        SocketIdentity identity = socketIoHelper.identity(client);
+        Integer tenantId = identity.getUserDetails().getTenantId();
+        Integer userId = identity.getUserDetails().getUserId();
+        long noticeCount = noticeReceiverRepository.countUnread(tenantId, userId);
+        ackSender.sendAckData(noticeCount);
     }
 }

@@ -12,7 +12,7 @@
  */
 package com.cowave.hub.admin.service.sys;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.hub.admin.domain.sys.entity.SysAttach;

@@ -12,8 +12,9 @@
  */
 package com.cowave.hub.admin.service.auth;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.cowave.hub.admin.domain.auth.entity.command.ApiTokenCreate;
-import com.cowave.hub.admin.domain.auth.entity.vo.TokenVo;
+import com.cowave.hub.admin.domain.auth.entity.vo.ApiTokenVo;
 
 import java.util.List;
 
@@ -23,9 +24,14 @@ import java.util.List;
 public interface ApiTokenService {
 
     /**
+     * 当前用户可授权的API权限树
+     */
+    List<Tree<Integer>> getApiTree();
+
+    /**
      * 列表
      */
-    List<TokenVo> listApiToken();
+    List<ApiTokenVo> listApiToken();
 
     /**
      * 创建用户令牌

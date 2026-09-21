@@ -20,7 +20,7 @@ import com.cowave.hub.admin.domain.rbac.entity.command.TenantManagerRemove;
 import com.cowave.hub.admin.domain.rbac.entity.command.UserCreate;
 import com.cowave.hub.admin.domain.auth.entity.command.ProfileUpdate;
 import com.cowave.hub.admin.domain.rbac.entity.command.UserRoleUpdate;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 
 import java.util.List;
 

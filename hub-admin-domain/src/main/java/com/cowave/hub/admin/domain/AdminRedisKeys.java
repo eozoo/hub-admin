@@ -23,6 +23,21 @@ public class AdminRedisKeys {
     public static final String AUTH_CAPTCHA = "hub-admin:auth:captcha:%s";
 
     /**
+     * 注册邮箱验证码
+     */
+    public static final String AUTH_EMAIL_CAPTCHA = "hub-admin:auth:captcha:email:register:%s";
+
+    /**
+     * 邮箱验证码发送冷却
+     */
+    public static final String AUTH_EMAIL_COOLDOWN = "hub-admin:auth:captcha:email:cooldown:%s";
+
+    /**
+     * 邮箱验证码IP发送次数
+     */
+    public static final String AUTH_EMAIL_SENDS = "hub-admin:auth:captcha:email:sends:%s";
+
+    /**
      * OAuth2授权code
      */
     public static final String OAUTH_CODE = "hub-admin:auth:oauth-code:%s";
@@ -30,12 +45,32 @@ public class AdminRedisKeys {
     /**
      * 登录账号锁定
      */
-    public static final String AUTH_LOCK = "hub-admin:auth:%s:sys:%s:lock";
+    public static final String AUTH_LOCK = "hub-admin:auth:lock:%s";
 
     /**
      * 登录账号失败次数
      */
-    public static final String AUTH_FAILS = "hub-admin:auth:%s:sys:%s:fails";
+    public static final String AUTH_FAILS = "hub-admin:auth:fails:%s";
+
+    /**
+     * MFA一次性认证
+     */
+    public static final String AUTH_MFA = "hub-admin:auth:mfa:%s";
+
+    /**
+     * 账号绑定凭证
+     */
+    public static final String AUTH_EXTERNAL_BIND = "hub-admin:auth:bind:%s";
+
+    /**
+     * OAuth2授权state
+     */
+    public static final String AUTH_OAUTH_STATE = "hub-admin:auth:oauth-state:%s";
+
+    /**
+     * 登录用户绑定OAuth身份的授权state
+     */
+    public static final String AUTH_OAUTH_BIND_STATE = "hub-admin:auth:oauth-bind-state:%s";
 
     /**
      * Api令牌

@@ -15,17 +15,13 @@ package com.cowave.hub.admin.service.auth;
 import com.cowave.hub.admin.domain.auth.entity.command.UserRegister;
 import com.cowave.hub.admin.domain.auth.entity.query.OnlineQuery;
 import com.cowave.hub.admin.domain.auth.entity.vo.AuthVo;
+import com.cowave.hub.admin.domain.auth.entity.vo.LoginVo;
 import com.cowave.hub.admin.domain.auth.entity.vo.OnlineVo;
-import com.cowave.hub.admin.domain.rbac.entity.vo.Route;
-import com.cowave.zoo.framework.access.security.AccessUserDetails;
 import com.cowave.zoo.http.client.response.Response;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
- * 鉴权服务
- *
  * @author shanhuiming
  */
 public interface AuthService {
@@ -36,14 +32,14 @@ public interface AuthService {
     String register(UserRegister userRegister);
 
     /**
-     * 登录（密码）
+     * 登录
      */
-    AccessUserDetails login(String tenantId, String userAccount, String passwd);
+    LoginVo login(String userAccount, String passwd);
 
     /**
      * MFA二次认证
      */
-    AccessUserDetails mfa(String mfaToken, String mfaCode);
+    LoginVo mfa(String mfaToken, String mfaCode);
 
     /**
      * 退出
@@ -58,25 +54,21 @@ public interface AuthService {
     /**
      * 撤销Access令牌
      */
-    void revokeAccess(String tenantId, String authType, String userAccount, String accessId);
+    void revokeAccess(String userAccount, String sessionId, String accessId);
 
     /**
      * 撤销Refresh令牌
      */
-    void revokeRefresh(String tenantId, String authType, String userAccount);
+    void revokeRefresh(String userAccount, String sessionId);
 
     /**
      * 刷新令牌
      */
-    AccessUserDetails refresh(String refreshToken) throws Exception;
+    LoginVo refresh(String refreshToken) throws Exception;
 
     /**
      * 登录信息
      */
     AuthVo getAuth() throws Exception;
 
-    /**
-     * 菜单权限
-     */
-    List<Route> menus();
 }

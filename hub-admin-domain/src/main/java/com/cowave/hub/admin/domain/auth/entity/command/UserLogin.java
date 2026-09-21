@@ -16,7 +16,7 @@ import com.cowave.zoo.framework.access.annotation.Sensitive;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * @author shanhuiming
@@ -24,12 +24,6 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 public class UserLogin {
-
-    /**
-     * 租户id
-     */
-    @NotBlank(message = "{admin.tenant.id.null}")
-    private String tenantId;
 
     /**
      * 用户名

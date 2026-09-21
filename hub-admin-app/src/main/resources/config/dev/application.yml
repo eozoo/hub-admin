@@ -15,6 +15,8 @@ spring:
       enable: true
       mode: access-refresh
       accessExpire: 60
+      accessSecret: ${access_secret:hub-admin-access-secret-0123456789-abcdefghijklmnopqrstuvwxyz-2026}
+      refreshSecret: ${refresh_secret:hub-admin-refresh-secret-0123456789-abcdefghijklmnopqrstuvwxyz-2026}
       ignoreUrls:
         - /favicon.ico
         - /actuator/**
@@ -43,8 +45,8 @@ spring:
     port: 19011
   mail:
     host: smtp.163.com
-    username: cowaveAdmin@163.com
-    password: WKTSJr7Wn9qhcUzv
+    username: hubadmin@163.com
+    password: ZBSWYBMkkPiMX3Tk
 
 flowable:
   database-schema-update: true

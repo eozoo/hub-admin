@@ -15,7 +15,7 @@ package com.cowave.hub.admin.domain.sys.store;
 import com.cowave.hub.admin.domain.sys.entity.SysAttach;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author shanhuiming

@@ -18,11 +18,11 @@ import com.alibaba.excel.metadata.GlobalConfiguration;
 import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.metadata.property.ExcelContentProperty;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.cowave.hub.admin.domain.rbac.enums.EnableStatus.DISABLE;
-import static com.cowave.hub.admin.domain.rbac.enums.EnableStatus.ENABLE;
+import static com.cowave.hub.admin.domain.rbac2.enums.EnableStatus.DISABLE;
+import static com.cowave.hub.admin.domain.rbac2.enums.EnableStatus.ENABLE;
 
 /**
  * @author shanhuiming

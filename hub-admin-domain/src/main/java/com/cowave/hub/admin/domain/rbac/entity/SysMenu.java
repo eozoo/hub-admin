@@ -23,7 +23,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.cowave.zoo.framework.access.security.AccessInfoSetter;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import com.cowave.hub.admin.domain.rbac.enums.converter.EnableStatusConverter;
 import com.cowave.hub.admin.domain.rbac.enums.YesNo;
 import com.cowave.hub.admin.domain.rbac.enums.converter.YesNoConverter;
@@ -32,7 +32,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

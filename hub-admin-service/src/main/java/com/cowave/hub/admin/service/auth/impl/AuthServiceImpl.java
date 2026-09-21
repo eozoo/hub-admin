@@ -12,14 +12,29 @@
  */
 package com.cowave.hub.admin.service.auth.impl;
 
-import com.cowave.hub.admin.domain.sys.biz.SysAttachBiz;
+import com.cowave.hub.admin.domain.auth.entity.vo.OnlineAccess;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthPasswd;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthIdentity;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthProvider;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthLdap;
+import com.cowave.hub.admin.domain.auth.entity.bo.MfaChallenge;
+import com.cowave.hub.admin.domain.auth.enums.ProviderType;
+import com.cowave.hub.admin.domain.auth.enums.LoginSource;
+import com.cowave.hub.admin.domain.auth.biz.SysAuthBiz;
+import com.cowave.hub.admin.domain.auth.enums.PasswdAlgo;
+import com.cowave.hub.admin.domain.auth.enums.PasswdSource;
+import com.cowave.hub.admin.domain.rbac2.biz.SysTenantUserBiz;
+import com.cowave.hub.admin.domain.rbac2.entity.SysTenantUser;
+import com.cowave.hub.admin.domain.rbac2.entity.SysUserRole;
+import com.cowave.hub.admin.domain.rbac2.entity.SysUser;
+import com.cowave.hub.admin.domain.rbac2.enums.RoleGrant;
+import com.cowave.hub.admin.domain.sys2.biz.SysAttachBiz;
 import com.cowave.hub.admin.service.auth.AuthService;
 
-import com.cowave.hub.admin.domain.rbac.entity.*;
-import com.cowave.hub.admin.domain.sys.repository.facade.SysConfigRepositoryFacade;
-import com.cowave.hub.admin.domain.sys.biz.SysNoticeBiz;
-import com.cowave.hub.admin.service.auth.support.MfaAuthVerifier;
+import com.cowave.hub.admin.domain.rbac2.biz.SysMenuBiz;
+import com.cowave.hub.admin.domain.sys2.repository.facade.SysConfigRepositoryFacade;
 import com.cowave.hub.admin.service.auth.support.MfaConfiguration;
+import com.cowave.hub.admin.service.auth.support.SysUserDetailsServiceImpl;
 import com.cowave.zoo.http.client.asserts.HttpAsserts;
 import com.cowave.zoo.http.client.asserts.HttpHintException;
 import com.cowave.zoo.http.client.response.Response;
@@ -27,26 +42,19 @@ import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.access.operation.OperationInfo;
 import com.cowave.zoo.framework.access.security.*;
 import com.cowave.zoo.framework.helper.redis.RedisHelper;
-import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
 import com.cowave.hub.admin.domain.auth.entity.command.UserRegister;
 import com.cowave.hub.admin.domain.auth.entity.query.OnlineQuery;
 import com.cowave.hub.admin.domain.auth.entity.vo.AuthVo;
-import com.cowave.hub.admin.domain.auth.entity.vo.OnlineAccess;
+import com.cowave.hub.admin.domain.auth.entity.vo.LoginVo;
+import com.cowave.hub.admin.domain.auth.repository.facade.SysAuthRepositoryFacade;
 import com.cowave.hub.admin.domain.auth.entity.vo.OnlineVo;
-import com.cowave.hub.admin.domain.sys.entity.SysAttach;
-import com.cowave.hub.admin.domain.rbac.entity.vo.Route;
-import com.cowave.hub.admin.domain.rbac.entity.vo.RouteMeta;
-import com.cowave.hub.admin.domain.auth.repository.facade.UserDetailsRepositoryFacade;
 import com.cowave.hub.admin.domain.sys.biz.SysOperationBiz;
-import com.cowave.hub.admin.domain.auth.repository.facade.SysOAuthRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.SysRoleRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.SysTenantRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.biz.SysUserBiz;
-import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
-import com.cowave.hub.admin.domain.rbac.repository.facade.SysMenuRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac2.entity.SysTenant;
+import com.cowave.hub.admin.domain.rbac2.repository.facade.SysTenantRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac2.repository.facade.SysUserRepositoryFacade;
+import com.cowave.hub.admin.domain.rbac2.biz.SysUserBiz;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -56,21 +64,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import static com.cowave.hub.admin.domain.rbac.enums.UserType.GITLAB;
-import static com.cowave.hub.admin.domain.rbac.enums.UserType.SYS;
-import static com.cowave.zoo.framework.access.security.BearerTokenDelegate.CLAIM_TENANT_ID;
+import static com.cowave.zoo.framework.access.security.Permission.ROLE_ADMIN;
 import static com.cowave.zoo.framework.access.security.BearerTokenDelegate.CLAIM_USER_ACCOUNT;
 import static com.cowave.zoo.http.client.constants.HttpCode.BAD_REQUEST;
 import static com.cowave.zoo.http.client.constants.HttpCode.FORBIDDEN;
 import static com.cowave.hub.admin.domain.AdminRedisKeys.AUTH_FAILS;
 import static com.cowave.hub.admin.domain.AdminRedisKeys.AUTH_LOCK;
-import static com.cowave.hub.admin.domain.sys.enums.AttachType.AVATAR;
-import static com.cowave.hub.admin.domain.rbac.enums.EnableStatus.ENABLE;
+import static com.cowave.hub.admin.domain.rbac2.enums.EnableStatus.ENABLE;
 import static com.cowave.hub.admin.domain.sys.enums.OpAction.LOGIN;
-import static com.cowave.hub.admin.domain.sys.enums.OpAction.LOGOUT_FORCE;
 import static com.cowave.hub.admin.domain.sys.enums.OpModule.*;
 
 /**
@@ -79,58 +86,93 @@ import static com.cowave.hub.admin.domain.sys.enums.OpModule.*;
 @RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
-    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final BearerTokenService bearerTokenService;
-    private final SysOperationBiz operationBiz;
+    private final AuthenticationManager authenticationManager;
     private final RedisHelper redisHelper;
     private final MfaConfiguration mfaConfiguration;
+    private final SysOperationBiz operationBiz;
     private final SysUserBiz userBiz;
-    private final SysNoticeBiz noticeBiz;
+    private final SysMenuBiz menuBiz;
+    private final SysAuthBiz authBiz;
     private final SysAttachBiz attachBiz;
-    private final SysUserRepositoryFacade userRepositoryFacade;
-    private final SysRoleRepositoryFacade roleRepositoryFacade;
-    private final SysMenuRepositoryFacade menuRepositoryFacade;
+    private final SysTenantUserBiz tenantUserBiz;
     private final SysConfigRepositoryFacade configRepositoryFacade;
-    private final SysOAuthRepositoryFacade oauthRepositoryFacade;
-    private final SysTenantRepositoryFacade tenantRepositoryFacade;
-    private final UserDetailsRepositoryFacade userDetailsRepositoryFacade;
+    private final SysAuthRepositoryFacade authRepositoryFacade;
+    private final SysUserRepositoryFacade userRepositoryFacade;
+    private final SysTenantRepositoryFacade tenantAccessRepositoryFacade;
+    private final SysUserDetailsServiceImpl userDetailsService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String register(UserRegister userRegister) {
-        String tenantId = userRegister.getTenantId();
-
-        boolean registerOnOff = configRepositoryFacade.queryConfigValue(tenantId, "hub.registerOnOff");
-        HttpAsserts.isTrue(registerOnOff, FORBIDDEN, "{admin.register.disable}");
-
-        String userCode = SYS.newCode(tenantId, userRegister.getUserAccount());
-        String initPasswd = configRepositoryFacade.queryConfigValue(tenantId, "hub.initPassword");
-        SysUser sysUser = new SysUser();
-        sysUser.setTenantId(tenantId);
-        sysUser.setUserType(SYS);
-        sysUser.setUserStatus(ENABLE);
-        sysUser.setUserCode(userCode);
-        sysUser.setUserEmail(userRegister.getUserEmail());
-        sysUser.setUserName(userRegister.getUserName());
-        sysUser.setUserAccount(userRegister.getUserAccount());
-        sysUser.setUserPasswd(passwordEncoder.encode(initPasswd));
-        userBiz.saveUser(sysUser);
-
-        SysRole sysRole = roleRepositoryFacade.queryByCode(tenantId, "role-readonly");
-        if(sysRole != null) {
-            userBiz.saveUserRole(sysUser.getUserId(), sysRole.getRoleId());
+        // 注册开关
+        Boolean registerOnOff = configRepositoryFacade.queryConfigValue("hub.registerOnOff");
+        HttpAsserts.isTrue(Boolean.TRUE.equals(registerOnOff), FORBIDDEN, "{admin.register.disable}");
+        // 默认租户
+        SysTenant publicTenant = tenantAccessRepositoryFacade.queryPublicTenant();
+        HttpAsserts.notNull(publicTenant, BAD_REQUEST, "{admin.tenant.user.invalid}");
+        // 账号重复检查
+        String userAccount = userRegister.getUserAccount();
+        HttpAsserts.isFalse(userRepositoryFacade.existsAccountIncludingDeleted(userAccount),
+                BAD_REQUEST, "{admin.user.account.conflict}", userAccount);
+        // 默认密码
+        String initPasswd = configRepositoryFacade.queryConfigValue("hub.initPassword");
+        HttpAsserts.notNull(initPasswd, BAD_REQUEST, "{admin.user.passwd.null}");
+        // 用户信息
+        Date now = new Date();
+        SysUser user = new SysUser();
+        user.setUserAccount(userAccount);
+        user.setUserName(userRegister.getUserName());
+        user.setUserEmail(userRegister.getUserEmail());
+        user.setUserStatus(ENABLE);
+        user.setIsDelete(0);
+        user.setCreateBy(userAccount);
+        user.setCreateTime(now);
+        userBiz.createUser(user);
+        // 密码信息
+        SysAuthPasswd passwd = new SysAuthPasswd();
+        passwd.setUserId(user.getUserId());
+        passwd.setPasswdHash(passwordEncoder.encode(initPasswd));
+        passwd.setPasswdAlgo(PasswdAlgo.BCRYPT);
+        passwd.setIsCurrent(1);
+        passwd.setNeedChange(1);
+        passwd.setEffectiveTime(now);
+        passwd.setChangeSource(PasswdSource.INITIAL);
+        passwd.setCreateBy(userAccount);
+        passwd.setCreateTime(now);
+        authBiz.createPasswd(passwd);
+        // 租户成员
+        SysTenantUser member = new SysTenantUser();
+        member.setTenantId(publicTenant.getTenantId());
+        member.setUserId(user.getUserId());
+        member.setUserType("external");
+        member.setUserCode("open-visitor-" + user.getUserId());
+        member.setDisplayName(user.getUserName());
+        member.setStatus(ENABLE);
+        member.setIsDefault(1);
+        member.setJoinTime(now);
+        member.setCreateBy(userAccount);
+        member.setCreateTime(now);
+        tenantUserBiz.createMember(member);
+        // 租户角色
+        Integer roleId = tenantAccessRepositoryFacade.queryVisitorRoleId(publicTenant.getTenantId());
+        if (roleId != null) {
+            SysUserRole userRole = new SysUserRole();
+            userRole.setTenantId(publicTenant.getTenantId());
+            userRole.setUserId(user.getUserId());
+            userRole.setRoleId(roleId);
+            userRole.setGrantType(RoleGrant.DIRECT);
+            userRole.setGrantedBy(userAccount);
+            userRole.setGrantedTime(now);
+            tenantUserBiz.grantRole(userRole);
         }
-
-        // 注册用户的通知消息
-        noticeBiz.initNoticeMsgForNewUser(userCode);
-        noticeBiz.updateNoticeStatForNewUser();
         return initPasswd;
     }
 
     @Override
-    public AccessUserDetails login(String tenantId, String userAccount, String passwd) {
-        Long lockTime = redisHelper.getExpire(AUTH_LOCK.formatted(tenantId, userAccount));
+    public LoginVo login(String userAccount, String passwd) {
+        Long lockTime = redisHelper.getExpire(AUTH_LOCK.formatted(userAccount));
         if (lockTime != null && lockTime > 0) {
             long minutes = (lockTime + 59) / 60;
             throw new HttpHintException(BAD_REQUEST, "{admin.auth.locked}", minutes);
@@ -138,30 +180,21 @@ public class AuthServiceImpl implements AuthService {
 
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new TenantUsernamePasswordAuthenticationToken(tenantId, userAccount, passwd));
+                    new TenantUsernamePasswordAuthenticationToken(null, userAccount, passwd));
             AccessUserDetails userDetails = (AccessUserDetails) authentication.getPrincipal();
             // 如果有MFA，需要二次认证
             if (!userDetails.isMfaRequired()) {
-                bearerTokenService.assignAccessRefreshToken(userDetails);
-                // 登录日志
-                OperationInfo operationInfo = OperationInfo.builder()
-                        .success(true)
-                        .opModule(SYSTEM)
-                        .opType(SYSTEM_AUTH)
-                        .opAction(LOGIN)
-                        .desc("用户登录：" + userAccount)
-                        .build();
-                operationBiz.createOperation(operationInfo, null);
+                completeLogin(userDetails, "用户登录：" + userAccount, null);
             }
-            return userDetails;
+            return LoginVo.from(userDetails);
         } catch (BadCredentialsException e) {
             // 5min内最多允许尝试5次密码，否则锁定30min
-            Long failCount = redisHelper.incrementValue(AUTH_FAILS.formatted(tenantId, userAccount), 1);
+            Long failCount = redisHelper.incrementValue(AUTH_FAILS.formatted(userAccount), 1);
             if (failCount == 1) {
-                redisHelper.expire(AUTH_FAILS.formatted(tenantId, userAccount), 300, TimeUnit.SECONDS);
+                redisHelper.expire(AUTH_FAILS.formatted(userAccount), 300, TimeUnit.SECONDS);
             }
             if (failCount >= 5) {
-                redisHelper.putExpire(AUTH_LOCK.formatted(tenantId, userAccount), "-", 1800, TimeUnit.SECONDS);
+                redisHelper.putExpire(AUTH_LOCK.formatted(userAccount), "-", 1800, TimeUnit.SECONDS);
                 throw new HttpHintException(BAD_REQUEST, "{admin.auth.locked}", 30);
             }
             throw new HttpHintException(BAD_REQUEST, "{admin.auth.failed}", 5 - failCount);
@@ -169,19 +202,58 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AccessUserDetails mfa(String mfaToken, String mfaCode) {
+    public LoginVo mfa(String mfaToken, String mfaCode) {
         Claims claims = mfaConfiguration.parseMfaToken(mfaToken);
-        String tenantId = (String) claims.get(CLAIM_TENANT_ID);
         String userAccount = (String) claims.get(CLAIM_USER_ACCOUNT);
-        SysUser sysUser = userRepositoryFacade.queryByAccount(tenantId, SYS, userAccount);
+        AccessUserDetails userDetails = userDetailsService.loadMfaUser(userAccount, mfaCode);
+        MfaChallenge challenge = mfaConfiguration.consume(claims);
+        SysAuthIdentity identity = null;
+        String loginDescription = "用户登录：" + userAccount;
+        if (challenge.getIdentityId() != null) {
+            identity = authRepositoryFacade.queryIdentityById(challenge.getIdentityId());
+            HttpAsserts.isTrue(identity != null && Objects.equals(identity.getUserId(), userDetails.getUserId())
+                    && identity.getAuthStatus() == ENABLE, FORBIDDEN, "{admin.auth.provider.unavailable}");
+            if (identity.getIdentityType() == ProviderType.LDAP) {
+                SysAuthLdap ldap = authRepositoryFacade.queryEnabledLdap();
+                HttpAsserts.isTrue(ldap != null && Objects.equals(ldap.getLdapId(), identity.getLdapId()),
+                        FORBIDDEN, "{admin.auth.ldap.unavailable}");
+                loginDescription = "LDAP登录：" + identity.getUserAccount();
+                userDetails.setLoginSource(LoginSource.LDAP.getVal());
+            } else {
+                SysAuthProvider provider = authRepositoryFacade.queryOauthProviderById(identity.getProviderId());
+                HttpAsserts.isTrue(provider != null && provider.getStatus() == ENABLE,
+                        FORBIDDEN, "{admin.auth.provider.unavailable}");
+                loginDescription = provider.getProviderCode().getVal() + "登录：" + identity.getUserAccount();
+                userDetails.setLoginSource(provider.getProviderCode().getVal());
+            }
+        }
+        completeLogin(userDetails, loginDescription, identity);
+        return LoginVo.from(userDetails);
+    }
 
-        String mfaKey = sysUser.getMfa();
-        HttpAsserts.isTrue(MfaAuthVerifier.validateCode(mfaKey, mfaCode), BAD_REQUEST, "{admin.mfa.code.invalid}");
-
-        SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
-        AccessUserDetails userDetails = userDetailsRepositoryFacade.queryUserDetails(sysTenant, sysUser, true);
+    private void completeLogin(AccessUserDetails userDetails, String loginDescription, SysAuthIdentity identity) {
+        // 租户权限信息
+        userDetailsService.loadUserAccess(userDetails);
+        // 生成令牌
         bearerTokenService.assignAccessRefreshToken(userDetails);
-        return userDetails;
+        redisHelper.delete(AUTH_FAILS.formatted(userDetails.getUsername()), AUTH_LOCK.formatted(userDetails.getUsername()));
+        if (identity != null) {
+            identity.setLastLoginTime(new Date());
+            if (identity.getIdentityType() == ProviderType.LDAP) {
+                authBiz.updateLdapIdentity(identity);
+            } else {
+                authBiz.updateProviderIdentity(identity);
+            }
+        }
+        // 操作日志
+        OperationInfo operationInfo = OperationInfo.builder()
+                .success(true)
+                .opModule(SYSTEM)
+                .opType(SYSTEM_AUTH)
+                .opAction(LOGIN)
+                .desc(loginDescription)
+                .build();
+        operationBiz.createOperation(operationInfo, null);
     }
 
     @Override
@@ -191,202 +263,107 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Response.Page<OnlineVo> onlineList(OnlineQuery query) {
-        String tenantId = Access.tenantId();
-
-        // 在线索引数据，按登录时间倒序
-        List<OnlineIndex> indexList = bearerTokenService.listOnlineIndex(tenantId, query.getBeginTime(), query.getEndTime());
-        // 账号过滤
-        String userAccount = query.getUserAccount();
-        if (StringUtils.isNotBlank(userAccount)) {
-            indexList = indexList.stream().filter(
-                    member -> StringUtils.contains(member.getUserAccount(), userAccount)).toList();
+        // 检索令牌索引
+        List<OnlineIndex> indexes = bearerTokenService.listTenantOnlineIndex(
+                Access.tenantCode(), query.getBeginTime(), query.getEndTime());
+        if (StringUtils.isNotBlank(query.getUserAccount())) {
+            indexes = indexes.stream().filter(index -> StringUtils.containsIgnoreCase(
+                    index.getUserAccount(), query.getUserAccount().trim())).toList();
         }
-
-        // 手动分页
-        int total = indexList.size();
-        int pageIndex = Access.pageIndex();
-        int pageSize = Access.pageSize();
-        int fromIndex = Math.min((pageIndex - 1) * pageSize, total);
-        int toIndex = Math.min(fromIndex + pageSize, total);
-        List<OnlineIndex> pageList = indexList.subList(fromIndex, toIndex);
+        // 令牌信息
         List<OnlineVo> onlineList = new ArrayList<>();
-        for (OnlineToken onlineToken : bearerTokenService.listOnlineToken(tenantId, pageList)) {
-            List<OnlineAccess> grantList = new ArrayList<>();
-            // access令牌
-            for (AccessTokenInfo accessToken : onlineToken.getAccessTokens()) {
-                grantList.add(new OnlineAccess(accessToken));
-            }
-            // oauth令牌
-            for (RefreshTokenInfo oauthToken : onlineToken.getOauthTokens()) {
-                grantList.add(new OnlineAccess(oauthToken));
-            }
-            // 登录信息
+        for (OnlineToken onlineToken : bearerTokenService.listOnlineToken(indexes)) {
+            // Refresh令牌
             RefreshTokenInfo refresh = onlineToken.getRefreshToken();
+            // 授权列表
+            List<OnlineAccess> grants = new ArrayList<>();
+            // Access授权
+            for (AccessTokenInfo accessToken : onlineToken.getAccessTokens()) {
+                if (Objects.equals(refresh.getTenantCode(), accessToken.getTenantCode())) {
+                    grants.add(new OnlineAccess(accessToken));
+                }
+            }
+            // OAuth授权
+            for (RefreshTokenInfo oauthToken : onlineToken.getOauthTokens()) {
+                if (Objects.equals(refresh.getTenantCode(), oauthToken.getTenantCode())) {
+                    grants.add(new OnlineAccess(oauthToken));
+                }
+            }
             onlineList.add(OnlineVo.builder()
+                    .sessionId(refresh.getSessionId())
+                    .tenantCode(refresh.getTenantCode())
                     .refreshId(refresh.getRefreshId())
                     .authType(refresh.getAuthType())
-                    .userType(refresh.getUserType())
+                    .loginSource(LoginSource.of(refresh.getLoginSource()))
                     .userAccount(refresh.getUserAccount())
                     .userName(refresh.getUserName())
                     .cluster(refresh.getClusterName())
                     .loginIp(refresh.getLoginIp())
                     .loginTime(refresh.getLoginTime())
-                    .accessList(grantList)
+                    .accessList(grants)
                     .build());
         }
-        return new Response.Page<>(onlineList, total);
+        int total = onlineList.size();
+        int pageSize = Math.max(1, Access.pageSize());
+        long offset = (long) (Math.max(1, Access.pageIndex()) - 1) * pageSize;
+        int from = (int) Math.min(offset, total);
+        int to = Math.min(from + pageSize, total);
+        return new Response.Page<>(onlineList.subList(from, to), total);
     }
 
     @Override
-    public void revokeAccess(String tenantId, String authType, String userAccount, String accessId) {
-        bearerTokenService.revokeAccessToken(tenantId, authType, userAccount, accessId);
+    public void revokeAccess(String userAccount, String sessionId, String accessId) {
+        requireCurrentTenantSession(userAccount, sessionId);
+        bearerTokenService.revokeAccessToken(userAccount, sessionId, Access.tenantCode(), accessId);
     }
 
     @Override
-    public void revokeRefresh(String tenantId, String authType, String userAccount) {
-        bearerTokenService.revokeRefreshToken(tenantId, authType, userAccount);
-        // 强退日志
-        OperationInfo operationInfo = OperationInfo.builder()
-                .success(true)
-                .opModule(SYSTEM)
-                .opType(SYSTEM_AUTH)
-                .opAction(LOGOUT_FORCE)
-                .desc("强制退出：" + userAccount)
-                .build();
-        operationBiz.createOperation(operationInfo, null);
+    public void revokeRefresh(String userAccount, String sessionId) {
+        requireCurrentTenantSession(userAccount, sessionId);
+        bearerTokenService.revokeRefreshToken(userAccount, sessionId);
+    }
+
+    private void requireCurrentTenantSession(String userAccount, String sessionId) {
+        boolean found = bearerTokenService.listTenantOnlineIndex(
+                Access.tenantCode(), null, null).stream().anyMatch(
+                        index -> Objects.equals(index.getUserAccount(), userAccount)
+                                && Objects.equals(index.getSessionId(), sessionId));
+        HttpAsserts.isTrue(found, FORBIDDEN, "{frame.auth.access.denied}");
     }
 
     @Override
-    public AccessUserDetails refresh(String refreshToken) throws Exception{
-        return bearerTokenService.refreshAccessRefreshToken(refreshToken);
+    public LoginVo refresh(String refreshToken) throws Exception{
+        return LoginVo.from(bearerTokenService.refreshAccessRefreshToken(refreshToken));
     }
 
     @Override
     public AuthVo getAuth() throws Exception {
         AccessUserDetails userDetails = Access.userDetails();
         Integer userId = userDetails.getUserId();
-
+        Integer tenantId = userDetails.getTenantId();
+        // 用户信息
         AuthVo authVo = new AuthVo();
         authVo.setUserId(userId);
         authVo.setUserName(userDetails.getUserNick());
         authVo.setRoles(userDetails.getRoles());
         authVo.setPermissions(userDetails.getPermissions());
-
-        String tenantId = userDetails.getTenantId();
-        SysTenant sysTenant = tenantRepositoryFacade.queryById(tenantId);
         authVo.setTenantId(tenantId);
-        authVo.setTenantTitle(sysTenant.getTitle());
-
-        // Avatar
-        if (GITLAB.equalsVal(userDetails.getUserType())) {
-            SysOAuthUser oauthUser =
-                    oauthRepositoryFacade.queryUserByAccount(tenantId, GITLAB.getVal(), userDetails.getUsername());
-            authVo.setAvatar(oauthUser.getUserAvatar());
-        } else if (SYS.equalsVal(userDetails.getUserType())) {
-            SysAttach avatar = attachBiz.previewLatestByOwner(String.valueOf(userId), SYSTEM_USER, AVATAR);
-            if (avatar != null) {
-                authVo.setAvatar(avatar.getViewUrl());
-            }
+        authVo.setTenantCode(userDetails.getTenantCode());
+        // 修改密码提示
+        SysAuthPasswd authPasswd = authRepositoryFacade.queryCurrentPasswd(userId);
+        authVo.setNeedChangePasswd(authPasswd == null ? 0 : authPasswd.getNeedChange());
+        // 菜单权限
+        SysTenant tenant = tenantAccessRepositoryFacade.queryTenantById(tenantId);
+        authVo.setTenantTitle(tenant == null ? null : tenant.getTitle());
+        authVo.setMenus(menuBiz.buildRoutes(tenantId, userId, userDetails.getRoles().contains(ROLE_ADMIN)));
+        // 用户头像
+        String avatarUrl = attachBiz.previewLatestAvatar(Access.userAccount());
+        if (avatarUrl != null) {
+            authVo.setAvatar(avatarUrl);
+        } else {
+            var user = userRepositoryFacade.queryById(userId);
+            authVo.setAvatar(user == null ? null : user.getUserAvatar());
         }
         return authVo;
-    }
-
-    @Override
-    public List<Route> menus(){
-        List<SysMenu> menuList;
-        if(Access.isAdminUser()){
-            menuList = menuRepositoryFacade.queryMenusByAdmin(Access.tenantId());
-        }else{
-            List<String> userRoles = Access.userRoles();
-            if(CollectionUtils.isEmpty(userRoles)){
-                menuList = menuRepositoryFacade.queryMenusInPublic(Access.tenantId());
-            } else {
-                menuList = menuRepositoryFacade.queryMenusByRoles(Access.tenantId(), userRoles);
-            }
-        }
-
-        if(menuList.isEmpty()){
-            return Collections.emptyList();
-        }
-
-        List<SysMenu> rootMenus = new ArrayList<>();
-        for(SysMenu menu : menuList){
-            if (menu.getParentId() == 0) {
-                recursionFn(menuList, menu);
-                rootMenus.add(menu);
-            }
-        }
-        return buildRoutes(rootMenus);
-    }
-
-    private void recursionFn(List<SysMenu> list, SysMenu menu) {
-        List<SysMenu> childList = getChildList(list, menu);
-        menu.setChildren(childList);
-        for (SysMenu child : childList) {
-            if (hasChild(list, child)) {
-                recursionFn(list, child);
-            }
-        }
-    }
-
-    private boolean hasChild(List<SysMenu> list, SysMenu t) {
-        return !getChildList(list, t).isEmpty();
-    }
-
-    private List<SysMenu> getChildList(List<SysMenu> list, SysMenu parent) {
-        List<SysMenu> children = new ArrayList<>();
-        for (SysMenu child : list) {
-            if (child.getParentId().equals(parent.getMenuId())) {
-                children.add(child);
-            }
-        }
-        return children;
-    }
-
-    private List<Route> buildRoutes(List<SysMenu> menus){
-        List<Route> routes = new LinkedList<>();
-        for (SysMenu menu : menus) {
-            Route route = new Route();
-            route.setHidden("L".equals(menu.getMenuType())); // 链接不展示在菜单
-            route.setName(menu.routeName());
-            route.setPath(menu.routePath());
-            route.setComponent(menu.routeComponent());
-            route.setQuery(menu.getMenuParam());
-            route.setMeta(new RouteMeta(menu.getMenuName(), menu.getMenuIcon(), false, menu.getMenuPath()));
-
-            List<SysMenu> cMenus = menu.getChildren();
-            if (!cMenus.isEmpty() && "M".equals(menu.getMenuType())) {
-                route.setAlwaysShow(true);
-                route.setRedirect("noRedirect");
-                route.setChildren(buildRoutes(cMenus));
-            } else if (menu.ifMenuFrame()) {
-                route.setMeta(null);
-                List<Route> childrenList = new ArrayList<>();
-                Route children = new Route();
-                children.setPath(menu.getMenuPath());
-                children.setComponent(menu.getComponent());
-                children.setName(StringUtils.capitalize(menu.getMenuPath()));
-                children.setMeta(new RouteMeta(menu.getMenuName(), menu.getMenuIcon(), false, menu.getMenuPath()));
-                children.setQuery(menu.getMenuParam());
-                childrenList.add(children);
-                route.setChildren(childrenList);
-            } else if (menu.getParentId() == 0L && menu.ifInnerLink()) {
-                route.setMeta(new RouteMeta(menu.getMenuName(), menu.getMenuIcon()));
-                route.setPath("/");
-                List<Route> childrenList = new ArrayList<>();
-                Route children = new Route();
-                String routerPath = menu.getMenuPath();
-                routerPath = routerPath.replace("http://", "");
-                routerPath = routerPath.replace("https://", "");
-                children.setPath(routerPath);
-                children.setComponent("InnerLink");
-                children.setName(StringUtils.capitalize(routerPath));
-                children.setMeta(new RouteMeta(menu.getMenuName(), menu.getMenuIcon(), menu.getMenuPath()));
-                childrenList.add(children);
-                route.setChildren(childrenList);
-            }
-            routes.add(route);
-        }
-        return routes;
     }
 }

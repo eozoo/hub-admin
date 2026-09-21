@@ -17,7 +17,7 @@ import com.cowave.hub.admin.domain.home.entity.command.OAuth2CodeReq;
 import com.cowave.hub.admin.domain.home.entity.command.OAuth2TokenReq;
 import com.cowave.hub.admin.domain.home.entity.vo.OAuth2CodeVo;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**

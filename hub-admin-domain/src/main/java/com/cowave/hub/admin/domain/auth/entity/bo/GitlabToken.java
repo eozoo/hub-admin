@@ -5,8 +5,8 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an "AS IS" BASIS,
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
@@ -26,20 +26,38 @@ import java.util.Date;
 @Setter
 public class GitlabToken {
 
+    /**
+     * 授权范围
+     */
     private String scope;
 
+    /**
+     * 令牌类型
+     */
     @JsonProperty("token_type")
     private String tokenType;
 
+    /**
+     * 有效期秒数
+     */
     @JsonProperty("expires_in")
     private Integer expiresIn;
 
+    /**
+     * GitLab Access Token
+     */
     @JsonProperty("access_token")
     private String accessToken;
 
+    /**
+     * GitLab Refresh Token
+     */
     @JsonProperty("refresh_token")
     private String refreshToken;
 
+    /**
+     * 创建时间
+     */
     @JsonProperty("created_at")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdAt;

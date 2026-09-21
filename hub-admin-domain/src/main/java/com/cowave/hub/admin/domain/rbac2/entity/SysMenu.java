@@ -13,12 +13,17 @@
 package com.cowave.hub.admin.domain.rbac2.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 菜单信息
@@ -146,4 +151,58 @@ public class SysMenu {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
+
+    /**
+     * 子菜单
+     */
+    @TableField(exist = false)
+    private List<SysMenu> children = new ArrayList<>();
+
+    public boolean ifInnerLink() {
+        return Objects.equals(isFrame, 1)
+                && StringUtils.startsWithAny(menuPath, "http://", "https://");
+    }
+
+    public boolean ifMenuFrame() {
+        return Objects.equals(parentId, 0)
+                && "C".equals(menuType)
+                && Objects.equals(isFrame, 1);
+    }
+
+    public boolean ifParentView() {
+        return !Objects.equals(parentId, 0) && "M".equals(menuType);
+    }
+
+    public String routeName() {
+        return ifMenuFrame() ? "" : StringUtils.capitalize(menuPath);
+    }
+
+    public String routePath() {
+        String routePath = menuPath;
+        if (!Objects.equals(parentId, 0) && ifInnerLink()) {
+            routePath = StringUtils.removeStart(routePath, "http://");
+            routePath = StringUtils.removeStart(routePath, "https://");
+        }
+        if (Objects.equals(parentId, 0)
+                && "M".equals(menuType)
+                && Objects.equals(isFrame, 1)) {
+            routePath = "/" + menuPath;
+        } else if (ifMenuFrame()) {
+            routePath = "/";
+        }
+        return routePath;
+    }
+
+    public String routeComponent() {
+        if (StringUtils.isNotEmpty(component) && !ifMenuFrame()) {
+            return component;
+        }
+        if (StringUtils.isEmpty(component) && !Objects.equals(parentId, 0) && ifInnerLink()) {
+            return "InnerLink";
+        }
+        if (StringUtils.isEmpty(component) && ifParentView()) {
+            return "ParentView";
+        }
+        return "Layout";
+    }
 }

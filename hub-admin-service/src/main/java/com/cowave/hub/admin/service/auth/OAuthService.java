@@ -12,11 +12,16 @@
  */
 package com.cowave.hub.admin.service.auth;
 
+import com.cowave.hub.admin.domain.auth.enums.ProviderCode;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
+
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cowave.zoo.framework.access.security.AccessUserDetails;
-import com.cowave.hub.admin.domain.auth.entity.SysOAuth;
-import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthProvider;
+import com.cowave.hub.admin.domain.auth.entity.command.AccountBind;
+import com.cowave.hub.admin.domain.auth.entity.command.OAuthConfigUpdate;
 import com.cowave.hub.admin.domain.auth.entity.query.OAuthUserQuery;
+import com.cowave.hub.admin.domain.auth.entity.vo.OAuthUserVo;
+import com.cowave.hub.admin.domain.auth.entity.vo.LoginVo;
 
 /**
  * @author shanhuiming
@@ -24,22 +29,57 @@ import com.cowave.hub.admin.domain.auth.entity.query.OAuthUserQuery;
 public interface OAuthService {
 
     /**
+     * 绑定本地账号
+     */
+    LoginVo bindAccount(AccountBind command);
+
+    /**
      * gitlab回调
      */
-    AccessUserDetails gitlabCallback(String tenantId, String code);
+    LoginVo gitlabCallback(String code, String state);
+
+    /**
+     * GitHub回调认证
+     */
+    LoginVo githubCallback(String code, String state);
+
+    /**
+     * 微信回调认证
+     */
+    LoginVo wechatCallback(String code, String state);
+
+    /**
+     * QQ回调认证
+     */
+    LoginVo qqCallback(String code, String state);
+
+    /**
+     * Bilibili回调认证
+     */
+    LoginVo bilibiliCallback(String code, String state);
 
     /**
      * 获取授权服务配置
      */
-    SysOAuth getOauth(String tenantId, String serverType);
+    SysAuthProvider getOauth(ProviderCode providerCode);
 
     /**
      * 修改授权服务配置
      */
-    void editOauth(String tenantId, SysOAuth oauth);
+    void editOauth(ProviderCode providerCode, OAuthConfigUpdate oauthConfig);
 
     /**
      * 用户列表
      */
-    Page<SysOAuthUser> listUser(String tenantId, OAuthUserQuery query);
+    Page<OAuthUserVo> listUser(ProviderCode providerCode, OAuthUserQuery userQuery);
+
+    /**
+     * 修改身份状态
+     */
+    void updateIdentityStatus(ProviderCode providerCode, Long identityId, EnableStatus status);
+
+    /**
+     * 删除身份绑定
+     */
+    void deleteIdentity(ProviderCode providerCode, Long identityId);
 }

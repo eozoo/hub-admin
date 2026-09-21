@@ -27,9 +27,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -44,13 +45,20 @@ public class SysBearerTokenServiceImpl extends BearerTokenServiceImpl {
 
     private final RedisHelper redisHelper;
     private final AccessProperties accessProperties;
+    private final SysUserDetailsServiceImpl userDetailsService;
 
     public SysBearerTokenServiceImpl(RedisHelper redisHelper, ObjectMapper objectMapper,
                                      AccessIdGenerator accessIdGenerator, BearerTokenDelegate bearerTokenDelegate,
-                                     AccessProperties accessProperties) {
+                                     AccessProperties accessProperties, SysUserDetailsServiceImpl userDetailsService) {
         super(redisHelper, objectMapper, accessIdGenerator, bearerTokenDelegate);
         this.redisHelper = redisHelper;
         this.accessProperties = accessProperties;
+        this.userDetailsService = userDetailsService;
+    }
+
+    @Override
+    protected void reloadRefreshUserDetails(AccessUserDetails userDetails) {
+        userDetailsService.reloadRefreshUserAccess(userDetails);
     }
 
     @Override
@@ -58,8 +66,7 @@ public class SysBearerTokenServiceImpl extends BearerTokenServiceImpl {
                                           HttpServletResponse response, boolean useRefreshToken) throws IOException {
         // API Token：注销检查和IP白名单
         if (AuthType.API.getVal().equals(userDetails.getAuthType())) {
-            String accessId = userDetails.getAccessId();
-            if (!validateApiToken(response, accessId)) {
+            if (!validateApiToken(response, userDetails.getAccessId())) {
                 return false;
             }
             recordApiTokenAccess(userDetails);
@@ -97,10 +104,10 @@ public class SysBearerTokenServiceImpl extends BearerTokenServiceImpl {
     }
 
     private void recordApiTokenAccess(AccessUserDetails userDetails) {
-        Map<String, Object> accessInfo = Map.of(
-                "ip", Access.accessIp(),
-                "url", Access.accessUrl(),
-                "time", new Date());
+        Map<String, Object> accessInfo = new HashMap<>();
+        accessInfo.put("ip", Access.accessIp());
+        accessInfo.put("url", Access.accessUrl());
+        accessInfo.put("time", new Date());
         redisHelper.putExpire(AdminRedisKeys.AUTH_API_CURRENT.formatted(userDetails.getAccessId()),
                 accessInfo, 15, TimeUnit.MINUTES);
     }

@@ -13,7 +13,7 @@
 package com.cowave.hub.admin.service.rbac;
 
 import cn.hutool.core.lang.tree.Tree;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import com.cowave.hub.admin.domain.rbac.entity.SysMenu;
 
 import java.util.List;

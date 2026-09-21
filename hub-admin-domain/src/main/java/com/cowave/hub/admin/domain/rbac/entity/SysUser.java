@@ -21,8 +21,8 @@ import com.alibaba.excel.annotation.write.style.HeadRowHeight;
 import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
-import com.cowave.hub.admin.domain.rbac.enums.UserType;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.UserType;
 import com.cowave.hub.admin.domain.rbac.enums.converter.EnableStatusConverter;
 import com.cowave.hub.admin.domain.rbac.enums.UserSex;
 import com.cowave.hub.admin.domain.rbac.enums.converter.UserSexConverter;
@@ -33,8 +33,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import java.util.Date;
 
 /**

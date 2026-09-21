@@ -17,7 +17,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import com.cowave.hub.admin.domain.rbac.entity.SysUserDept;
 import com.cowave.hub.admin.domain.rbac.entity.SysUserDiagram;
-import com.cowave.hub.admin.domain.auth.entity.pto.UserProfile;
 import com.cowave.hub.admin.domain.rbac.entity.SysUserRole;
 import com.cowave.hub.admin.domain.rbac.entity.pto.TenantManagerPto;
 import com.cowave.hub.admin.domain.rbac.entity.pto.UserInfoPto;
@@ -26,7 +25,7 @@ import com.cowave.hub.admin.domain.rbac.entity.pto.UserNamePto;
 import com.cowave.hub.admin.domain.rbac.entity.query.UserExportQuery;
 import com.cowave.hub.admin.domain.rbac.entity.query.UserMemberQuery;
 import com.cowave.hub.admin.domain.rbac.entity.query.UserQuery;
-import com.cowave.hub.admin.domain.rbac.enums.UserType;
+import com.cowave.hub.admin.domain.rbac2.enums.UserType;
 
 import java.util.Collection;
 import java.util.List;
@@ -139,8 +138,4 @@ public interface SysUserRepositoryFacade {
      */
     Page<TenantManagerPto> queryTenantManager(String tenantId);
 
-    /**
-     * 个人信息
-     */
-    UserProfile queryUserProfile(Integer userId);
 }

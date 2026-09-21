@@ -30,8 +30,8 @@ public class MfaAuthVerifier {
         return TimeBasedOneTimePasswordUtil.generateBase32Secret();
     }
 
-    public static String generateAuthUrl(String tenantId, String userAccount, final String tfaKey) {
-        return TimeBasedOneTimePasswordUtil.generateOtpAuthUrl(tenantId + ":" + userAccount, tfaKey);
+    public static String generateAuthUrl(String userAccount, final String tfaKey) {
+        return TimeBasedOneTimePasswordUtil.generateOtpAuthUrl(userAccount, tfaKey);
     }
 
     public static boolean validateCode(String tfaKey, String tfaCode) {

@@ -12,13 +12,13 @@
  */
 package com.cowave.hub.admin.domain.rbac.entity.command;
 
-import com.cowave.hub.admin.domain.rbac.enums.UserType;
+import com.cowave.hub.admin.domain.rbac2.enums.UserType;
 import com.cowave.hub.admin.domain.rbac.entity.SysUser;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * @author shanhuiming

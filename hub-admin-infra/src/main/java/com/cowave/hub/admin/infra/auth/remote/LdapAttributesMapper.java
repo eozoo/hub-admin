@@ -1,19 +1,7 @@
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0.txt
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- */
 package com.cowave.hub.admin.infra.auth.remote;
 
-import com.cowave.hub.admin.domain.auth.entity.SysLdap;
-import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthIdentity;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthLdap;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ldap.core.AttributesMapper;
@@ -22,6 +10,11 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,15 +22,15 @@ import java.util.regex.Pattern;
  * @author shanhuiming
  */
 @RequiredArgsConstructor
-public class LdapAttributesMapper implements AttributesMapper<SysLdapUser> {
+public class LdapAttributesMapper implements AttributesMapper<SysAuthIdentity> {
 
     private static final Pattern PATTERN_CN = Pattern.compile("CN=([^,]+)");
 
-    private final SysLdap sysLdap;
+    private final SysAuthLdap config;
 
     @Override
-    public SysLdapUser mapFromAttributes(Attributes attributes) throws NamingException {
-        SysLdapUser ldapUser = new SysLdapUser();
+    public SysAuthIdentity mapFromAttributes(Attributes attributes) throws NamingException {
+        SysAuthIdentity ldapUser = new SysAuthIdentity();
         NamingEnumeration<? extends Attribute> attributeEnum = attributes.getAll();
         while (attributeEnum.hasMore()) {
             Attribute attribute = attributeEnum.next();
@@ -50,65 +43,84 @@ public class LdapAttributesMapper implements AttributesMapper<SysLdapUser> {
             setUserLeader(attribute, ldapUser);
             setUserInfo(attribute, ldapUser);
         }
+        ldapUser.setExternalSubject(subject(attributes));
         return ldapUser;
     }
 
-    private void setUserAccount(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
-        if(sysLdap.getAccountProperty().equals(attribute.getID())){
+    /**
+     * 读取 LDAP 目录对象的稳定标识，不使用可变的账号或 DN 兜底
+     */
+    private String subject(Attributes attributes) throws NamingException {
+        if (StringUtils.isBlank(config.getSubjectProperty())) {
+            throw new NamingException("LDAP subject property is not configured");
+        }
+        Attribute attribute = attributes.get(config.getSubjectProperty());
+        if (attribute == null || attribute.get() == null) {
+            throw new NamingException("LDAP subject attribute is missing: " + config.getSubjectProperty());
+        }
+        Object value = attribute.get();
+        if ("objectGUID".equalsIgnoreCase(config.getSubjectProperty())) {
+            if (!(value instanceof byte[] bytes) || bytes.length != 16) {
+                throw new NamingException("Invalid LDAP objectGUID");
+            }
+            return objectGuid(bytes);
+        }
+        if (!(value instanceof String subject) || StringUtils.isBlank(subject)) {
+            throw new NamingException("Invalid LDAP subject: " + config.getSubjectProperty());
+        }
+        return subject.toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * 将 AD objectGUID 的混合字节序转换为标准 UUID 字符串
+     */
+    private String objectGuid(byte[] bytes) {
+        ByteBuffer first = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+        long mostSignificantBits = (Integer.toUnsignedLong(first.getInt()) << 32)
+                | (Short.toUnsignedLong(first.getShort()) << 16)
+                | Short.toUnsignedLong(first.getShort());
+        long leastSignificantBits = ByteBuffer.wrap(bytes, 8, 8).getLong();
+        return new UUID(mostSignificantBits, leastSignificantBits).toString();
+    }
+
+    private void setUserAccount(Attribute attribute, SysAuthIdentity ldapUser) throws NamingException {
+        if (config.getAccountProperty().equals(attribute.getID())) {
             ldapUser.setUserAccount(attribute.get().toString());
         }
     }
 
-    public void setUserName(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
-        if(StringUtils.isBlank(sysLdap.getNameProperty())){
-            return;
-        }
-        if(sysLdap.getNameProperty().equals(attribute.getID())){
+    private void setUserName(Attribute attribute, SysAuthIdentity ldapUser) throws NamingException {
+        if (StringUtils.isNotBlank(config.getNameProperty()) && config.getNameProperty().equals(attribute.getID())) {
             ldapUser.setUserName(attribute.get().toString());
         }
     }
 
-    public void setUserEmail(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
-        if(StringUtils.isBlank(sysLdap.getEmailProperty())){
-            return;
-        }
-        if(sysLdap.getEmailProperty().equals(attribute.getID())){
+    private void setUserEmail(Attribute attribute, SysAuthIdentity ldapUser) throws NamingException {
+        if (StringUtils.isNotBlank(config.getEmailProperty()) && config.getEmailProperty().equals(attribute.getID())) {
             ldapUser.setUserEmail(attribute.get().toString());
         }
     }
 
-    public void setUserPhone(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
-        if(StringUtils.isBlank(sysLdap.getPhoneProperty())){
-            return;
-        }
-        if(sysLdap.getPhoneProperty().equals(attribute.getID())){
+    private void setUserPhone(Attribute attribute, SysAuthIdentity ldapUser) throws NamingException {
+        if (StringUtils.isNotBlank(config.getPhoneProperty()) && config.getPhoneProperty().equals(attribute.getID())) {
             ldapUser.setUserPhone(attribute.get().toString());
         }
     }
 
-    public void setUserPost(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
-        if(StringUtils.isBlank(sysLdap.getPostProperty())){
-            return;
-        }
-        if(sysLdap.getPostProperty().equals(attribute.getID())){
+    private void setUserPost(Attribute attribute, SysAuthIdentity ldapUser) throws NamingException {
+        if (StringUtils.isNotBlank(config.getPostProperty()) && config.getPostProperty().equals(attribute.getID())) {
             ldapUser.setUserPost(attribute.get().toString());
         }
     }
 
-    public void setUserDept(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
-        if(StringUtils.isBlank(sysLdap.getDeptProperty())){
-            return;
-        }
-        if(sysLdap.getDeptProperty().equals(attribute.getID())){
+    private void setUserDept(Attribute attribute, SysAuthIdentity ldapUser) throws NamingException {
+        if (StringUtils.isNotBlank(config.getDeptProperty()) && config.getDeptProperty().equals(attribute.getID())) {
             ldapUser.setUserDept(attribute.get().toString());
         }
     }
 
-    public void setUserLeader(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
-        if(StringUtils.isBlank(sysLdap.getLeaderProperty())){
-            return;
-        }
-        if(sysLdap.getLeaderProperty().equals(attribute.getID())){
+    private void setUserLeader(Attribute attribute, SysAuthIdentity ldapUser) throws NamingException {
+        if (StringUtils.isNotBlank(config.getLeaderProperty()) && config.getLeaderProperty().equals(attribute.getID())) {
             String manager = attribute.get().toString();
             Matcher matcher = PATTERN_CN.matcher(manager);
             if (matcher.find()) {
@@ -117,12 +129,9 @@ public class LdapAttributesMapper implements AttributesMapper<SysLdapUser> {
         }
     }
 
-    public void setUserInfo(Attribute attribute, SysLdapUser ldapUser) throws NamingException {
-        if(StringUtils.isBlank(sysLdap.getInfoProperty())){
-            return;
-        }
-        if(sysLdap.getInfoProperty().equals(attribute.getID())){
-            ldapUser.setUserInfo(attribute.get().toString());
+    private void setUserInfo(Attribute attribute, SysAuthIdentity ldapUser) throws NamingException {
+        if (StringUtils.isNotBlank(config.getInfoProperty()) && config.getInfoProperty().equals(attribute.getID())) {
+            ldapUser.setIdentityInfo(Map.of("userInfo", attribute.get().toString()));
         }
     }
 }

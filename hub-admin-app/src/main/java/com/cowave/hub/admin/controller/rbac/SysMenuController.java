@@ -17,7 +17,7 @@ import com.alibaba.excel.EasyExcel;
 import com.cowave.zoo.http.client.response.Response;
 import com.cowave.zoo.framework.access.Access;
 import com.cowave.zoo.framework.support.excel.write.ExcelIgnoreStyle;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import com.cowave.hub.admin.domain.rbac.entity.SysMenu;
 import com.cowave.hub.admin.service.rbac.SysMenuService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

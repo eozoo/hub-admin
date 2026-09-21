@@ -22,7 +22,7 @@ import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.cowave.zoo.framework.support.excel.StringConverter;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import com.cowave.hub.admin.domain.rbac.enums.converter.EnableStatusConverter;
 import com.cowave.hub.admin.domain.rbac.enums.YesNo;
 import com.cowave.hub.admin.domain.rbac.enums.converter.YesNoConverter;

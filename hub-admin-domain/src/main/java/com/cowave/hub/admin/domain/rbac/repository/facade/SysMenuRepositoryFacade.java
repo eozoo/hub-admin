@@ -16,7 +16,7 @@ import cn.hutool.core.lang.tree.Tree;
 import com.cowave.hub.admin.domain.rbac.entity.SysMenu;
 import com.cowave.hub.admin.domain.rbac.entity.SysRoleMenu;
 import com.cowave.hub.admin.domain.rbac.entity.pto.MenuTreePto;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 
 import java.util.List;
 

@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.List;
 
@@ -97,9 +97,9 @@ public class SysAttachServiceImpl implements SysAttachService {
         attach.setCreateTime(Access.accessTime());
         attach.setUpdateTime(Access.accessTime());
         attach.setTenantId(upload.getTenantId());
-        if (StringUtils.isBlank(upload.getTenantId())) {
-            attach.setTenantId(Access.tenantId());
-        }
+//        if (StringUtils.isBlank(upload.getTenantId())) {
+//            attach.setTenantId(Access.tenantId());
+//        }
         String filePath = upload.getAttachType() + File.separator
                 + DateUtils.format("yyyy-MM") + File.separator + IdUtil.randomUUID() + "." + fileName;
         attach.setAttachPath(filePath);

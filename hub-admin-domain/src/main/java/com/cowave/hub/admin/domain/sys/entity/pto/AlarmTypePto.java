@@ -15,7 +15,7 @@ package com.cowave.hub.admin.domain.sys.entity.pto;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * 告警类型

@@ -18,7 +18,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cowave.hub.admin.domain.home.entity.HubApp;
 import com.cowave.hub.admin.domain.home.entity.HubAppMenu;
 import com.cowave.hub.admin.domain.rbac.entity.*;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import com.cowave.hub.admin.domain.home.repository.HubAppRepository;
 import com.cowave.hub.admin.infra.home.mapper.HubAppMapper;
 import com.cowave.hub.admin.infra.home.mapper.HubAppMenuMapper;

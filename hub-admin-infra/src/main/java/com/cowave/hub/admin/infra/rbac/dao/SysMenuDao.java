@@ -17,7 +17,7 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cowave.hub.admin.domain.rbac.entity.SysMenu;
 import com.cowave.hub.admin.domain.rbac.entity.pto.MenuTreePto;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import com.cowave.hub.admin.domain.rbac.repository.SysMenuRepository;
 import com.cowave.hub.admin.infra.rbac.mapper.SysMenuMapper;
 import com.cowave.hub.admin.infra.rbac.mapper.SysRoleMenuMapper;

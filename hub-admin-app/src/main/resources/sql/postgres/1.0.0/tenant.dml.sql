@@ -167,9 +167,9 @@ INSERT INTO sys_tenant_menu (menu_id, parent_id, menu_module, menu_name, menu_or
 
 -- Gitlab认证
 (142, 222, NULL, 'commons.menu.sys.oauth2.gitlab', 2, NULL, 'gitlab', NULL, 'C', 'gitlab', 'system/oauth/gitlab', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(143, 142, 'module_oauth', 'commons.button.query', 1, 'oauth:gitlab:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(144, 142, 'module_oauth', 'commons.button.config', 2, 'oauth:gitlab:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(145, 142, 'module_oauth', 'commons.menu.sys.oauth2.userQuery', 3, 'oauth:gitlab:user:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(143, 142, 'module_oauth', 'commons.button.query', 1, 'oauth:provider:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(144, 142, 'module_oauth', 'commons.button.config', 2, 'oauth:provider:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(145, 142, 'module_oauth', 'commons.menu.sys.oauth2.userQuery', 3, 'oauth:provider:user:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (146, 142, 'module_oauth', 'commons.menu.sys.oauth2.userEdit', 4, 'oauth:gitlab:user:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 (147, 142, 'module_oauth', 'commons.menu.sys.oauth2.userDelete', 5, 'oauth:gitlab:user:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 

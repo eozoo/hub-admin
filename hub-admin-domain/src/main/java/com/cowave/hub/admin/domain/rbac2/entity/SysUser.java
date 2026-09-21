@@ -14,6 +14,8 @@ package com.cowave.hub.admin.domain.rbac2.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,9 +48,9 @@ public class SysUser {
     private String userName;
 
     /**
-     * 用户花名
+     * 用户昵称
      */
-    private String userAlias;
+    private String userNick;
 
     /**
      * 用户性别
@@ -78,12 +80,18 @@ public class SysUser {
     /**
      * 用户状态
      */
-    private Integer userStatus;
+    private EnableStatus userStatus;
 
     /**
      * mfa
      */
     private String mfa;
+
+    /**
+     * 是否删除
+     */
+    @TableLogic
+    private Integer isDelete;
 
     /**
      * 备注

@@ -30,7 +30,7 @@
 
 spring:
   kafka:
-    bootstrap-servers: 127.0.0.1:9092,127.0.0.1:9093,127.0.0.1:9094
+    bootstrap-servers: 127.0.0.1:9094,127.0.0.1:9095,127.0.0.1:9096
     listener:
       missing-topics-fatal: false
     producer:

@@ -27,6 +27,11 @@ import lombok.NoArgsConstructor;
 public class MfaVo {
 
     /**
+     * 是否已启用MFA
+     */
+    private boolean enabled;
+
+    /**
      * MFA二维码
      */
     private String mfaUrl;

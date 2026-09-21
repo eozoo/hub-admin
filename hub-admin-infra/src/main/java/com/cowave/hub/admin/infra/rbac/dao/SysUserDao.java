@@ -18,7 +18,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cowave.hub.admin.domain.auth.entity.pto.UserProfile;
 import com.cowave.hub.admin.domain.auth.entity.command.ProfileUpdate;
 import com.cowave.hub.admin.domain.rbac.entity.*;
 import com.cowave.hub.admin.domain.rbac.entity.command.TenantManagerRemove;
@@ -31,8 +30,8 @@ import com.cowave.hub.admin.domain.rbac.entity.query.UserExportQuery;
 import com.cowave.hub.admin.domain.rbac.entity.query.UserMemberQuery;
 import com.cowave.hub.admin.domain.rbac.entity.query.UserQuery;
 import com.cowave.hub.admin.domain.rbac.entity.pto.UserDiagramPto;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
-import com.cowave.hub.admin.domain.rbac.enums.UserType;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.UserType;
 import com.cowave.hub.admin.domain.rbac.repository.SysUserRepository;
 import com.cowave.hub.admin.infra.rbac.mapper.*;
 import com.cowave.zoo.framework.access.Access;
@@ -289,11 +288,6 @@ public class SysUserDao extends ServiceImpl<SysUserMapper, SysUser> implements S
     @Override
     public void batchInsert(List<SysUser> list, boolean overwrite) {
         baseMapper.batchInsert(list, overwrite);
-    }
-
-    @Override
-    public UserProfile queryUserProfile(Integer userId) {
-        return baseMapper.getUserProfile(userId);
     }
 
     @Override

@@ -17,7 +17,7 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import com.cowave.hub.admin.domain.rbac.biz.SysMenuBiz;
 import com.cowave.hub.admin.domain.rbac.entity.SysMenu;
 import com.cowave.hub.admin.domain.rbac.entity.pto.MenuTreePto;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysMenuRepositoryFacade;
 import com.cowave.hub.admin.service.rbac.SysMenuService;
 import com.cowave.zoo.framework.access.Access;

@@ -22,7 +22,7 @@ import com.cowave.hub.admin.domain.auth.enums.AuthType;
 import com.cowave.hub.admin.domain.home.repository.facade.HubAppRepositoryFacade;
 import com.cowave.hub.admin.domain.home.repository.facade.HubMemberRepositoryFacade;
 import com.cowave.hub.admin.domain.rbac.entity.HubRoleApp;
-import com.cowave.hub.admin.domain.rbac.enums.EnableStatus;
+import com.cowave.hub.admin.domain.rbac2.enums.EnableStatus;
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.service.home.HomeAppService;
 import com.cowave.zoo.framework.access.Access;

@@ -14,7 +14,7 @@ package com.cowave.hub.admin.domain.sys.entity.command;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

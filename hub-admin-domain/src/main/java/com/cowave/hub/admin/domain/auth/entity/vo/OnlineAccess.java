@@ -35,6 +35,16 @@ public class OnlineAccess {
     private String grantId;
 
     /**
+     * 登录会话id
+     */
+    private String sessionId;
+
+    /**
+     * 授权租户编码
+     */
+    private String tenantCode;
+
+    /**
      * 刷新id
      */
     private String refreshId;
@@ -78,6 +88,8 @@ public class OnlineAccess {
     public OnlineAccess(AccessTokenInfo accessToken) {
         this.grantId = accessToken.getAccessId();
         this.refreshId = accessToken.getRefreshId();
+        this.sessionId = accessToken.getSessionId();
+        this.tenantCode = accessToken.getTenantCode();
         this.userAccount = accessToken.getUserAccount();
         this.grantType = accessToken.getAccessType();
         this.grantIp = accessToken.getAccessIp();
@@ -87,6 +99,8 @@ public class OnlineAccess {
 
     public OnlineAccess(RefreshTokenInfo oauthToken) {
         this.grantId = oauthToken.getRefreshId();
+        this.sessionId = oauthToken.getSessionId();
+        this.tenantCode = oauthToken.getTenantCode();
         this.userAccount = oauthToken.getUserAccount();
         this.grantType = oauthToken.getAuthType();
         this.grantIp = oauthToken.getLoginIp();

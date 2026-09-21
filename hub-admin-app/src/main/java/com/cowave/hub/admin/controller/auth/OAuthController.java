@@ -12,11 +12,14 @@
  */
 package com.cowave.hub.admin.controller.auth;
 
-import com.cowave.zoo.framework.access.Access;
+import com.cowave.hub.admin.domain.auth.enums.ProviderCode;
+import com.cowave.hub.admin.domain.auth.entity.command.IdentityStatusUpdate;
+
 import com.cowave.zoo.http.client.response.Response;
-import com.cowave.hub.admin.domain.auth.entity.SysOAuth;
-import com.cowave.hub.admin.domain.auth.entity.SysOAuthUser;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthProvider;
+import com.cowave.hub.admin.domain.auth.entity.command.OAuthConfigUpdate;
 import com.cowave.hub.admin.domain.auth.entity.query.OAuthUserQuery;
+import com.cowave.hub.admin.domain.auth.entity.vo.OAuthUserVo;
 import com.cowave.hub.admin.service.auth.OAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,36 +36,60 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/oauth")
 public class OAuthController {
-
     private final OAuthService oauthService;
 
     /**
      * 获取授权服务配置
      *
-     * @param serverType 服务类型
+     * @param providerCode 提供方编码
      */
-    @PreAuthorize("@permits.hasPermit('oauth:gitlab:query')")
-    @GetMapping("/config/{serverType}")
-    public Response<SysOAuth> getOauth(@PathVariable String serverType) {
-        return Response.success(oauthService.getOauth(Access.tenantId(), serverType));
+    @PreAuthorize("@permits.hasPermit('oauth:provider:query')")
+    @GetMapping("/config/{providerCode}")
+    public Response<SysAuthProvider> getOauth(@PathVariable("providerCode") String providerCode) {
+        return Response.success(oauthService.getOauth(ProviderCode.of(providerCode)));
     }
 
     /**
      * 修改授权服务配置
      */
-    @PreAuthorize("@permits.hasPermit('oauth:gitlab:edit')")
-    @PatchMapping("/config")
-    public Response<Void> editOauth(@RequestBody SysOAuth oauth) {
-        oauthService.editOauth(Access.tenantId(), oauth);
+    @PreAuthorize("@permits.hasPermit('oauth:provider:edit')")
+    @PatchMapping("/config/{providerCode}")
+    public Response<Void> editOauth(@PathVariable("providerCode") String providerCode,
+                                    @Validated @RequestBody OAuthConfigUpdate oauthConfig) {
+        oauthService.editOauth(ProviderCode.of(providerCode), oauthConfig);
         return Response.success();
     }
 
     /**
      * 用户列表
      */
-    @PreAuthorize("@permits.hasPermit('oauth:gitlab:user:query')")
-    @GetMapping("/user")
-    public Response<Response.Page<SysOAuthUser>> listUser(OAuthUserQuery query) {
-        return Response.page(oauthService.listUser(Access.tenantId(), query));
+    @PreAuthorize("@permits.hasPermit('oauth:provider:user:query')")
+    @GetMapping("/user/{providerCode}")
+    public Response<Response.Page<OAuthUserVo>> listUser(
+            @PathVariable("providerCode") String providerCode, OAuthUserQuery userQuery) {
+        return Response.page(oauthService.listUser(ProviderCode.of(providerCode), userQuery));
+    }
+
+    /**
+     * 修改OAuth身份状态
+     */
+    @PreAuthorize("@permits.hasPermit('oauth:provider:user:edit')")
+    @PatchMapping("/user/{providerCode}/{identityId}/status")
+    public Response<Void> updateIdentityStatus(@PathVariable("providerCode") String providerCode,
+                                               @PathVariable("identityId") Long identityId,
+                                               @Validated @RequestBody IdentityStatusUpdate command) {
+        oauthService.updateIdentityStatus(ProviderCode.of(providerCode), identityId, command.getAuthStatus());
+        return Response.success();
+    }
+
+    /**
+     * 删除OAuth身份绑定
+     */
+    @PreAuthorize("@permits.hasPermit('oauth:provider:user:delete')")
+    @DeleteMapping("/user/{providerCode}/{identityId}")
+    public Response<Void> deleteIdentity(@PathVariable("providerCode") String providerCode,
+                                         @PathVariable("identityId") Long identityId) {
+        oauthService.deleteIdentity(ProviderCode.of(providerCode), identityId);
+        return Response.success();
     }
 }

@@ -131,7 +131,7 @@ insert into sys_post_diagram (post_id, parent_id, tenant_id) values (24, 21, 2);
 insert into sys_post_diagram (post_id, parent_id, tenant_id) values (26, 21, 2);
 
 -- 用户数据
-insert into sys_user (user_id, user_account, user_name, user_alias, user_sex, user_phone, user_email, user_avatar, user_sign, user_status, mfa, remark, create_by, create_time, update_by, update_time) values
+insert into sys_user (user_id, user_account, user_name, user_nick, user_sex, user_phone, user_email, user_avatar, user_sign, user_status, mfa, remark, create_by, create_time, update_by, update_time) values
 (1, 'sysAdmin', '系统管理员', null, 0, null, null, null, null, 1, null, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (2, 'liubei', '刘备', null, 0, '13288888888', 'liubei@cowave.com', null, null, 1, null, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (3, 'zhugeliang', '诸葛亮', null, 0, '13288888888', 'zhugeliang@cowave.com', null, null, 1, null, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
@@ -159,8 +159,29 @@ insert into sys_tenant_user (tenant_id, user_id, user_type, user_code, display_n
 (2, 10, 'sys', 'cowave-sys-xiaoqiao', '小乔', 'M2', 1, 1, '2022-04-25 09:00:00+08', null, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (3, 11, 'sys', 'open-sys-mia', '米娅', null, 1, 1, '2022-04-25 09:00:00+08', null, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
 
+-- Open Hub 是永久公共访客租户，所有用户均保留一条启用成员关系；已有正式默认租户的用户不将其设为默认。
+insert into sys_tenant_user
+    (tenant_id, user_id, user_type, user_code, display_name, status, is_default, join_time, create_by, create_time)
+select 3,
+       u.user_id,
+       'external',
+       'open-visitor-' || u.user_id,
+       u.user_name,
+       1,
+       0,
+       '2022-04-25 09:00:00+08',
+       null,
+       '2022-04-25 09:00:00+08'
+from sys_user u
+where not exists (
+    select 1
+    from sys_tenant_user tu
+    where tu.tenant_id = 3
+      and tu.user_id = u.user_id
+);
+
 -- 用户密码
-insert into sys_user_passwd (passwd_id, user_id, passwd_hash, passwd_algo, is_current, need_change, effective_time, expire_time, invalid_time, change_source, create_by, create_time, update_by, update_time) values
+insert into sys_auth_passwd (passwd_id, user_id, passwd_hash, passwd_algo, is_current, need_change, effective_time, expire_time, invalid_time, change_source, create_by, create_time, update_by, update_time) values
 (1, 1, '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 'bcrypt', 1, 1, '2022-04-25 09:00:00+08', null, null, 'initial', null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (2, 2, '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 'bcrypt', 1, 1, '2022-04-25 09:00:00+08', null, null, 'initial', null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (3, 3, '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 'bcrypt', 1, 1, '2022-04-25 09:00:00+08', null, null, 'initial', null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
@@ -172,19 +193,19 @@ insert into sys_user_passwd (passwd_id, user_id, passwd_hash, passwd_algo, is_cu
 (9, 9, '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 'bcrypt', 1, 1, '2022-04-25 09:00:00+08', null, null, 'initial', null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (10, 10, '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 'bcrypt', 1, 1, '2022-04-25 09:00:00+08', null, null, 'initial', null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (11, 11, '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 'bcrypt', 1, 1, '2022-04-25 09:00:00+08', null, null, 'initial', null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
-select setval(pg_get_serial_sequence('sys_user_passwd', 'passwd_id'), (select max(passwd_id) from sys_user_passwd));
+select setval(pg_get_serial_sequence('sys_auth_passwd', 'passwd_id'), (select max(passwd_id) from sys_auth_passwd));
 
 -- 角色数据：system租户保存模板，cowave和open租户复制模板
 insert into sys_role (role_id, tenant_id, role_code, role_name, role_type, role_status, is_template, remark, create_by, create_time, update_by, update_time) values
 (1, 1, 'sysAdmin', '系统管理员', 'system', 1, 1, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (2, 1, 'flowAdmin', '流程管理员', 'system', 1, 1, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
-(3, 1, 'role-readonly', '只读用户', 'system', 1, 1, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
+(3, 1, 'visitor', '访客', 'system', 1, 1, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (4, 2, 'sysAdmin', '系统管理员', 'system', 1, 0, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (5, 2, 'flowAdmin', '流程管理员', 'system', 1, 0, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
-(6, 2, 'role-readonly', '只读用户', 'system', 1, 0, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
+(6, 2, 'visitor', '访客', 'system', 1, 0, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (7, 3, 'sysAdmin', '系统管理员', 'system', 1, 0, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
 (8, 3, 'flowAdmin', '流程管理员', 'system', 1, 0, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08'),
-(9, 3, 'role-readonly', '只读用户', 'system', 1, 0, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
+(9, 3, 'visitor', '访客', 'system', 1, 0, null, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
 
 -- 菜单数据
 INSERT INTO "sys_menu" ("menu_id", "parent_id", "tenant_id", "menu_module", "menu_name", "menu_order", "menu_permit", "menu_path", "menu_param", "menu_type", "menu_icon", "component", "menu_status", "is_frame", "is_cache", "is_visible", "is_protected", "remark", "create_by", "create_time", "update_by", "update_time") VALUES
@@ -335,13 +356,13 @@ INSERT INTO "sys_menu" ("menu_id", "parent_id", "tenant_id", "menu_module", "men
 (153, 148, 1, 'module_ldap', 'commons.button.test', 5, 'sys:ldap:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
 (154, 148, 1, 'module_ldap', 'commons.button.status', 6, 'sys:ldap:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
 
--- Gitlab认证
-(142, 222, 1, NULL, 'commons.menu.sys.oauth2.gitlab', 2, NULL, 'gitlab', NULL, 'C', 'gitlab', 'system/oauth/gitlab', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
-(143, 142, 1, 'module_oauth', 'commons.button.query', 1, 'oauth:gitlab:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
-(144, 142, 1, 'module_oauth', 'commons.button.config', 2, 'oauth:gitlab:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
-(145, 142, 1, 'module_oauth', 'commons.menu.sys.oauth2.userQuery', 3, 'oauth:gitlab:user:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
-(146, 142, 1, 'module_oauth', 'commons.menu.sys.oauth2.userEdit', 4, 'oauth:gitlab:user:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
-(147, 142, 1, 'module_oauth', 'commons.menu.sys.oauth2.userDelete', 5, 'oauth:gitlab:user:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
+-- OAuth2认证
+(142, 222, 1, NULL, 'commons.menu.sys.oauth2.root', 2, NULL, 'oauth2', NULL, 'C', 'oauth', 'system/oauth/index', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
+(143, 142, 1, 'module_oauth', 'commons.menu.sys.oauth2.configQuery', 1, 'oauth:provider:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
+(144, 142, 1, 'module_oauth', 'commons.menu.sys.oauth2.configEdit', 2, 'oauth:provider:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
+(145, 142, 1, 'module_oauth', 'commons.menu.sys.oauth2.userQuery', 3, 'oauth:provider:user:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
+(146, 142, 1, 'module_oauth', 'commons.menu.sys.oauth2.userEdit', 4, 'oauth:provider:user:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
+(147, 142, 1, 'module_oauth', 'commons.menu.sys.oauth2.userDelete', 5, 'oauth:provider:user:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
 
 -- 开发者文档
 (21, 1, 1, NULL, 'commons.menu.sys.doc.api', 12, NULL, 'doc', NULL, 'M', 'develop', '', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00+08', NULL, '2022-04-25 09:00:00+08'),
@@ -449,6 +470,24 @@ insert into sys_user_role (tenant_id, user_id, role_id, grant_type, granted_by, 
 insert into sys_user_role (tenant_id, user_id, role_id, grant_type, granted_by, granted_time) values (2, 8, 6, 'direct', 'system', '2022-04-25 09:00:00+08');
 insert into sys_user_role (tenant_id, user_id, role_id, grant_type, granted_by, granted_time) values (3, 11, 7, 'direct', 'system', '2022-04-25 09:00:00+08');
 
+-- Open Hub 所有访客统一授予访客角色，保留其永久访问能力。
+insert into sys_user_role (tenant_id, user_id, role_id, grant_type, granted_by, granted_time)
+select 3,
+       tu.user_id,
+       9,
+       'direct',
+       'system',
+       '2022-04-25 09:00:00+08'
+from sys_tenant_user tu
+where tu.tenant_id = 3
+  and not exists (
+      select 1
+      from sys_user_role ur
+      where ur.tenant_id = 3
+        and ur.user_id = tu.user_id
+        and ur.role_id = 9
+  );
+
 -- 用户关系
 insert into sys_user_diagram (parent_id, user_id, tenant_id, relation_type) values (0, 1, 1, 'direct');
 insert into sys_user_diagram (parent_id, user_id, tenant_id, relation_type) values (0, 2, 2, 'direct');
@@ -460,7 +499,7 @@ insert into sys_user_diagram (parent_id, user_id, tenant_id, relation_type) valu
 insert into sys_user_diagram (parent_id, user_id, tenant_id, relation_type) values (2, 8, 2, 'direct');
 insert into sys_user_diagram (parent_id, user_id, tenant_id, relation_type) values (0, 11, 3, 'direct');
 
--- 只读用户菜单
+-- 访客菜单
 insert into sys_role_menu (tenant_id, role_id, menu_id, scope_id) values (1, 3, 1, null);
 insert into sys_role_menu (tenant_id, role_id, menu_id, scope_id) values (1, 3, 5, null);
 insert into sys_role_menu (tenant_id, role_id, menu_id, scope_id) values (1, 3, 8, null);
@@ -640,23 +679,25 @@ insert into sys_scope (scope_id, tenant_id, scope_name, scope_module, scope_stat
 select setval(pg_get_serial_sequence('sys_scope', 'scope_id'), (select max(scope_id) from sys_scope));
 
 -- 认证提供方，迁移旧sys_oauth及hub_oauth中的OAuth和普通链接入口
-insert into sys_auth_provider (provider_id, tenant_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, client_id, client_secret, auth_url, redirect_url, grant_type, response_type, auth_scope, status, create_by, create_time, update_by, update_time)
-values (1, 2, 'gitlab', 'oauth', 'Gitlab', '/images/icon/gitlab.png', 'Gitlab用户', 3, null, 'replace_with_member_gitlab_app_id', 'replace_with_member_gitlab_app_secret', 'https://gitlab.cowave.com', 'http://localhost:3000/oauth/callback?provider=gitlab', 'authorization_code', 'code', 'read_user', 1, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
-insert into sys_auth_provider (provider_id, tenant_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, client_id, client_secret, auth_url, redirect_url, grant_type, response_type, auth_scope, status, create_by, create_time, update_by, update_time)
-values (2, 2, 'cowave', 'oauth', 'Hub Admin', '/images/icon/cowave.png', '控维系统用户', 5, null, '6ac6519451ed4ef09431aacccbcb1f5f', null, null, null, null, null, null, 1, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
-insert into sys_auth_provider (provider_id, tenant_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, status, create_by, create_time, update_by, update_time)
-values (3, 2, 'github', 'link', 'Github', '/images/icon/github.png', '去 Github 看看', 2, 'https://github.com/imsyy', 1, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
-insert into sys_auth_provider (provider_id, tenant_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, status, create_by, create_time, update_by, update_time)
-values (4, 2, 'bilibili', 'link', 'BiliBili', '/images/icon/bilibili.png', '(゜-゜)つロ 干杯 ~', 1, 'https://space.bilibili.com/98544142', 1, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
-insert into sys_auth_provider (provider_id, tenant_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, status, create_by, create_time, update_by, update_time)
-values (5, 2, 'qq', 'link', 'QQ', '/images/icon/qq.png', '有什么事吗', 4, 'https://res.abeim.cn/api/qq/?qq=1539250352', 1, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
-insert into sys_auth_provider (provider_id, tenant_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, status, create_by, create_time, update_by, update_time)
-values (6, 2, 'email', 'link', 'Email', '/images/icon/email.png', '去留言 ~', 0, '/blog/comments', 1, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
+insert into sys_auth_provider (provider_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, client_id, client_secret, auth_url, redirect_url, grant_type, response_type, auth_scope, status, create_by, create_time, update_by, update_time)
+values (1, 'gitlab', 'oauth', 'Gitlab', '/images/icon/gitlab.png', 'Gitlab用户', 3, null, 'a66456e64cb955b7da257deabe7f088c38327ec63fe3c125e02c5db0407ada23', 'gloas-0300ae665a2f5fc00d4214490c5c174c099c6f023079f8105fd52ac6d7cd0c1b', 'http://localhost:8929/oauth/authorize', 'http://192.168.0.135:8081/oauth/gitlab', 'authorization_code', 'code', 'read_user', 1, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
+insert into sys_auth_provider (provider_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, client_id, client_secret, auth_url, redirect_url, grant_type, response_type, auth_scope, status, create_by, create_time, update_by, update_time)
+values (2, 'cowave', 'oauth', 'Hub Admin', '/images/icon/cowave.png', '控维系统用户', 5, null, '6ac6519451ed4ef09431aacccbcb1f5f', null, null, null, null, null, null, 1, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
+insert into sys_auth_provider (provider_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, client_id, client_secret, auth_url, redirect_url, grant_type, response_type, auth_scope, status, create_by, create_time, update_by, update_time)
+values (3, 'github', 'oauth', 'GitHub', '/images/icon/github.png', 'GitHub用户', 2, null, null, null, 'https://github.com/login/oauth/authorize', 'http://localhost:8081/oauth/github', 'authorization_code', 'code', 'read:user user:email', 0, null, '2022-04-25 09:00:00+08', null, null);
+insert into sys_auth_provider (provider_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, client_id, client_secret, auth_url, redirect_url, grant_type, response_type, auth_scope, status, create_by, create_time, update_by, update_time)
+values (5, 'wechat', 'oauth', '微信', '/images/icon/wechat.png', '微信用户', 4, null, null, null, 'https://open.weixin.qq.com/connect/qrconnect', 'http://localhost:8081/oauth/wechat', 'authorization_code', 'code', 'snsapi_login', 0, null, '2022-04-25 09:00:00+08', null, null);
+insert into sys_auth_provider (provider_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, client_id, client_secret, auth_url, redirect_url, grant_type, response_type, auth_scope, status, create_by, create_time, update_by, update_time)
+values (4, 'bilibili', 'oauth', 'Bilibili', '/images/icon/bilibili.png', 'Bilibili用户', 1, null, null, null, 'https://account.bilibili.com/pc/account-pc/auth/oauth', 'http://localhost:8081/oauth/bilibili', 'authorization_code', 'code', 'USER_INFO', 0, null, '2022-04-25 09:00:00+08', null, null);
+insert into sys_auth_provider (provider_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, client_id, client_secret, auth_url, redirect_url, grant_type, response_type, auth_scope, status, create_by, create_time, update_by, update_time)
+values (7, 'qq', 'oauth', 'QQ', '/images/icon/qq.png', 'QQ用户', 4, null, null, null, 'https://graph.qq.com/oauth2.0/authorize', 'http://localhost:8081/oauth/qq', 'authorization_code', 'code', 'get_user_info', 0, null, '2022-04-25 09:00:00+08', null, null);
+insert into sys_auth_provider (provider_id, provider_code, provider_type, provider_name, provider_icon, provider_tip, provider_sort, link_url, status, create_by, create_time, update_by, update_time)
+values (6, 'email', 'link', 'Email', '/images/icon/email.png', '去留言 ~', 0, '/blog/comments', 1, null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
 select setval(pg_get_serial_sequence('sys_auth_provider', 'provider_id'), (select max(provider_id) from sys_auth_provider));
 
 -- LDAP配置
-insert into sys_auth_ldap (ldap_id, ldap_status, ldap_url, ldap_user, ldap_passwd, base_dn, readonly, user_dn, user_class, account_property, name_property, email_property, phone_property, post_property, dept_property, leader_property, info_property, create_by, create_time, update_by, update_time)
-values (1, 1, 'ldap://10.64.3.1:389', 'zhangyuliang@cowave.com', 'Cowave@123', 'OU=Cowavers,DC=cowave,DC=com', 0, null, 'person', 'sAMAccountName', 'displayName', 'userPrincipalName', 'telephoneNumber', 'title', 'department', 'manager', 'distinguishedName', null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
+insert into sys_auth_ldap (ldap_id, ldap_status, ldap_url, ldap_user, ldap_passwd, base_dn, readonly, user_dn, user_class, account_property, subject_property, name_property, email_property, phone_property, post_property, dept_property, leader_property, info_property, create_by, create_time, update_by, update_time)
+values (1, 1, 'ldap://10.64.3.1:389', 'zhangyuliang@cowave.com', 'Cowave@123', 'OU=Cowavers,DC=cowave,DC=com', 0, null, 'person', 'sAMAccountName', 'objectGUID', 'displayName', 'userPrincipalName', 'telephoneNumber', 'title', 'department', 'manager', 'distinguishedName', null, '2022-04-25 09:00:00+08', null, '2022-04-25 09:00:00+08');
 select setval(pg_get_serial_sequence('sys_auth_ldap', 'ldap_id'), (select max(ldap_id) from sys_auth_ldap));
 
 -- 门户授权应用

@@ -16,7 +16,7 @@ import com.cowave.hub.admin.domain.rbac.enums.YesNo;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author shanhuiming

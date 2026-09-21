@@ -12,21 +12,24 @@
  */
 package com.cowave.hub.admin.controller.auth;
 
+import com.cowave.hub.admin.domain.auth.enums.ProviderCode;
+import com.cowave.hub.admin.domain.auth.entity.command.LdapLogin;
+
 import cn.hutool.core.lang.tree.Tree;
 import com.cowave.zoo.http.client.asserts.I18Messages;
 import com.cowave.zoo.http.client.response.HttpResponse;
 import com.cowave.zoo.http.client.response.Response;
-import com.cowave.zoo.framework.access.Access;
-import com.cowave.hub.admin.domain.auth.entity.pto.UserProfile;
+import com.cowave.hub.admin.domain.auth.entity.vo.UserProfileVo;
 import com.cowave.hub.admin.domain.auth.entity.command.ApiTokenCreate;
 import com.cowave.hub.admin.domain.auth.entity.command.MfaBind;
+import com.cowave.hub.admin.domain.auth.entity.command.MfaDisable;
 import com.cowave.hub.admin.domain.auth.entity.command.PasswdReset;
 import com.cowave.hub.admin.domain.auth.entity.command.ProfileUpdate;
-import com.cowave.hub.admin.domain.auth.entity.vo.TokenVo;
+import com.cowave.hub.admin.domain.auth.entity.vo.ApiTokenVo;
 import com.cowave.hub.admin.domain.auth.entity.vo.MfaVo;
+import com.cowave.hub.admin.domain.auth.entity.vo.IdentityBindingVo;
 import com.cowave.hub.admin.service.auth.ApiTokenService;
 import com.cowave.hub.admin.service.auth.ProfileService;
-import com.cowave.hub.admin.service.rbac.SysMenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -47,13 +50,12 @@ import static com.cowave.zoo.http.client.constants.HttpCode.UNAUTHORIZED;
 public class ProfileController {
     private final ProfileService profileService;
     private final ApiTokenService apiTokenService;
-    private final SysMenuService menuService;
 
     /**
      * 详情
      */
     @GetMapping
-    public Response<UserProfile> info() throws Exception {
+    public Response<UserProfileVo> info() throws Exception {
         return Response.success(profileService.info());
     }
 
@@ -70,7 +72,7 @@ public class ProfileController {
      * 重置密码
      */
     @PatchMapping(value = {"/passwd"})
-    public HttpResponse<Response<Void>> resetPasswd(@RequestBody PasswdReset passwdReset) {
+    public HttpResponse<Response<Void>> resetPasswd(@Validated @RequestBody PasswdReset passwdReset) {
         profileService.resetPasswd(passwdReset);
         return HttpResponse.body(UNAUTHORIZED, Response.msg(UNAUTHORIZED,
                 I18Messages.translateIfNeed("{admin.auth.passwd.reset}")));
@@ -97,8 +99,8 @@ public class ProfileController {
      * MFA解除
      */
     @PatchMapping("/mfa/disable")
-    public Response<Void> disableMfa(@Validated @RequestBody MfaBind mfaBind) {
-        profileService.disableMfa(mfaBind);
+    public Response<Void> disableMfa(@Validated @RequestBody MfaDisable mfaDisable) {
+        profileService.disableMfa(mfaDisable);
         return Response.success();
     }
 
@@ -107,14 +109,14 @@ public class ProfileController {
 	 */
 	@GetMapping("/api/permits")
 	public Response<List<Tree<Integer>>> getApiTree(){
-		return Response.success(menuService.queryApiPermitsByUser(Access.tenantId()));
+		return Response.success(apiTokenService.getApiTree());
 	}
 
     /**
 	 * Api令牌列表
 	 */
 	@GetMapping("/api/token")
-	public Response<List<TokenVo>> listApiToken() {
+	public Response<List<ApiTokenVo>> listApiToken() {
 		return Response.success(apiTokenService.listApiToken());
 	}
 
@@ -122,7 +124,7 @@ public class ProfileController {
 	 * 创建Api令牌
 	 */
 	@PostMapping("/api/token")
-	public Response<String> creatApiToken(@RequestBody ApiTokenCreate tokenCreate) {
+	public Response<String> creatApiToken(@Validated @RequestBody ApiTokenCreate tokenCreate) {
 		return Response.success(apiTokenService.creatApiToken(tokenCreate));
 	}
 
@@ -130,8 +132,42 @@ public class ProfileController {
 	 * 删除Api令牌
 	 */
 	@DeleteMapping("/api/token/{tokenId}")
-	public Response<Void> deleteApiToken(@PathVariable Integer tokenId) {
+    public Response<Void> deleteApiToken(@PathVariable("tokenId") Integer tokenId) {
 		apiTokenService.deleteApiToken(tokenId);
 		return Response.success();
-	}
+    }
+
+    /**
+     * 获取账号绑定信息
+     */
+    @GetMapping("/identities")
+    public Response<List<IdentityBindingVo>> identities() {
+        return Response.success(profileService.identities());
+    }
+
+    /**
+     * OAuth账号绑定
+     */
+    @PostMapping("/identities/bind/{providerCode}")
+    public Response<String> oauthBind(@PathVariable("providerCode") String providerCode) {
+        return Response.success(profileService.oauthBind(ProviderCode.of(providerCode)));
+    }
+
+    /**
+     * LDAP账号绑定
+     */
+    @PostMapping("/identities/bind/ldap")
+    public Response<IdentityBindingVo> ldapBind(@Validated @RequestBody LdapLogin login) {
+        return Response.success(profileService.ldapBind(login));
+    }
+
+    /**
+     * 账号绑定回调
+     */
+    @GetMapping("/identities/callback/{providerCode}")
+    public Response<IdentityBindingVo> identityCallback(@PathVariable("providerCode") String providerCode,
+                                                        @RequestParam("code") String code,
+                                                        @RequestParam("state") String state) {
+        return Response.success(profileService.identityCallback(ProviderCode.of(providerCode), code, state));
+    }
 }

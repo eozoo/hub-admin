@@ -47,7 +47,7 @@ import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -123,13 +123,13 @@ public class SpringTest {
                 "/api/v1/auth/public/logon",
                 "/api/v1/auth/public/login",
                 "/api/v1/auth/public/mfa",
+                "/api/v1/auth/public/refresh",
                 "/api/v1/auth/public/ldap",
                 "/api/v1/auth/public/register",
                 "/api/v1/home/app/authorize/token"));
         anonymousUrls.put("GET", Set.of(
                 "/api/v1/auth/public/captcha",
                 "/api/v1/auth/public/captcha/email",
-                "/api/v1/auth/public/refresh",
                 "/api/v1/auth/public/gitlab",
                 "/api/v1/oauth/callback/**",
                 "/api/v1/home/app/authorize/redirect/**",

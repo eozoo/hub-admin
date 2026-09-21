@@ -12,6 +12,8 @@
  */
 package com.cowave.hub.admin.infra.sys.dao;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import com.cowave.hub.admin.domain.rbac.entity.SysScope;
 import com.cowave.hub.admin.domain.sys.entity.SysOperation;
 import com.cowave.hub.admin.domain.sys.entity.query.OperationQuery;
@@ -23,15 +25,10 @@ import com.cowave.zoo.http.client.response.Response;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,56 +58,53 @@ public class SysOperationDao implements SysOperationRepository {
     @PostConstruct
     public void indexInit() {
         esHelper.indexCreate(SysOperation.INDEX_NAME, MAPPING_PROPERTIES);
-        esHelper.indexSetting(SysOperation.INDEX_NAME, Settings.builder().put("index.max_result_window", 25000));
+        esHelper.indexSetting(SysOperation.INDEX_NAME, 25000);
     }
 
     @Override
     public Response.Page<SysOperation> queryPage(String tenantId, OperationQuery query, boolean isPage) {
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        boolQuery.filter(QueryBuilders.termsQuery("access.accessTenantId", tenantId));
+        List<Query> filters = new ArrayList<>();
+        filters.add(termQuery("access.accessTenantId", tenantId));
         if (StringUtils.isNotBlank(query.getOpModule())) {
-            boolQuery.filter(QueryBuilders.termsQuery("opModule.keyword", query.getOpModule()));
+            filters.add(termQuery("opModule.keyword", query.getOpModule()));
         }
         if (StringUtils.isNotBlank(query.getOpType())) {
-            boolQuery.filter(QueryBuilders.termsQuery("opType.keyword", query.getOpType()));
+            filters.add(termQuery("opType.keyword", query.getOpType()));
         }
 
         String currentScope = resolveCurrentScope();
         if (StringUtils.isNotBlank(currentScope)) {
             if (SCOPE_PERSON.equals(currentScope)) {
-                boolQuery.filter(QueryBuilders.termsQuery("access.accessUserAccount", Access.userAccount()));
+                filters.add(termQuery("access.accessUserAccount", Access.userAccount()));
             } else if (SCOPE_DEPT.equals(currentScope)) {
-                boolQuery.filter(QueryBuilders.termsQuery("access.accessDeptId", List.of(Access.deptId())));
+                filters.add(termQuery("access.accessDeptId", String.valueOf(Access.deptId())));
             }
         }
 
         if (query.getBeginTime() != null || query.getEndTime() != null) {
-            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("opTime");
-            if (query.getBeginTime() != null) {
-                rangeQuery.gte(query.getBeginTime());
-            }
-            if (query.getEndTime() != null) {
-                rangeQuery.lte(query.getEndTime().getTime());
-            }
-            boolQuery.filter(rangeQuery);
+            filters.add(Query.of(builder -> builder.range(range -> range.number(number -> {
+                number.field("opTime");
+                if (query.getBeginTime() != null) {
+                    number.gte((double) query.getBeginTime().getTime());
+                }
+                if (query.getEndTime() != null) {
+                    number.lte((double) query.getEndTime().getTime());
+                }
+                return number;
+            }))));
         }
 
         if (StringUtils.isNotBlank(query.getOpUser())) {
-            BoolQueryBuilder orCondition = QueryBuilders.boolQuery();
-            orCondition.should(QueryBuilders.wildcardQuery("access.accessUserName", query.getOpUser()));
-            orCondition.should(QueryBuilders.wildcardQuery("access.accessUserAccount", query.getOpUser()));
-            boolQuery.filter(orCondition);
+            filters.add(Query.of(builder -> builder.bool(bool -> bool
+                    .should(wildcardQuery("access.accessUserName", query.getOpUser()))
+                    .should(wildcardQuery("access.accessUserAccount", query.getOpUser()))
+                    .minimumShouldMatch("1"))));
         }
 
-        SearchSourceBuilder source = new SearchSourceBuilder();
-        if (boolQuery.hasClauses()){
-            source.query(boolQuery);
-        }
-        source.sort("opTime", SortOrder.DESC);
-        if (isPage) {
-            source.from(Access.pageOffset()).size(Access.pageSize());
-        }
-        return esHelper.query(SysOperation.INDEX_NAME, source, SysOperation.class);
+        Query esQuery = Query.of(builder -> builder.bool(bool -> bool.filter(filters)));
+        int from = isPage ? Access.pageOffset() : -1;
+        int size = isPage ? Access.pageSize() : -1;
+        return esHelper.query(SysOperation.INDEX_NAME, esQuery, from, size, "opTime", SysOperation.class);
     }
 
     @Override
@@ -120,24 +114,36 @@ public class SysOperationDao implements SysOperationRepository {
 
     @Override
     public void delete(List<String> ids) {
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        List<Query> filters = new ArrayList<>();
         String currentScope = resolveCurrentScope();
         if (StringUtils.isNotBlank(currentScope)) {
             if (SCOPE_PERSON.equals(currentScope)) {
-                boolQuery.filter(QueryBuilders.termsQuery("access.accessUserAccount", Access.userAccount()));
+                filters.add(termQuery("access.accessUserAccount", Access.userAccount()));
             } else if (SCOPE_DEPT.equals(currentScope)) {
-                boolQuery.filter(QueryBuilders.termsQuery("access.accessDeptId", List.of(Access.deptId())));
+                filters.add(termQuery("access.accessDeptId", String.valueOf(Access.deptId())));
             }
         }
-        boolQuery.filter(QueryBuilders.termsQuery("_id", ids));
-        esHelper.deleteByQuery(SysOperation.INDEX_NAME, boolQuery, true);
+        filters.add(Query.of(builder -> builder.terms(terms -> terms.field("_id")
+                .terms(values -> values.value(ids.stream().map(FieldValue::of).toList())))));
+        esHelper.deleteByQuery(SysOperation.INDEX_NAME, boolQuery(filters), true);
     }
 
     @Override
     public void clean(String tenantId) {
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
-                .filter(QueryBuilders.termsQuery("access.accessTenantId", tenantId));
-        esHelper.deleteByQuery(SysOperation.INDEX_NAME, boolQuery, true);
+        esHelper.deleteByQuery(SysOperation.INDEX_NAME,
+                boolQuery(List.of(termQuery("access.accessTenantId", tenantId))), true);
+    }
+
+    private Query boolQuery(List<Query> filters) {
+        return Query.of(builder -> builder.bool(bool -> bool.filter(filters)));
+    }
+
+    private Query termQuery(String field, String value) {
+        return Query.of(builder -> builder.term(term -> term.field(field).value(value)));
+    }
+
+    private Query wildcardQuery(String field, String value) {
+        return Query.of(builder -> builder.wildcard(wildcard -> wildcard.field(field).value(value)));
     }
 
     private String resolveCurrentScope() {

@@ -12,6 +12,7 @@
  */
 package com.cowave.hub.admin.domain.rbac2.entity;
 
+import com.cowave.hub.admin.domain.rbac2.enums.RoleGrant;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,7 +46,7 @@ public class SysUserRole {
     /**
      * 授权类型，默认直接授权
      */
-    private String grantType;
+    private RoleGrant grantType;
 
     /**
      * 授权人

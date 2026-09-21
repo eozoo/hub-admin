@@ -1,19 +1,7 @@
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0.txt
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- */
 package com.cowave.hub.admin.domain.auth.remote;
 
-import com.cowave.hub.admin.domain.auth.entity.SysLdap;
-import com.cowave.hub.admin.domain.auth.entity.SysLdapUser;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthIdentity;
+import com.cowave.hub.admin.domain.auth.entity.SysAuthLdap;
 
 import java.util.List;
 
@@ -23,21 +11,17 @@ import java.util.List;
 public interface LdapRemote {
 
     /**
-     * LDAP 认证
-     *
-     * @param config   LDAP 配置
-     * @param filter   查询过滤器
-     * @param password 用户密码
-     * @return 认证是否通过
+     * 验证LDAP配置
      */
-    boolean authenticate(SysLdap config, String filter, String password);
+    void validConfig(SysAuthLdap config);
 
     /**
-     * 搜索 LDAP 用户
-     *
-     * @param config LDAP 配置
-     * @param filter 查询过滤器
-     * @return 用户属性列表
+     * 验证用户密码
      */
-    List<SysLdapUser> searchUser(SysLdap config, String filter);
+    boolean authenticate(SysAuthLdap config, String userAccount, String password);
+
+    /**
+     * 查询LDAP用户
+     */
+    List<SysAuthIdentity> searchUser(SysAuthLdap config, String userAccount);
 }

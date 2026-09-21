@@ -15,7 +15,7 @@ package com.cowave.hub.admin.domain.rbac.entity.command;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author shanhuiming

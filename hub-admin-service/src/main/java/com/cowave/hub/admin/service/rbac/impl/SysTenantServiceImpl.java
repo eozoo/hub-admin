@@ -21,7 +21,7 @@ import com.cowave.hub.admin.domain.rbac.entity.command.*;
 import com.cowave.hub.admin.domain.rbac.entity.vo.TenantInfoVo;
 import com.cowave.hub.admin.domain.rbac.entity.pto.TenantManagerPto;
 import com.cowave.hub.admin.domain.rbac.entity.query.TenantQuery;
-import com.cowave.hub.admin.domain.rbac.enums.UserType;
+import com.cowave.hub.admin.domain.rbac2.enums.UserType;
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysTenantRepositoryFacade;
 import com.cowave.hub.admin.domain.rbac.repository.facade.SysUserRepositoryFacade;
 import com.cowave.hub.admin.domain.sys.biz.SysAttachBiz;

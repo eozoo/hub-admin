@@ -17,7 +17,7 @@ import com.cowave.hub.admin.socketio.event.GetNoticeCountEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import static com.cowave.hub.admin.domain.AdminSocketIoNames.EVENT_CLIENT_NOTICE_COUNT;
 import static com.cowave.hub.admin.domain.AdminSocketIoNames.SPACE_NOTICE;
@@ -35,6 +35,6 @@ public class AdminSocketIoConfiguration {
     public void init(){
         socketIoHelper.registerConnectListener(SPACE_NOTICE);
         socketIoHelper.registerDisconnectListener(SPACE_NOTICE);
-        socketIoHelper.registerDataListener(SPACE_NOTICE, EVENT_CLIENT_NOTICE_COUNT, String.class, getNoticeCountEvent);
+        socketIoHelper.registerDataListener(SPACE_NOTICE, EVENT_CLIENT_NOTICE_COUNT, Object.class, getNoticeCountEvent);
     }
 }
